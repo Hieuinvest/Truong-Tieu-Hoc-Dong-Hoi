@@ -4981,7 +4981,7 @@ const ROOM_INFO = {
   vr12: { t: 'Cô Tuyết', ad: '#60a5fa', board: 4, subj: ['ta'], games: [['🃏', 'Lật thẻ Tiếng Anh', '#/game/mem']] },
   vr13: { t: 'Cô Giang', ad: '#c084fc', board: -7, subj: ['an'] },
   vr14: { t: 'Cô Lan', ad: '#fb923c', board: 68, subj: ['mt'] },
-  vr11: { t: 'Cô Thảo', ad: '#34d399', board: 135, subj: ['tv', 'lsdl', 'dd'] },
+  vr11: { t: 'Cô Đông', ad: '#34d399', board: 135, subj: ['tv', 'lsdl', 'dd'] },
   vr09: { t: 'Cô Trang', ad: '#2dd4bf', board: 0, subj: ['cn', 'nature'], games: [['✅', 'Đúng hay Sai?', '#/game/tf']] },
   vr17: { t: 'Cô Phương (Tổng phụ trách Đội)', ad: '#dc2626', board: -90, subj: ['hdtn', 'sk:kns', 'sk:atgt', 'sk:pccc', 'sk:mang'] },
   vr19: { t: 'Cô Bình (Y tế)', nurse: 1, board: 0, subj: ['sk:vs', 'sk:boi'] },
@@ -5361,7 +5361,7 @@ const RINFO = {
   c1a: { t: 'Cô Tuyết', ad: '#0d9488' }, c1b: { t: 'Cô Mận', ad: '#fda4af' }, c2a: { t: 'Cô Hương', ad: '#fb7185' }, c2b: { t: 'Cô Đào', ad: '#f9a8d4' },
   c3a: { t: 'Cô Thu', ad: '#a78bfa' }, c3b: { t: 'Cô Yến', ad: '#c4b5fd' }, c4a: { t: 'Cô Ngọc', ad: '#f59e0b' }, c4b: { t: 'Cô Liên', ad: '#fbbf24' },
   c5a: { t: 'Cô Hạnh', ad: '#ef4444' }, c5b: { t: 'Cô Nhung', ad: '#f87171' },
-  en: { t: 'Cô Tuyết', ad: '#60a5fa', subj: ['ta'], games: [['🃏', 'Lật thẻ Tiếng Anh', '#/game/mem']] }, lib: { t: 'Cô Thảo', ad: '#34d399', subj: ['tv', 'lsdl', 'dd'] }, it: { t: 'Cô Quỳnh', ad: '#818cf8', subj: ['th'], games: [['⚡', 'Tính nhẩm siêu tốc', '#/game/math']] },
+  en: { t: 'Cô Tuyết', ad: '#60a5fa', subj: ['ta'], games: [['🃏', 'Lật thẻ Tiếng Anh', '#/game/mem']] }, lib: { t: 'Cô Đông', ad: '#34d399', subj: ['tv', 'lsdl', 'dd'] }, it: { t: 'Cô Quỳnh', ad: '#818cf8', subj: ['th'], games: [['⚡', 'Tính nhẩm siêu tốc', '#/game/math']] },
   mus: { t: 'Cô Giang', ad: '#c084fc', subj: ['an'], games: [['🎹', 'Đàn piano & học hát', '#/game/piano']] }, art: { t: 'Cô Lan', ad: '#fb923c', subj: ['mt'], games: [['🖌️', 'Tô màu tranh', '#/game/color'], ['✏️', 'Vẽ tranh tự do', '#/game/draw']] }, stem: { t: 'Cô Trang', ad: '#2dd4bf', subj: ['cn', 'nature'], games: [['🔧', 'Lắp ghép kĩ thuật', '#/game/build'], ['🧩', 'Ghép hình', '#/game/puzzle'], ['✅', 'Đúng hay Sai?', '#/game/tf']] },
   doi: { t: 'Cô Phương (Tổng phụ trách Đội)', ad: '#dc2626', subj: ['hdtn', 'sk:kns', 'sk:atgt', 'sk:pccc', 'sk:mang'] }, med: { t: 'Cô Bình (Y tế)', nurse: 1, subj: ['sk:vs', 'sk:boi'] },
   pri: { t: 'Cô Hiệu trưởng', ad: '#0e9aa7', principal: 1 },
@@ -5597,13 +5597,14 @@ function buildRoom(id) {
   const def = { scene, B, name: R.n, indoor: true, room: { w, d, h }, board, T, kids, rid: id, grade: R.g,
     spawn: { x: doorX, z: d / 2 - 2.6, ry: Math.PI }, bounds: { x0: -w / 2 + .1, x1: w / 2 - .1, z0: -d / 2 + .1, z1: d / 2 - .1 },
     onEnter() {
-      const greet = I.principal ? `Chào em ${ME.n}! Cô là Hiệu trưởng Trường Tiểu học Đông Hội. Chúc em học tập thật tốt!` : I.nurse ? 'Chào em! Đây là phòng Y tế. Cô sẽ hướng dẫn em cách giữ gìn sức khỏe nhé.' : `Chào em ${ME.n}! Mời em vào lớp. Em tìm một ghế trống rồi bấm Ngồi vào chỗ, cô sẽ giảng bài cho em nhé.`;
+      const greet = type === 'library' ? `Chào em ${ME.n}! Cô là cô Đông, thủ thư. Em chọn sách truyện trên giá rồi ngồi đọc nhé.` : I.principal ? `Chào em ${ME.n}! Cô là Hiệu trưởng Trường Tiểu học Đông Hội. Chúc em học tập thật tốt!` : I.nurse ? 'Chào em! Đây là phòng Y tế. Cô sẽ hướng dẫn em cách giữ gìn sức khỏe nhé.' : `Chào em ${ME.n}! Mời em vào lớp. Em tìm một ghế trống rồi bấm Ngồi vào chỗ, cô sẽ giảng bài cho em nhé.`;
       setTimeout(() => { if (W.S !== def || Lesson.on) return; W.face(T); T.state = 'wave'; Voice.speak(greet, { who: T, onSentence: s => W.bubble(T, s, 5000) }); setTimeout(() => { if (T.state === 'wave') T.state = 'idle'; }, 2000); }, 700);
       if (scene.userData.hon) refreshHonor(scene.userData.hon);
       if (R.type === 'english') board.draw({ title: 'English Class – Cô Tuyết (Ms. Tuyet)', lines: ['Welcome to our class! – Chào mừng các em!', 'Sit down, please. – Mời các em ngồi vào ghế.', "Let's learn English together! – Cùng học tiếng Anh nào!"] });
+      else if (type === 'library') board.draw({ title: '📚 Thư viện – Cô Đông', lines: ['Chào mừng các em đến thư viện!', 'Chọn sách truyện trên giá rồi ngồi đọc nhé.', 'Giữ yên lặng và trả sách về đúng chỗ.'] });
       else board.draw({ title: R.n + (I.t ? ' – ' + I.t : ''), lines: ['Chào mừng các em!', I.principal ? 'Bảng vàng Đấu trường ở bên phải phòng.' : 'Ngồi vào ghế trống để học bài cùng cô.', I.principal ? 'Chúc các em chăm ngoan, học giỏi!' : 'Cô giảng bài trước, sau đó cả lớp luyện tập.'] });
     },
-    onSit(seat) { if (type === 'library' && W._readSit) { W._readSit = false; return; } if (!I.principal) HUD.open('study', { room: id, teacher: T }); else { Voice.speak('Em ngồi ngay ngắn lắm. Em có muốn xem bảng vàng Đấu trường không?', { who: T }); HUD.open('rank'); } },
+    onSit(seat) { if (type === 'library') { if (W._readSit) W._readSit = false; else HUD.open('books'); return; } if (!I.principal) HUD.open('study', { room: id, teacher: T }); else { Voice.speak('Em ngồi ngay ngắn lắm. Em có muốn xem bảng vàng Đấu trường không?', { who: T }); HUD.open('rank'); } },
     onLeave() { Lesson.end(true); },
   };
   return def;
@@ -5616,6 +5617,7 @@ function roomTeacherTalk(id, T) {
   const I = ROOM_INFO[id] || {}; W.face(T); T.state = 'wave'; setTimeout(() => { if (T.state === 'wave') T.state = 'idle'; }, 1600);
   if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Mỗi mười phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
     HUD.choice('🏫 Cô Hiệu trưởng', 'Em muốn làm gì?', [{ label: '🔔 Vào Đấu trường', fn: () => location.hash = '#/arena' }, { label: '🏆 Bảng xếp hạng', fn: () => HUD.open('rank') }]); return; }
+  if (I.lib || (ROOMS[id] && ROOMS[id].type === 'library')) { Voice.speak('Chào em! Cô là cô Đông, thủ thư. Mời em chọn một cuốn truyện để đọc nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) }); HUD.open('books'); return; }
   Voice.speak('Chào em! Em ngồi vào chỗ trống, chọn bài học, cô sẽ giảng bài cho em nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) });
   HUD.open('study', { room: id, teacher: T });
 }
@@ -6710,7 +6712,7 @@ const HUD = {
     const T = { books: '📖 Thư viện truyện', vr: '📷 VR 360° – ảnh thật của trường', map: '🗺️ Bản đồ trường', study: '📚 Học bài cùng cô', rank: '🏆 Bảng xếp hạng', shop: '🛍️ Cửa hàng đồ chơi', wardrobe: '🎒 Tủ đồ của em', profile: '🎨 Đổi nhân vật của em' };
     $('#dTitle').textContent = T[kind] || ''; const B = $('#dBody'); B.innerHTML = '<p class="muted">Đang tải…</p>'; B.scrollTop = 0;
     if (kind === 'map') return this.mapView(B);
-    if (kind === 'study') return this.studyView(B, o);
+    if (kind === 'study') { const rid = o.room || (W.S && W.S.rid); if (rid && ROOMS[rid] && ROOMS[rid].type === 'library') return this.booksView(B); return this.studyView(B, o); }
     if (kind === 'rank') { const draw = async t => { B.innerHTML = await Rank.html(t); B.querySelectorAll('[data-rt]').forEach(b => b.onclick = () => draw(b.dataset.rt)); }; return draw(o.tab || ''); }
     if (kind === 'shop' || kind === 'wardrobe') return this.shopView(B, kind === 'wardrobe', o.cat);
     if (kind === 'profile') return this.profileView(B);
