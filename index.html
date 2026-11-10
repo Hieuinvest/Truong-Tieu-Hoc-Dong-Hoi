@@ -168,7 +168,7 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .timer svg{transform:rotate(-90deg)}
 .timer b{position:absolute;inset:0;display:grid;place-items:center;font-family:'Baloo 2',Nunito,system-ui,sans-serif;font-size:24px;color:var(--ink)}
 .hall{position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(180deg,#fff7d6 0,#fde68a 40%,#c48b52 40%,#a46b37 100%);box-shadow:var(--sh);padding:16px}
-.seats{position:relative;z-index:2;display:flex;flex-direction:column;gap:2px;margin-top:16px;align-items:center}
+.seats{position:relative;z-index:2;display:flex;flex-direction:column;gap:2px;margin-top:2px;align-items:center}
 .srow{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;width:100%;transform-origin:center bottom}
 .seat{position:relative;aspect-ratio:1/1.15;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 .seat svg.k{width:88%;height:auto;display:block;position:relative;z-index:1}
@@ -182,8 +182,8 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .seat.me{background:radial-gradient(circle at 50% 60%,rgba(37,99,235,.35),transparent 70%);border-radius:12px}
 .seat.me .nm{color:#fde047}
 .seat.empty svg.k{opacity:.0}
-.lb-mini{background:rgba(255,255,255,.9);border-radius:16px;padding:10px 12px;font-size:13px;font-weight:800;min-width:180px}
-.lb-mini div{display:flex;justify-content:space-between;gap:10px}
+.lb-mini{background:rgba(255,255,255,.88);border-radius:10px;padding:4px 8px;font-size:11px;line-height:1.25;font-weight:800;min-width:120px;max-width:170px}
+.lb-mini div{display:flex;justify-content:space-between;gap:8px}
 .pod{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:10px 0 18px}
 .pod .p{display:flex;flex-direction:column;align-items:center;gap:6px;width:120px}
 .pod .p .av{width:84px}
@@ -6997,7 +6997,7 @@ function arenaRoom(J) {
   }
   function stage(top) {
     hall.innerHTML = `${top}${principalHTML()}<div id="bb"></div>
-      <div class="row" style="position:relative;z-index:4;margin-top:12px;align-items:flex-start"><div class="lb-mini" id="mini"></div><div class="spacer"></div></div>
+      <div class="row" style="position:relative;z-index:4;margin-top:4px;align-items:flex-start"><div class="lb-mini" id="mini"></div><div class="spacer"></div></div>
       <div class="seats" id="seats">${seatHTML()}</div>`;
     occupant = {}; seatsDirty = true;
   }
@@ -7023,7 +7023,7 @@ function arenaRoom(J) {
       const sv = $('svg', el); if (p && sv && sv.dataset.vk !== vk) { sv.outerHTML = avatarSVG(p.av || {}, { cls: 'k', raise: up, mood, bust: true }); const s2 = $('svg', el); if (s2) s2.dataset.vk = vk; }
     }
     const ranked = all.slice().sort((a, b) => b.s - a.s);
-    const mini = $('#mini'); if (mini) mini.innerHTML = `<div style="margin-bottom:4px">🏅 Top Khối ${J.g} · phòng ${J.room + 1}</div>` + ranked.slice(0, 5).map((p, i) => `<div><span>${i + 1}. ${esc(p.n)}${p.id === ME.id ? ' (em)' : ''}</span><span>${p.s}</span></div>`).join('') + `<div class="muted" style="margin-top:4px;font-weight:700">${realList().length} bạn thật · ${all.length - realList().length} bạn ảo</div>`;
+    const mini = $('#mini'); if (mini) mini.innerHTML = `<div style="margin-bottom:2px">🏅 Top ${J.room + 1}</div>` + ranked.slice(0, 3).map((p, i) => `<div><span>${i + 1}. ${esc(p.n)}${p.id === ME.id ? ' (em)' : ''}</span><span>${p.s}</span></div>`).join('') ;
     return ranked;
   }
 
