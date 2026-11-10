@@ -3568,11 +3568,11 @@ const CONFIG = {
     appId: '',
   },
   roomSize: 100,          // số chỗ ngồi mỗi phòng thi
-  cycleMin: 10,           // cứ bao nhiêu phút có 1 cuộc thi
+  cycleMin: 13,           // cứ bao nhiêu phút có 1 cuộc thi
   questions: 30,          // số câu mỗi cuộc thi
-  lobbySec: 45,           // thời gian phòng chờ / xếp chỗ
-  answerSec: 14,          // thời gian trả lời mỗi câu (cô Hiệu trưởng đọc câu hỏi + đáp án)
-  revealSec: 4,           // thời gian cô giáo công bố đáp án
+  lobbySec: 30,           // thời gian phòng chờ / xếp chỗ
+  answerSec: 20,          // thời gian trả lời mỗi câu (cô Hiệu trưởng đọc câu hỏi + đáp án)
+  revealSec: 3,           // thời gian cô giáo công bố đáp án
   botFill: 60,            // tối đa bao nhiêu "bạn ảo" ngồi lấp chỗ trống (0 = tắt)
   practiceLen: 10,        // số câu mỗi lượt luyện tập
 };
@@ -3866,7 +3866,7 @@ const Voice = {
     normal: { rate: .88, pitch: 1.05, gap: 280 },
     praise: { rate: .92, pitch: 1.1, gap: 200 },
     cheer: { rate: .86, pitch: 1.0, gap: 220 },
-    contest: { rate: .95, pitch: 1.03, gap: 160 },
+    contest: { rate: 1.05, pitch: 1.03, gap: 110 },
     kid: { rate: 1.0, pitch: 1.35, gap: 150 },
   },
   split(t) {
@@ -4949,7 +4949,7 @@ const KIDLINES = ['Chào bạn! Bạn học lớp mấy thế?', 'Hôm nay cô g
 const KIDNAMES_M = ['Minh', 'Huy', 'Khoa', 'Nam', 'Phúc', 'Bảo', 'An', 'Đức', 'Long', 'Quân'];
 const KIDNAMES_F = ['Lan', 'Mai', 'Hà', 'Linh', 'Ngọc', 'Thảo', 'Vy', 'Trang', 'Hân', 'My'];
 const KID_SUBJ = ['Toán, vì mình thích tính nhẩm thật nhanh', 'Tiếng Việt, vì mình thích đọc truyện', 'Mĩ thuật, mình thích vẽ tranh lắm', 'Âm nhạc, mình hay hát cùng cô Giang', 'Tiếng Anh, cô Tuyết dạy vui lắm', 'Thể dục, mình thích đá bóng', 'Tự nhiên và Xã hội, mình thích tìm hiểu về cây cối và con vật', 'Tin học, mình thích học máy tính'];
-const KID_TIPS = ['Bạn vào thư viện đọc truyện đi, đọc xong được thưởng sao đấy!', 'Cứ mười phút là có Đấu trường Trí tuệ ở sân khấu, bạn nhớ tham gia nhé!', 'Bạn bấm nút Học bài để học với cô, làm đúng nhiều sẽ được nhiều sao.', 'Có sao rồi thì ra Cửa hàng đồ chơi mua mũ, cặp và thú cưng nhé!', 'Khu Cây Xanh có hồ sen đẹp lắm, bạn ra đó ngồi ghế đá chơi đi.', 'Ở Không Gian Mỹ Thuật có tranh của các bạn vẽ đấy, bạn qua xem chưa?'];
+const KID_TIPS = ['Bạn vào thư viện đọc truyện đi, đọc xong được thưởng sao đấy!', 'Cứ mười ba phút là có Đấu trường Trí tuệ ở sân khấu, bạn nhớ tham gia nhé!', 'Bạn bấm nút Học bài để học với cô, làm đúng nhiều sẽ được nhiều sao.', 'Có sao rồi thì ra Cửa hàng đồ chơi mua mũ, cặp và thú cưng nhé!', 'Khu Cây Xanh có hồ sen đẹp lắm, bạn ra đó ngồi ghế đá chơi đi.', 'Ở Không Gian Mỹ Thuật có tranh của các bạn vẽ đấy, bạn qua xem chưa?'];
 let KID_QUIZ_N = 0;
 function kidSay(n, line, st) { const C = n.C; if (st) { const prev = C.state; C.state = st; setTimeout(() => { if (C.state === st) C.state = n.base || (/^sit/.test(prev) ? prev : 'idle'); }, 1800); } W.bubble(C, `${n.name}: ${line}`, 5200); return Voice.speak(line, { style: 'kid', who: C, onSentence: x => HUD.subtitle(n.name, x) }).then(() => HUD.subtitle()); }
 function kidMenu(n) {
@@ -4975,8 +4975,8 @@ function kidTalk(n) {
 /* thông tin từng khu có giờ học: cô giáo, hướng bảng (độ), môn */
 const ROOM_INFO = {
   vr07: { t: 'Cô Tuyết', ad: '#f472b6', board: 181, cls: 1 },
-  vr07a: { t: 'Cô Hương', ad: '#fb7185', board: 162, cls: 1 },
-  vr07b: { t: 'Cô Thu', ad: '#a78bfa', board: 181, cls: 1 },
+  vr07a: { t: 'Cô Tâm', ad: '#fb7185', board: 162, cls: 1 },
+  vr07b: { t: 'Cô Hạnh', ad: '#a78bfa', board: 181, cls: 1 },
   vr08: { t: 'Cô Quỳnh', ad: '#818cf8', board: 178, subj: ['th'], games: [['⚡', 'Tính nhẩm siêu tốc', '#/game/math']] },
   vr12: { t: 'Cô Tuyết', ad: '#60a5fa', board: 4, subj: ['ta'], games: [['🃏', 'Lật thẻ Tiếng Anh', '#/game/mem']] },
   vr13: { t: 'Cô Giang', ad: '#c084fc', board: -7, subj: ['an'] },
@@ -5113,7 +5113,7 @@ function vrZone(zid) {
 const VR_LIST = Object.keys(ZONES);
 function zoneTeacherTalk(zid, T) {
   const I = ROOM_INFO[zid] || {}; W.face(T, new THREE.Vector3()); T.state = 'wave'; setTimeout(() => { if (T.state === 'wave') T.state = 'idle'; }, 1600);
-  if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Mỗi mười phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
+  if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Cứ mười ba phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
     HUD.choice('🏫 Cô Hiệu trưởng', 'Em muốn làm gì?', [{ label: '🔔 Vào Đấu trường', fn: () => location.hash = '#/arena' }, { label: '🏆 Bảng xếp hạng', fn: () => HUD.open('rank') }]); return; }
   Voice.speak(I.pe ? 'Chào em! Cô là cô Diễn dạy Thể dục. Em chọn bài học nhé.' : 'Chào em! Em chọn bài học, cô sẽ giảng bài cho em nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) });
   HUD.open('study', { room: zid, teacher: T });
@@ -5358,9 +5358,9 @@ SCENES.bld = () => {
    phòng Hiệu trưởng, phòng Đội, phòng Y tế.
    ====================================================================== */
 const RINFO = {
-  c1a: { t: 'Cô Tuyết', ad: '#0d9488' }, c1b: { t: 'Cô Mận', ad: '#fda4af' }, c2a: { t: 'Cô Hương', ad: '#fb7185' }, c2b: { t: 'Cô Đào', ad: '#f9a8d4' },
-  c3a: { t: 'Cô Thu', ad: '#a78bfa' }, c3b: { t: 'Cô Yến', ad: '#c4b5fd' }, c4a: { t: 'Cô Ngọc', ad: '#f59e0b' }, c4b: { t: 'Cô Liên', ad: '#fbbf24' },
-  c5a: { t: 'Cô Hạnh', ad: '#ef4444' }, c5b: { t: 'Cô Nhung', ad: '#f87171' },
+  c1a: { t: 'Cô Tuyết', ad: '#0d9488' }, c1b: { t: 'Cô Tuyết', ad: '#fda4af' }, c2a: { t: 'Cô Tâm', ad: '#fb7185' }, c2b: { t: 'Cô Tâm', ad: '#f9a8d4' },
+  c3a: { t: 'Cô Hạnh', ad: '#a78bfa' }, c3b: { t: 'Cô Hạnh', ad: '#c4b5fd' }, c4a: { t: 'Cô Thuần', ad: '#f59e0b' }, c4b: { t: 'Cô Thuần', ad: '#fbbf24' },
+  c5a: { t: 'Cô Quyên', ad: '#ef4444' }, c5b: { t: 'Cô Quyên', ad: '#f87171' },
   en: { t: 'Cô Tuyết', ad: '#60a5fa', subj: ['ta'], games: [['🃏', 'Lật thẻ Tiếng Anh', '#/game/mem']] }, lib: { t: 'Cô Đông', ad: '#34d399', subj: ['tv', 'lsdl', 'dd'] }, it: { t: 'Cô Quỳnh', ad: '#818cf8', subj: ['th'], games: [['⚡', 'Tính nhẩm siêu tốc', '#/game/math']] },
   mus: { t: 'Cô Giang', ad: '#c084fc', subj: ['an'], games: [['🎹', 'Đàn piano & học hát', '#/game/piano']] }, art: { t: 'Cô Lan', ad: '#fb923c', subj: ['mt'], games: [['🖌️', 'Tô màu tranh', '#/game/color'], ['✏️', 'Vẽ tranh tự do', '#/game/draw']] }, stem: { t: 'Cô Trang', ad: '#2dd4bf', subj: ['cn', 'nature'], games: [['🔧', 'Lắp ghép kĩ thuật', '#/game/build'], ['🧩', 'Ghép hình', '#/game/puzzle'], ['✅', 'Đúng hay Sai?', '#/game/tf']] },
   doi: { t: 'Cô Phương (Tổng phụ trách Đội)', ad: '#dc2626', subj: ['hdtn', 'sk:kns', 'sk:atgt', 'sk:pccc', 'sk:mang'] }, med: { t: 'Cô Bình (Y tế)', nurse: 1, subj: ['sk:vs', 'sk:boi'] },
@@ -5615,7 +5615,7 @@ function drawHonor(x) { const w = 1024, h = 600; x.fillStyle = '#7f1d1d'; x.fill
 function refreshHonor() { }
 function roomTeacherTalk(id, T) {
   const I = ROOM_INFO[id] || {}; W.face(T); T.state = 'wave'; setTimeout(() => { if (T.state === 'wave') T.state = 'idle'; }, 1600);
-  if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Mỗi mười phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
+  if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Cứ mười ba phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
     HUD.choice('🏫 Cô Hiệu trưởng', 'Em muốn làm gì?', [{ label: '🔔 Vào Đấu trường', fn: () => location.hash = '#/arena' }, { label: '🏆 Bảng xếp hạng', fn: () => HUD.open('rank') }]); return; }
   if (I.lib || (ROOMS[id] && ROOMS[id].type === 'library')) { Voice.speak('Chào em! Cô là cô Đông, thủ thư. Mời em chọn một cuốn truyện để đọc nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) }); HUD.open('books'); return; }
   Voice.speak('Chào em! Em ngồi vào chỗ trống, chọn bài học, cô sẽ giảng bài cho em nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) });
@@ -5757,7 +5757,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   }
   // nền
   B.plane(500, 500, mat(texRep(TX.grass, 80, 80)), 0, -.09, 0, 0, -Math.PI / 2);
-  B.plane(26, 93, new THREE.MeshLambertMaterial({ map: realTex('paver', 26 / 7, 93 / 7) }), -51, .018, -1.5, 0, -Math.PI / 2);   // sân phía nhà thể chất – nhà ăn
+  B.plane(31, 93, new THREE.MeshLambertMaterial({ map: realTex('paver', 31 / 7, 93 / 7) }), -48.5, .018, -1.5, 0, -Math.PI / 2);   // sân phía nhà thể chất – nhà ăn
   // ---- BÊN NGOÀI TRƯỜNG: vỉa hè, đường nhựa có vạch, đảo giao thông trồng hoa, cột đèn, hàng cây, ô tô đỗ
   B.plane(300, 4.4, mat(texRep(canvasTex(128, 111, (x) => { x.fillStyle = '#7d8388'; x.fillRect(0, 0, 128, 111); const hx = (cx, cy, c) => { x.fillStyle = c; x.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i; x.lineTo(cx + Math.cos(a) * 33, cy + Math.sin(a) * 33); } x.fill(); }; [[0, 0, '#a3a8ad'], [128, 0, '#a3a8ad'], [0, 111, '#9a9fa4'], [128, 111, '#9a9fa4'], [64, 55.5, '#aab0b5']].forEach(a => hx(...a)); }), 330, 5.6)), 0, .012, 48.6, 0, -Math.PI / 2); B.box(300, .16, .3, '#d1d5db', 0, 0, 50.9);
   B.plane(300, 14, mat(texRep(TX.road, 60, 3)), 0, .01, 58, 0, -Math.PI / 2);
@@ -5914,7 +5914,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   B.act({ x: 30, z: 35.6, r: 2.2, icon: '🛍️', label: 'Mua đồ ở Cửa hàng', fn: () => HUD.open('shop') });
   if (!BK)
   // ---- NHÀ THỂ CHẤT (Khu Sân Chơi & Thể Thao): nhà mái tôn xanh, mở mặt phía sân, bên trong có sân bóng, khán đài, rổ bóng
-  { const cx = -50, cz = -31, W2 = 23, D2 = 21, H = 7.2, wl = mat('#f1f5f9');
+  { const cx = -51.75, cz = -31, W2 = 19.5, D2 = 21, H = 7.2, wl = mat('#f1f5f9');
     B.plane(W2, D2, mat('#2b7fee'), cx, .024, cz, 0, -Math.PI / 2);
     B.box(.4, H, D2, wl, cx - W2 / 2, 0, cz, { col: true }); B.box(W2, H, .4, wl, cx, 0, cz - D2 / 2, { col: true }); B.box(W2, H, .4, wl, cx, 0, cz + D2 / 2, { col: true });
     for (let i = 0; i < 5; i++) B.box(2.6, 1.3, .1, '#93c5fd', cx - 8 + i * 4, 4.2, cz + D2 / 2 + .22);
@@ -5924,7 +5924,12 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     for (let i = 0; i < 3; i++) B.box(1, .45 * (i + 1), D2 - 6, ['#f59e0b', '#fb923c', '#f97316'][i], cx - W2 / 2 + 1 + i * -.0 + .5 + i * 0, 0, cz, { col: i === 0 }).position.x = cx - W2 / 2 + 2.6 - i * 1;   // khán đài
     for (const sz of [-1, 1]) { B.cyl(.08, .08, 3.2, '#475569', cx + 6 * 0 + sz * 0 - 0, 0, cz + sz * (D2 / 2 - .9), 8); B.box(1.4, .95, .06, '#ffffff', cx, 2.9, cz + sz * (D2 / 2 - 1.1)); const hp = new THREE.Mesh(new THREE.TorusGeometry(.25, .03, 6, 16), mat('#ea580c')); hp.rotation.x = Math.PI / 2; hp.position.set(cx, 2.75, cz + sz * (D2 / 2 - 1.45)); scene.add(hp); }
     for (let i = 0; i < 4; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(.16, 10, 8), mat(['#ea580c', '#f8fafc', '#facc15', '#22c55e'][i])); b.position.set(cx + 9.6, .18, cz - 8 + i * .5); scene.add(b); }
-    B.act({ x: cx + 9, z: cz + 6, r: 2.4, icon: '⚽', label: 'Học Thể dục với cô Diễn', fn: () => HUD.open('study', { subj: 'gdtc' }) }); }
+    B.act({ x: cx + 9, z: cz + 6, r: 2.4, icon: '⚽', label: 'Học Thể dục với cô Diễn', fn: () => HUD.open('study', { subj: 'gdtc' }) });
+    // ba trò chơi trong nhà thể chất: lưới cầu lông, khung thành, rổ bóng
+    B.box(.1, 1.55, 6, '#f8fafc', cx + 1.5, 0, cz, { col: false }); B.box(.06, .9, 6, '#e2e8f0', cx + 1.5, .65, cz); for (const sz of [-1, 1]) B.cyl(.06, .06, 1.6, '#475569', cx + 1.5, 0, cz + sz * 3.05, 8);
+    B.act({ x: cx + 4.2, z: cz, r: 2.2, icon: '🏸', label: 'Chơi cầu lông', fn: () => { location.hash = '#/game/badm'; } });
+    B.act({ x: cx - 3, z: cz - 7, r: 2.4, icon: '🥅', label: 'Thủ môn bắt bóng', fn: () => { location.hash = '#/game/keeper'; } });
+    B.act({ x: cx, z: cz + D2 / 2 - 3.2, r: 2.4, icon: '🏀', label: 'Ném bóng rổ', fn: () => { location.hash = '#/game/basket'; } }); }
   // ---- NHÀ ĂN HỌC SINH: nhà mái tôn xanh lớn, mở mặt phía sân; bàn ghế inox, quầy chia cơm, bồn rửa tay
   { const cx = -39, cz = 31, W2 = 16, D2 = 24, H = 5, wl = mat('#f8fafc');
     B.plane(W2, D2, new THREE.MeshLambertMaterial({ map: realTex('tile', W2 / .9, D2 / .9), color: '#fff3df' }), cx, .026, cz, 0, -Math.PI / 2);
@@ -6020,9 +6025,9 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   // tập văn nghệ trước sân khấu
   for (let i = 0; i < 4; i++) { const k = kid(); k.C.root.position.set(-4.5 + i * 3, 0, -19); k.C.root.rotation.y = 0; const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? i) - dt; if (n.cd < 0) { n.cd = 2 + Math.random() * 3; k.C.state = ['clap', 'cheer', 'idle', 'wave'][Math.floor(Math.random() * 4)]; } }); n.name = k.name; n.talk = kidTalk; n.line = 'Bọn mình đang tập văn nghệ chào mừng 20 tháng 11!'; }
   // cô giáo Thể dục
-  { const C = CH.build({}, { role: 'pe', hair: 'teacherLong', skin: '#e9b98f' }); C.root.position.set(-38.4, 0, -33.4); C.root.rotation.y = -1.2; C.state = 'idle';
+  { const C = CH.build({}, { role: 'pe', hair: 'teacherLong', skin: '#e9b98f' }); C.root.position.set(-41.6, 0, -33.4); C.root.rotation.y = -1.2; C.state = 'idle';
     const n = B.npc(C, (dt, n) => { n.cd = (n.cd ?? 3) - dt; if (n.cd < 0 && !C.talking) { n.cd = 4 + Math.random() * 4; C.state = ['idle', 'clap', 'idle', 'point'][Math.floor(Math.random() * 4)]; } });
-    n.name = 'Cô Diễn (Thể dục)'; n.talkLabel = 'Học Thể dục với cô'; n.talk = () => { W.face(C); C.state = 'wave'; Voice.speak('Chào em! Cô là cô Diễn dạy Thể dục. Em chọn bài học nhé.', { who: C }); W.bubble(C, 'Cô Diễn: Chào em! Em chọn bài học Thể dục nhé.', 3500); HUD.open('study', { subj: 'gdtc', teacher: C, room: 'campus' }); };
+    n.name = 'Cô Diễn (Thể dục)'; n.talkLabel = 'Học Thể dục với cô'; n.talk = () => { W.face(C); C.state = 'wave'; Voice.speak('Chào em! Cô là cô Diễn dạy Thể dục. Em chọn bài học nhé.', { who: C }); W.bubble(C, 'Cô Diễn: Chào em! Em chọn bài học Thể dục nhé.', 3500); HUD.choice('🏃 Cô Diễn (Thể dục)', 'Em muốn làm gì nào?', [{ label: '📘 Học bài Thể dục', fn: () => HUD.open('study', { subj: 'gdtc', teacher: C, room: 'campus' }) }, { label: '🏸 Cầu lông', fn: () => { location.hash = '#/game/badm'; } }, { label: '🏀 Ném bóng rổ', fn: () => { location.hash = '#/game/basket'; } }, { label: '🥅 Thủ môn', fn: () => { location.hash = '#/game/keeper'; } }]); };
     scene.userData.peTeacher = C; }
   // bác bảo vệ đứng ở cổng chào học sinh tới trường
   { const C = CH.build({ g: 'm' }, { role: 'guard', hair: 'guard', skin: '#d9a273' }); C.root.position.set(4.2, 0, 44.2); C.root.rotation.y = 0; C.state = 'idle'; let greeted = 0;
@@ -6880,7 +6885,7 @@ const Reader = {
 };
 
 /* ======================================================================
-   ĐẤU TRƯỜNG TRÍ TUỆ – 10 phút/lần, 30 câu, phòng 100 chỗ
+   ĐẤU TRƯỜNG TRÍ TUỆ – 13 phút/lần, 30 câu, phòng 100 chỗ
    Mọi máy tính đều tính cùng một lịch theo giờ máy chủ Firebase,
    nên không cần máy chủ riêng: đề thi được sinh giống nhau từ số hiệu lượt thi.
    ====================================================================== */
@@ -6958,10 +6963,24 @@ screens.arena = () => {
 /* cô Hiệu trưởng (ảnh thật) dẫn chương trình */
 const PRINC = { el: null, set talking(v) { const e = document.getElementById('princ'); if (e) e.classList.toggle('speaking', !!v); }, get talking() { return false; } };
 function principalHTML() { return `<div class="principal" id="princ"><div class="ph"><img src="${typeof HT_IMG !== 'undefined' ? HT_IMG : 'hieu-truong.jpg'}" alt="Cô Hiệu trưởng"></div><div class="nm">Cô Hiệu trưởng</div><div class="waves"><i></i><i></i><i></i><i></i></div></div>`; }
-function princSay(t, style = 'contest') { return Voice.speak(t, { who: PRINC, style, onSentence: x => { const b = document.getElementById('bbtxt'); if (b) b.textContent = x; } }); }
+let PSEQ = 0;
+function princSay(t, style = 'contest') {
+  const my = ++PSEQ, o = { who: PRINC, style, onSentence: x => { const b = document.getElementById('bbtxt'); if (b) b.textContent = x.replace(/[⟦⟧]/g, ''); } };
+  if (!/⟦/.test(t)) return Voice.speak(t, o);
+  return (async () => { const ps = String(t).split(/⟦|⟧/); for (let i = 0; i < ps.length; i++) { if (my !== PSEQ) return false; const x = ps[i].trim(); if (!x) continue; const ok = await Voice.speak(x, i % 2 ? { ...o, lang: 'en' } : o); if (!ok || my !== PSEQ) return false; } return true; })();
+}
+/* câu hỏi Tiếng Anh: phần tiếng Anh đọc bằng giọng Anh, phần tiếng Việt đọc bằng giọng Việt */
+const VI_RE = /[àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ]/i;
+const isViet = x => VI_RE.test(x) || /\b(nghĩa|là|gì|nào|của|không|và|các|em|câu|chọn|trong|bạn|tên)\b/i.test(x);
+function readQmix(q, n) {
+  const en = x => `⟦${x}⟧`; let qs = String(q.q).replace(/_+/g, ' ... ');
+  const qt = /["“][^"”]+["”]/.test(qs) ? qs.replace(/["“]([^"”]+)["”]/g, (m, a) => ' ' + en(a) + ' ') : (isViet(qs) ? qs : en(qs));
+  return `${n ? 'Câu ' + n + '. ' : ''}${qt} ` + q.opts.map((o, i) => isViet(o) ? `${LETTERS[i]}, ${o}.` : en(`${LETTERS[i]}, ${o}.`)).join(' ');
+}
+const readQAny = (q, n) => q.s === 'ta' ? readQmix(q, n) : readQ(q, n);
 function arenaRoom(J) {
   if (!J.g) J.g = ME.g;
-  const QS = liveSet(J.slot, J.g); const players = {}; let ref = null, seatsDirty = true, lastKey = '', occupant = {}, iv;
+  const QS = liveSet(J.slot, J.g); const players = {}; let miniHTML = '', ref = null, seatsDirty = true, lastKey = '', occupant = {}, iv;
   if (DB.on) {
     ref = DB.ref(`live/${J.slot * 10 + J.g}/r/${J.room}`);
     const up = s => { players[s.key] = s.val(); seatsDirty = true; };
@@ -7023,7 +7042,7 @@ function arenaRoom(J) {
       const sv = $('svg', el); if (p && sv && sv.dataset.vk !== vk) { sv.outerHTML = avatarSVG(p.av || {}, { cls: 'k', raise: up, mood, bust: true }); const s2 = $('svg', el); if (s2) s2.dataset.vk = vk; }
     }
     const ranked = all.slice().sort((a, b) => b.s - a.s);
-    const mini = $('#mini'); if (mini) mini.innerHTML = `<div style="margin-bottom:2px">🏅 Top ${J.room + 1}</div>` + ranked.slice(0, 3).map((p, i) => `<div><span>${i + 1}. ${esc(p.n)}${p.id === ME.id ? ' (em)' : ''}</span><span>${p.s}</span></div>`).join('') ;
+    const mini = $('#mini'); if (mini) { miniHTML = `<div style="margin-bottom:2px">🏅 Top ${J.room + 1}</div>` + ranked.slice(0, 3).map((p, i) => `<div><span>${i + 1}. ${esc(p.n)}${p.id === ME.id ? ' (em)' : ''}</span><span>${p.s}</span></div>`).join(''); mini.innerHTML = miniHTML; }
     return ranked;
   }
 
@@ -7071,14 +7090,14 @@ function arenaRoom(J) {
           stage(`<div class="chalk" style="margin-right:150px"><div class="meta"><span>Câu ${st.idx + 1}/${CONFIG.questions}</span><span>·</span><span>${q.g ? 'Lớp ' + q.g : 'Kỹ năng'}</span><span>·</span><span>${S.icon} ${S.name}</span></div><div class="q">${esc(q.q)}</div><div class="tray"></div></div>
             <div class="answers">${q.opts.map((a, k) => `<button class="ans" data-i="${k}"><span class="L">${LETTERS[k]}</span><span>${esc(a)}</span></button>`).join('')}</div>`);
           $$('.ans', hall).forEach(b => b.onclick = () => answer(+b.dataset.i));
-          if (st.left > 4) princSay(readQ(q, st.idx + 1));
+          if (st.left > 4) princSay(readQAny(q, st.idx + 1));
           const mine = J.ans[st.idx]; if (mine) $$('.ans', hall).forEach((b, x) => { b.disabled = true; b.classList.add(x === mine.a ? 'picked' : 'dim'); });
         } else {
           const mine = J.ans[st.idx]; const right = mine && mine.a === q.ans;
           $$('.ans', hall).forEach((b, x) => { b.disabled = true; b.classList.remove('picked', 'dim'); b.classList.add(x === q.ans ? 'right' : (mine && x === mine.a) ? 'wrong' : 'dim'); });
           const line = !mine ? 'Em nhớ chọn đáp án nhanh hơn nhé, cố lên!' : right ? pickOne(PRAISE) : pickOne(CHEER);
           $('#bb').innerHTML = `<div class="bubble ${right ? 'good' : 'bad'}" style="top:70px">Đáp án đúng là <b>${LETTERS[q.ans]}</b>!<br>${line}${right ? `<br><small>+${mine.p} điểm</small>` : ''}</div>`;
-          princSay(`Đáp án đúng là ${LETTERS[q.ans]}. ${line}`, right ? 'praise' : 'cheer'); right ? (SFX.ok(), confetti(20)) : SFX.no();
+          princSay(`Đáp án đúng là ${LETTERS[q.ans]}.${q.s === 'ta' ? ' ⟦' + q.opts[q.ans] + '⟧ ' : ' '}${line}`, right ? 'praise' : 'cheer'); right ? (SFX.ok(), confetti(20)) : SFX.no();
         }
       } else {
         $('#qInfo').textContent = 'Kết thúc cuộc thi';
@@ -7421,6 +7440,90 @@ G2.order = () => {
   load();
 };
 { const g0 = screens.game; screens.game = k => { if (G2[k]) { show360(false); G2[k](); } else g0(k); }; }
+
+/* ============ NHÀ THỂ CHẤT: Cầu lông · Bóng rổ · Thủ môn bắt bóng ============ */
+Object.assign(GAMES, {
+  badm:   { icon: '🏸', name: 'Cầu lông', desc: 'Chạm đúng lúc quả cầu bay tới vợt để đỡ cầu về phía đối thủ.' },
+  basket: { icon: '🏀', name: 'Ném bóng rổ', desc: 'Dừng thanh lực đúng vạch xanh để ném bóng vào rổ.' },
+  keeper: { icon: '🥅', name: 'Thủ môn bắt bóng', desc: 'Nhìn chân người sút, chạm vào ô khung thành bóng sẽ bay tới.' },
+});
+const G3_CSS = `<style>.g3cv{width:100%;max-width:720px;display:block;margin:0 auto;border-radius:16px;border:3px solid #334155;touch-action:manipulation;background:#bfe3ff;cursor:pointer;user-select:none}
+.g3tip{text-align:center;font-weight:800;color:#334155;margin:8px 0 0}.g3msg{text-align:center;font:900 22px Nunito,sans-serif;min-height:30px;margin:6px 0}</style>`;
+function g3Loop(cv, fn) { let last = performance.now(), stop = false; const f = now => { if (stop || !cv.isConnected) return; const dt = Math.min(.05, (now - last) / 1000); last = now; fn(dt, now / 1000); requestAnimationFrame(f); }; requestAnimationFrame(f); return () => { stop = true; }; }
+function g3Hud(a) { const h = $('#ghud'); if (h) h.innerHTML = a.map(x => `<span class="chip">${x}</span>`).join(''); }
+const g3Ground = (c, W, H, col) => { c.fillStyle = '#7dd3fc'; c.fillRect(0, 0, W, H * .62); c.fillStyle = col; c.fillRect(0, H * .62, W, H * .38); };
+
+/* ---------- CẦU LÔNG: bấm đúng lúc cầu vào vùng vàng ---------- */
+G2.badm = () => {
+  g2Shell('🏸 Cầu lông', G3_CSS + `<canvas id="g3" class="g3cv" width="720" height="380"></canvas><div class="g3msg" id="g3m">Bấm / chạm / nhấn Space khi quả cầu vào vùng vàng!</div><p class="g3tip">Đỡ cầu thật nhiều lần liên tiếp. Em có 3 lượt hỏng.</p>`);
+  const cv = $('#g3'), c = cv.getContext('2d'), W = 720, H = 380; let score = 0, lives = 3, best = 0, T = 1.9, t = 0, phase = 'in', swing = 0, msg = '', over = false;
+  const X0 = 600, X1 = 150, py = x => 250 - Math.sin(Math.PI * (X0 - x) / (X0 - X1)) * 120 * (phase === 'in' ? 1 : .7);
+  const hit = () => { if (over) return; if (phase !== 'in') return; const x = X0 + (X1 - X0) * t / T;
+    if (x > 250) { miss('Em bấm sớm quá!'); } else if (x < 110) { miss('Muộn mất rồi!'); } else { swing = .25; score++; best = Math.max(best, score); const perfect = Math.abs(x - 170) < 26; SFX.ok(); setMsg(perfect ? '🌟 Tuyệt vời!' : '👍 Tốt!', '#16a34a'); phase = 'out'; t = 0; T = Math.max(.75, T - .08); } };
+  const setMsg = (m, col) => { const e = $('#g3m'); if (e) { e.textContent = m; e.style.color = col || '#334155'; } };
+  function miss(m) { lives--; SFX.no(); setMsg(m + ' Còn ' + lives + ' lượt.', '#dc2626'); phase = 'out'; t = 0; if (lives <= 0) { over = true; setTimeout(() => cv.isConnected && gameEnd('🏸 Cầu lông', score, Math.min(30, score * 2), 'badm'), 900); } }
+  const act = e => { e.preventDefault(); hit(); }; cv.addEventListener('pointerdown', act); const kd = e => { if (e.code === 'Space') act(e); if (!cv.isConnected) removeEventListener('keydown', kd); }; addEventListener('keydown', kd);
+  g3Loop(cv, dt => {
+    t += dt; swing = Math.max(0, swing - dt);
+    if (phase === 'in' && t > T) { miss('Quả cầu rơi mất rồi!'); }
+    if (phase === 'out' && t > .6 && !over) { phase = 'in'; t = 0; }
+    g3Hud([`🏸 ${score}`, `❤ ${lives}`, `🏆 ${best}`]);
+    g3Ground(c, W, H, '#16a34a'); c.fillStyle = '#e2e8f0'; c.fillRect(0, H * .62, W, 6);
+    c.fillStyle = '#fff'; c.fillRect(W / 2 - 3, 190, 6, 130); c.fillStyle = 'rgba(255,255,255,.75)'; c.fillRect(W / 2 - 60, 190, 120, 38); c.strokeStyle = '#94a3b8'; for (let i = 0; i < 6; i++) { c.beginPath(); c.moveTo(W / 2 - 60 + i * 24, 190); c.lineTo(W / 2 - 60 + i * 24, 228); c.stroke(); }
+    c.fillStyle = 'rgba(250,204,21,.55)'; c.fillRect(110, 120, 140, 190); c.strokeStyle = '#ca8a04'; c.lineWidth = 3; c.strokeRect(110, 120, 140, 190); c.fillStyle = 'rgba(34,197,94,.45)'; c.fillRect(144, 120, 52, 190);
+    const kid = (x, col, sw) => { c.fillStyle = col; c.beginPath(); c.arc(x, 232, 20, 0, 7); c.fill(); c.fillRect(x - 15, 252, 30, 52); c.fillStyle = '#fde0c4'; c.beginPath(); c.arc(x, 210, 17, 0, 7); c.fill(); c.strokeStyle = '#1f2937'; c.lineWidth = 5; c.beginPath(); c.moveTo(x + 10, 262); c.lineTo(x + 34 + (sw ? 20 : 0), sw ? 196 : 240); c.stroke(); c.beginPath(); c.ellipse(x + 40 + (sw ? 22 : 0), sw ? 186 : 230, 9, 14, 0, 0, 7); c.stroke(); };
+    kid(95, '#2563eb', swing > 0); kid(650, '#dc2626', phase === 'out' && t < .3);
+    const x = phase === 'in' ? X0 + (X1 - X0) * t / T : X1 + (X0 - X1) * Math.min(1, t / .6), y = py(x);
+    c.fillStyle = '#fff'; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 11, y - 18); c.lineTo(x + 11, y - 18); c.closePath(); c.fill(); c.fillStyle = '#f97316'; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill();
+  });
+};
+
+/* ---------- BÓNG RỔ: dừng thanh lực đúng vạch xanh ---------- */
+G2.basket = () => {
+  g2Shell('🏀 Ném bóng rổ', G3_CSS + `<canvas id="g3" class="g3cv" width="720" height="400"></canvas><div class="g3msg" id="g3m">Chạm vào màn hình để dừng thanh lực nhé!</div><p class="g3tip">Ném 10 quả. Vạch xanh là lực vừa đủ, ném xa thì cần lực mạnh hơn.</p>`);
+  const cv = $('#g3'), c = cv.getContext('2d'), W = 720, H = 400; let shot = 0, score = 0, pwr = 0, dir = 1, lock = false, fly = null, ideal = .5, dist = 3, over = false;
+  const HX = 610, HY = 150, newShot = () => { dist = 1 + Math.floor(Math.random() * 3); ideal = [.38, .56, .74][dist - 1]; lock = false; fly = null; pwr = 0; dir = 1; };
+  newShot();
+  const setMsg = (m, col) => { const e = $('#g3m'); if (e) { e.textContent = m; e.style.color = col || '#334155'; } };
+  const throwIt = () => { if (lock || over) return; lock = true; const d = Math.abs(pwr - ideal), res = d < .06 ? 'swish' : d < .11 ? 'in' : pwr > ideal ? 'long' : 'short'; fly = { t: 0, res }; };
+  const act = e => { e.preventDefault(); throwIt(); }; cv.addEventListener('pointerdown', act); const kd = e => { if (e.code === 'Space') act(e); if (!cv.isConnected) removeEventListener('keydown', kd); }; addEventListener('keydown', kd);
+  g3Loop(cv, dt => {
+    if (!lock) { pwr += dir * dt * (.75 + shot * .05); if (pwr > 1) { pwr = 1; dir = -1; } if (pwr < 0) { pwr = 0; dir = 1; } }
+    const sx = 90 + (3 - dist) * 70, sy = 300;
+    if (fly) { fly.t += dt; if (fly.t > 1.1) { const ok = fly.res === 'swish' || fly.res === 'in'; if (ok) { score += dist === 3 ? 3 : 2; SFX.ok(); setMsg(fly.res === 'swish' ? '🌟 Vào rổ đẹp quá!' : '👍 Vào rổ!', '#16a34a'); } else { SFX.no(); setMsg(fly.res === 'long' ? 'Ném mạnh quá rồi!' : 'Ném yếu quá rồi!', '#dc2626'); }
+      shot++; if (shot >= 10) { over = true; fly = null; setTimeout(() => cv.isConnected && gameEnd('🏀 Ném bóng rổ', score, Math.min(30, score), 'basket'), 900); } else newShot(); } }
+    g3Hud([`🏀 ${Math.min(shot + 1, 10)}/10`, `⭐ ${score}`]);
+    g3Ground(c, W, H, '#d97706'); c.strokeStyle = '#fff'; c.lineWidth = 3; c.beginPath(); c.arc(sx - 40, 330, 18, 0, 7); c.stroke(); c.fillStyle = '#e2e8f0'; c.fillRect(HX + 28, HY - 70, 10, 230); c.fillStyle = '#fff'; c.fillRect(HX + 10, HY - 80, 28, 90); c.strokeStyle = '#ef4444'; c.lineWidth = 4; c.beginPath(); c.moveTo(HX - 36, HY); c.lineTo(HX + 12, HY); c.stroke(); c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 2; for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(HX - 34 + i * 12, HY); c.lineTo(HX - 26 + i * 8, HY + 38); c.stroke(); }
+    c.fillStyle = '#2563eb'; c.beginPath(); c.arc(sx, sy - 36, 20, 0, 7); c.fill(); c.fillRect(sx - 15, sy - 16, 30, 50); c.fillStyle = '#fde0c4'; c.beginPath(); c.arc(sx, sy - 62, 17, 0, 7); c.fill(); c.fillStyle = '#1f2937'; c.fillText(`${dist === 3 ? '3 điểm' : '2 điểm'}`, sx - 20, sy + 60);
+    let bx = sx + 22, by = sy - 50; if (fly) { const k = fly.t / 1.1, tx = fly.res === 'short' ? HX - 120 : fly.res === 'long' ? HX + 70 : HX - 12; const ty = fly.res === 'short' ? HY + 120 : fly.res === 'long' ? HY - 30 : HY + 6; bx = sx + 22 + (tx - sx - 22) * k; by = sy - 50 + (ty - sy + 50) * k - Math.sin(Math.PI * k) * 190; }
+    c.fillStyle = '#f97316'; c.beginPath(); c.arc(bx, by, 13, 0, 7); c.fill(); c.strokeStyle = '#7c2d12'; c.lineWidth = 2; c.stroke();
+    const mx = 40, my = 372, mw = W - 80; c.fillStyle = '#e2e8f0'; c.fillRect(mx, my, mw, 18); c.fillStyle = '#22c55e'; c.fillRect(mx + (ideal - .06) * mw, my, .12 * mw, 18); c.fillStyle = '#fde047'; c.fillRect(mx + (ideal - .11) * mw, my, .05 * mw, 18); c.fillRect(mx + (ideal + .06) * mw, my, .05 * mw, 18); c.fillStyle = '#0f172a'; c.fillRect(mx + pwr * mw - 3, my - 6, 6, 30);
+  });
+};
+
+/* ---------- THỦ MÔN: nhìn người sút, chạm ô khung thành ---------- */
+G2.keeper = () => {
+  g2Shell('🥅 Thủ môn bắt bóng', G3_CSS + `<canvas id="g3" class="g3cv" width="720" height="420"></canvas><div class="g3msg" id="g3m">Nhìn chân người sút rồi chạm vào ô bóng sắp bay tới!</div><p class="g3tip">10 quả sút. Người sút sẽ nghiêng người về phía bóng trước khi sút.</p>`);
+  const cv = $('#g3'), c = cv.getContext('2d'), W = 720, H = 420, GX = 120, GY = 60, GW = 480, GH = 200, Z = (i) => ({ x: GX + (i % 3) * GW / 3, y: GY + Math.floor(i / 3) * GH / 2, w: GW / 3, h: GH / 2 });
+  let shot = 0, saved = 0, st = 'wait', t = 0, tgt = 0, pick = -1, over = false, wait = 1.2; const setMsg = (m, col) => { const e = $('#g3m'); if (e) { e.textContent = m; e.style.color = col || '#334155'; } };
+  const next = () => { tgt = Math.floor(Math.random() * 6); pick = -1; st = 'wait'; t = 0; wait = 1.2 + Math.random() * .8; };
+  next();
+  const tap = e => { e.preventDefault(); if (over || st === 'result') return; const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height; for (let i = 0; i < 6; i++) { const z = Z(i); if (x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.h) { pick = i; break; } } };
+  cv.addEventListener('pointerdown', tap);
+  g3Loop(cv, dt => {
+    t += dt;
+    if (st === 'wait' && t > wait) { st = 'kick'; t = 0; } else if (st === 'kick' && t > .85) { const ok = pick === tgt; if (ok) { saved++; SFX.ok(); setMsg('🧤 Bắt được bóng rồi!', '#16a34a'); } else { SFX.no(); setMsg(pick < 0 ? 'Em chưa chọn ô nào kìa!' : 'Bóng vào lưới mất rồi!', '#dc2626'); } shot++; st = 'result'; t = 0; if (shot >= 10) { over = true; setTimeout(() => cv.isConnected && gameEnd('🥅 Thủ môn bắt bóng', saved, Math.min(30, saved * 3), 'keeper'), 1100); } } else if (st === 'result' && t > 1 && !over) next();
+    g3Hud([`⚽ ${Math.min(shot + 1, 10)}/10`, `🧤 ${saved}`]);
+    c.fillStyle = '#16a34a'; c.fillRect(0, 0, W, H); c.fillStyle = '#22c55e'; for (let i = 0; i < 8; i++) c.fillRect(i * 90, 0, 45, H); c.fillStyle = '#bfe3ff'; c.fillRect(0, 0, W, 40);
+    c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(GX, GY, GW, GH); c.strokeStyle = '#fff'; c.lineWidth = 7; c.strokeRect(GX, GY, GW, GH); c.lineWidth = 1; c.strokeStyle = 'rgba(255,255,255,.5)'; for (let i = 1; i < 12; i++) { c.beginPath(); c.moveTo(GX + i * GW / 12, GY); c.lineTo(GX + i * GW / 12, GY + GH); c.stroke(); } for (let i = 1; i < 6; i++) { c.beginPath(); c.moveTo(GX, GY + i * GH / 6); c.lineTo(GX + GW, GY + i * GH / 6); c.stroke(); }
+    for (let i = 0; i < 6; i++) { const z = Z(i); c.strokeStyle = pick === i ? '#fde047' : 'rgba(255,255,255,.4)'; c.lineWidth = pick === i ? 5 : 2; c.setLineDash(pick === i ? [] : [6, 6]); c.strokeRect(z.x + 3, z.y + 3, z.w - 6, z.h - 6); c.setLineDash([]); }
+    const lean = (tgt % 3 - 1) * 26, kx = W / 2 + (st === 'wait' ? 0 : lean * Math.min(1, t * 5)), ky = 360;
+    c.fillStyle = '#dc2626'; c.beginPath(); c.arc(kx, ky - 40, 22, 0, 7); c.fill(); c.fillRect(kx - 16, ky - 18, 32, 40); c.fillStyle = '#fde0c4'; c.beginPath(); c.arc(kx, ky - 68, 17, 0, 7); c.fill(); c.strokeStyle = '#1f2937'; c.lineWidth = 8; c.beginPath(); c.moveTo(kx, ky + 20); c.lineTo(kx + (st === 'kick' ? lean * 1.6 : 12), ky + 52); c.stroke();
+    const z = Z(tgt), gx = z.x + z.w / 2, gy = z.y + z.h / 2; let bx = W / 2 + 40, by = 392, bs = 12; if (st === 'kick' || st === 'result') { const k = st === 'kick' ? Math.min(1, t / .85) : 1; bx = W / 2 + 40 + (gx - W / 2 - 40) * k; by = 392 + (gy - 392) * k; bs = 12 - 5 * k; }
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(bx, by, bs, 0, 7); c.fill(); c.strokeStyle = '#1f2937'; c.lineWidth = 2; c.stroke();
+    const gk = pick >= 0 ? Z(pick) : Z(4), gkx = gk.x + gk.w / 2, gky = gk.y + gk.h / 2; c.fillStyle = '#facc15'; c.beginPath(); c.arc(gkx, gky + 6, 22, 0, 7); c.fill(); c.fillStyle = '#fde0c4'; c.beginPath(); c.arc(gkx, gky - 20, 14, 0, 7); c.fill(); c.strokeStyle = '#facc15'; c.lineWidth = 8; c.beginPath(); c.moveTo(gkx - 20, gky); c.lineTo(gkx - 42, gky - 24); c.moveTo(gkx + 20, gky); c.lineTo(gkx + 42, gky - 24); c.stroke();
+  });
+};
 
 </script>
 </body>
