@@ -380,6 +380,7 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .emotes{right:150px;bottom:max(14px,env(safe-area-inset-bottom))}
 .emotes button{width:auto;height:38px;padding:0 9px;display:flex;align-items:center;gap:4px;font-size:16px}
 .emotes button i{font-style:normal;font-size:12px;font-weight:800;color:#1e293b}
+.emotes .wandb{background:linear-gradient(180deg,#fde68a,#f59e0b);outline:2px solid #fff;animation:wandp 1.6s ease-in-out infinite}@keyframes wandp{50%{box-shadow:0 0 0 6px rgba(250,204,21,.35),0 3px 10px rgba(0,0,0,.18)}}
 .vrhide{display:none!important}
 /* ===== trò chuyện ===== */
 .chatbtn{position:fixed;right:10px;bottom:max(12px,env(safe-area-inset-bottom));height:44px;padding:0 14px;border-radius:14px;background:#2563eb;color:#fff;font-size:18px;font-weight:800;display:flex;align-items:center;gap:6px;box-shadow:0 4px 0 #1e40af,0 8px 20px rgba(0,0,0,.25)}
@@ -486,7 +487,8 @@ body.seated .h-place{display:none}
   .h-me{padding:4px 8px 4px 4px;gap:6px}.h-me .av{width:40px;height:40px}.h-me .xpb{width:96px}.h-me .mi small{display:none}.h-me .mi b{font-size:13px;max-width:96px}.h-me .coin{font-size:11.5px;padding:2px 7px}
   .h-place{top:auto;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 70px);font-size:11.5px;padding:4px 12px}
   .h-tr .mm{width:98px;height:98px;border-radius:18px;border-width:3px}.h-tr .mmz{display:none}.h-trb span{display:none}
-  .hotbar{gap:3px;padding:5px;border-radius:14px;max-width:calc(100vw - 16px)}.hotbar button{width:44px;height:46px;font-size:18px;border-radius:10px}.hotbar button i{font-size:8.5px}.hotbar button s{display:none}
+  .hotbar{gap:3px;padding:5px;border-radius:14px;max-width:calc(100vw - 12px);width:max-content}.hotbar button{flex:1 1 0;min-width:0;width:44px;max-width:46px;height:46px;font-size:18px;border-radius:10px}.hotbar button i{font-size:7.2px;letter-spacing:-.3px}.hotbar b{right:-2px;top:-6px;font-size:8px;padding:0 3px}.hotbar button s{display:none}
+  @media (max-width:440px){.hotbar{width:calc(100vw - 12px)}.hotbar button{width:auto}}
   .moremenu{grid-template-columns:repeat(3,96px);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 62px)}.moremenu button{width:96px}
   .joy{width:100px;height:100px;left:12px;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 104px)}
   .emotes{right:10px;left:auto;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 124px)}.emotes button{width:38px;height:38px}
@@ -496,6 +498,19 @@ body.seated .h-place{display:none}
   .chatfeed{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 214px)}
   .subt{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 160px)}
 }
+/* ===== điện thoại cầm NGANG (màn hình thấp): thu nhỏ để các nút không che nhau ===== */
+@media (max-height:500px) and (min-width:600px){
+  .h-tr .mm{width:92px;height:92px;border-radius:16px;border-width:3px}.h-tr .mmz{display:none}.h-trb span{display:none}
+  .hotbar{gap:3px;padding:4px;border-radius:14px}.hotbar button{width:46px;height:42px;font-size:17px;border-radius:10px}.hotbar button i{font-size:8px}.hotbar button s{display:none}
+  .moremenu{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 58px)}.moremenu button{height:52px}
+  .joy{width:92px;height:92px;left:14px;bottom:max(14px,env(safe-area-inset-bottom))}
+  .emotes{right:10px;left:auto;top:auto;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 54px);flex-direction:column;gap:4px}
+  .chatbtn{right:10px!important;left:auto!important;bottom:max(12px,env(safe-area-inset-bottom))!important;top:auto!important}
+  .h-trb{right:112px;top:10px;position:fixed;flex-direction:column}.emotes{gap:3px}.emotes button{width:32px;height:32px;padding:0;justify-content:center;font-size:16px}.emotes button i{display:none}
+  .actbtn{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 60px);font-size:13px;padding:7px 14px}
+  .h-me small{display:none}
+}
+@media (max-width:760px){.emotes button i{display:none}.emotes button{padding:0;justify-content:center}}
 </style>
 </head>
 <body>
@@ -3523,7 +3538,7 @@ const CH = (() => {
       if (sleeveLong) add(el, m(G.c, TOP, [0, -P.al * .9, 0], [P.lr * 1.35, .05, P.lr * 1.35]));
       const hand = m(G.s, SK, [0, -P.al - .02, 0], [P.lr * (adult ? 1.05 : 1.3), P.lr * (adult ? 1.4 : 1.45), P.lr * (adult ? .8 : 1.1)]); add(el, hand);
       { const th = m(G.sl, SK, [-sx * 0, -P.al - .012, P.lr * .95], [P.lr * .5, P.lr * .75, P.lr * .5]); add(el, th); }
-      J[sx < 0 ? 'armL' : 'armR'] = sj; J[sx < 0 ? 'elbowL' : 'elbowR'] = el; J[sx < 0 ? 'handL' : 'handR'] = hand;
+      J[sx < 0 ? 'armL' : 'armR'] = sj; J[sx < 0 ? 'elbowL' : 'elbowR'] = el; { const hg = new THREE.Group(); hg.position.copy(hand.position); el.add(hg); J[sx < 0 ? 'handL' : 'handR'] = hg; }   // nhóm riêng cho bàn tay: đồ cầm tay gắn vào đây (không bị gộp lưới làm mất)
     }
     // ---- đầu
     add(spine, m(G.c, SK, [0, P.tor + .03, 0], [.045, .08, .045]));
@@ -5171,7 +5186,6 @@ function buildZone(zid, CL) {
     });
     tn.name = I.t; tn.talkLabel = 'Nói chuyện với ' + I.t.split(' (')[0]; tn.talkR = 99; tn.talk = () => zoneTeacherTalk(RID, T);
   }
-  if (zid === 'vr02') { const g = groundAt(-52, 12); const C = CH.build({}, { role: 'seller', hair: 'teacherBob', skin: '#f0c4a0' }); C.root.position.set(g.x, 0, g.z); W.face(C, new THREE.Vector3(0, 0, 0)); const n = B.npc(C); n.name = 'Cô bán hàng'; n.talkLabel = 'Mua đồ ở Cửa hàng'; n.talkR = 99; n.talk = () => { W.face(C, new THREE.Vector3()); Voice.speak('Chào em! Em dùng điểm thưởng để mua đồ nhé.', { who: C }); HUD.open('shop'); }; }
   mergeStatic(scene);
   if (CL) { const g2 = groundAt((I.board || 0) - 16, 9); B.sign(CL.name.toUpperCase() + ' · ' + (I.t || ''), 2.6, .5, g2.x * .9, 2.55, g2.z * .9, Math.atan2(-g2.x, -g2.z), { bg: GRADE_COL[CL.g] || '#1d4ed8', fg: '#fff', border: '#fff' }); }
   const def = { scene, B, pano: true, zone: zid, rid: RID, cls: CL || null, name: CL ? CL.name + ' (ảnh thật)' : Z.n, indoor, T, kids, grade: CL ? CL.g : null, steps, noPlayer: zid === 'vr01',
@@ -5546,7 +5560,7 @@ function portraitTex() {
 /* ---------- dựng phòng ---------- */
 function buildRoom(id) {
   const R = ROOMS[id], I = ROOM_INFO[id] || {}; const type = R.type;
-  const w = type === 'principal' || type === 'medical' ? 9 : type === 'class' || type === 'english' ? 12.4 : 11, d = type === 'principal' || type === 'medical' ? 8 : type === 'class' || type === 'english' ? 11 : 9.5, h = type === 'class' || type === 'english' ? 3.8 : 3.4;
+  const w = type === 'principal' || type === 'medical' ? 9 : type === 'class' || type === 'english' ? 13.8 : 11, d = type === 'principal' || type === 'medical' ? 8 : type === 'class' || type === 'english' ? 12.6 : 9.5, h = type === 'class' || type === 'english' ? 3.8 : 3.4;
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#dbeafe'); const B = Builder(scene);
   scene.add(new THREE.HemisphereLight('#ffffff', '#d8c8a8', .95)); const dl = new THREE.DirectionalLight('#ffffff', .3); dl.position.set(-3, 5, 2); scene.add(dl);
   let board, doorX;
@@ -5591,10 +5605,10 @@ function buildRoom(id) {
   let kidsN = 0;
   // ---- bố trí theo loại phòng
   if (type === 'class' || type === 'english' || type === 'doi' || type === 'it') {
-    const big = type === 'class' || type === 'english', cols = big ? [-4.1, 0, 4.1] : [-3.2, 0, 3.2], rows = type === 'doi' ? [-1.6, .2, 2.0] : big ? [-2.3, -.6, 1.1, 2.8] : [-2.0, -.55, .9, 2.35];
+    const big = type === 'class' || type === 'english', cols = big ? [-4.95, -1.65, 1.65, 4.95] : [-3.2, 0, 3.2], rows = type === 'doi' ? [-1.6, .2, 2.0] : big ? [-3.1, -1.55, 0, 1.55, 3.1] : [-2.0, -.55, .9, 2.35];   // lớp học: 4 dãy × 5 hàng × 2 ghế = 40 chỗ
     for (const cx of cols) for (const rz of rows) { desk2(B, cx, rz); for (const sx of [-1, 1]) { chair(B, cx + sx * .3, rz + .5); addSeat(cx + sx * .3, rz + .5, Math.PI, sx * 1.2, 0); }
       if (type === 'it') for (const sx of [-1, 1]) { B.box(.42, .28, .03, '#111827', cx + sx * .3, .62, rz - .12); B.plane(.38, .24, mat('#60a5fa', { emissive: '#1d4ed8' }), cx + sx * .3, .76, rz - .1, 0); B.box(.3, .015, .1, '#334155', cx + sx * .3, .6, rz + .1); } }
-    kidsN = type === 'class' || type === 'english' ? 12 : 10;   // lớp học để trống một nửa số ghế (24 ghế, 12 bạn)
+    kidsN = type === 'class' || type === 'english' ? 20 : 10;   // lớp học để trống một nửa số ghế (40 ghế, 20 bạn)
   }
   if (type === 'library') {
     for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) B.box(.4, 2.1, 1.8, mat(TX.books), sx * (w / 2 - .25), 0, -2 + i * 2, { col: true });
@@ -5839,8 +5853,8 @@ function realClassShell(B, scene, id, R, w, d, h) {
 const YARD_DOORS = {};
 // Các khu đúng như sơ đồ VR 360 của trường: Cổng Trường · Sân Trường · Hành lang · Khu Sân Chơi & Thể Thao · Không Gian Mỹ Thuật · Khu Cây Xanh
 const YARD_SPOTS = { gate: { n: 'Cổng Trường', x: 0, z: 54, ry: Math.PI }, yard: { n: 'Sân Trường', x: 0, z: 8, ry: Math.PI }, hall: { n: 'Hành lang – dãy lớp học', x: -16, z: -32, ry: Math.PI },
-  court: { n: 'Khu Sân Chơi & Thể Thao (Nhà thể chất)', x: -36, z: -31, ry: -Math.PI / 2 }, canteen: { n: 'Nhà ăn học sinh', x: -27, z: 31, ry: -Math.PI / 2 }, art: { n: 'Không Gian Mỹ Thuật', x: -27, z: 13.5, ry: -Math.PI / 2 }, trees: { n: 'Khu Cây Xanh', x: 40.5, z: 2.5, ry: Math.PI },
-  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -18.5, ry: Math.PI }, shop: { n: 'Cửa hàng đồ chơi', x: -12, z: 51, ry: Math.PI } };
+  court: { n: 'Khu Sân Chơi & Thể Thao (Nhà thể chất)', x: -36, z: -31, ry: -Math.PI / 2 }, canteen: { n: 'Nhà ăn học sinh', x: -27, z: 31, ry: -Math.PI / 2 }, art: { n: 'Không Gian Mỹ Thuật', x: -27, z: 15.3, ry: -Math.PI / 2 }, trees: { n: 'Khu Cây Xanh', x: 40.5, z: 2.5, ry: Math.PI },
+  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -18.5, ry: Math.PI } };
 let YARD_FAC = null;
 function yardFacade() {   // một ô mặt tiền 3 tầng: sàn trắng, lam che nắng, cửa kính tối, cột xanh – giống dãy nhà thật
   if (YARD_FAC) return YARD_FAC;
@@ -6022,14 +6036,14 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   // bảng di động cho giờ Thể dục
   B.box(2.2, 1.2, .08, '#14532d', -38.6, 1, -36.5, { ry: -.6 }); B.box(.08, 2.2, .08, '#475569', -39.4, 0, -37); B.box(.08, 2.2, .08, '#475569', -37.8, 0, -36);
   }
-  // ---- cửa hàng đồ chơi: quầy nằm NGOÀI trường, trên vỉa hè bên trái cổng
-  { const SX = -12, SZ = 48.2;
-  B.box(4, 1, 1.4, '#fef3c7', SX, 0, SZ, { col: true }); B.box(4.2, .1, 1.6, '#f59e0b', SX, 1, SZ);
-  for (const sx of [-1, 1]) B.box(.12, 2.6, .12, '#be185d', SX + sx * 1.95, 1, SZ + .6);
-  const awn = canvasTex(256, 64, (x, w, h) => { for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#fff' : '#ec4899'; x.fillRect(i * 32, 0, 32, h); } });
-  B.box(4.6, .12, 2, mat(awn), SX, 3.5, SZ + .2); B.sign('🧸 CỬA HÀNG ĐỒ CHƠI', 4.4, .7, SX, 4.05, SZ + 1.2, 0, { bg: '#be185d', fg: '#fff' });
-  for (let i = 0; i < 5; i++) { const t = new THREE.Mesh(new THREE.SphereGeometry(.16, 10, 8), mat(['#ef4444', '#3b82f6', '#22c55e', '#facc15', '#a855f7'][i])); t.position.set(SX - 1.4 + i * .7, 1.25, SZ - .2); scene.add(t); }
-  B.act({ x: SX, z: SZ + 1.6, r: 2.2, icon: '🛍️', label: 'Mua đồ ở Cửa hàng', fn: () => HUD.open('shop') }); }
+  // tường mặt trước có cửa sổ kính + cửa ra vào hai cánh mở (nhà ăn, phòng Mỹ thuật) – không còn nhìn xuyên vào trong
+  const frontWall = (x, z0, z1, top, doorZ, nBay) => { const wl = mat('#f8fafc'), glass = new THREE.MeshLambertMaterial({ color: '#9fd3f5', transparent: true, opacity: .45 }), fr = mat('#1d4ed8'), DW = 1.3;
+    const seg = (a, b) => { if (b - a < .3) return; const len = b - a, mid = (a + b) / 2; B.box(.24, 1.0, len, wl, x, 0, mid, { col: true }); B.box(.3, .06, len, '#e2e8f0', x, 1.0, mid); B.box(.08, top - 1.0, len, glass, x, 1.0, mid); B.box(.14, .1, len, fr, x, top - .1, mid);
+      const n = Math.max(1, Math.round(len / 1.5)); for (let i = 1; i < n; i++) B.box(.12, top - 1.0, .08, fr, x, 1.0, a + i * len / n); B.box(.1, .06, len, fr, x, 1.0 + (top - 1.0) * .55, mid); };
+    seg(z0 + .25, doorZ - DW); seg(doorZ + DW, z1 - .25);
+    for (const s2 of [-1, 1]) { B.box(.3, top, .22, fr, x, 0, doorZ + s2 * (DW + .0), { col: true }); const leaf = new THREE.Group(); leaf.position.set(x, 0, doorZ + s2 * (DW - .12)); leaf.rotation.y = s2 * 1.35; scene.add(leaf);
+      const d1 = new THREE.Mesh(new THREE.BoxGeometry(.06, 2.3, DW - .15), fr); d1.position.set(0, 1.15, -s2 * (DW - .15) / 2); leaf.add(d1); const d2 = new THREE.Mesh(new THREE.BoxGeometry(.07, 1.1, DW - .5), glass); d2.position.set(0, 1.55, -s2 * (DW - .15) / 2); leaf.add(d2); }
+    B.box(.3, top - 2.4, DW * 2, wl, x, 2.4, doorZ); B.box(.34, .1, DW * 2 + .3, fr, x, 2.36, doorZ); B.plane(DW * 2 - .3, 1.6, mat('#fde68a'), x + .9, .03, doorZ, 0, -Math.PI / 2); };
   if (!BK)
   // ---- NHÀ THỂ CHẤT (Khu Sân Chơi & Thể Thao): nhà mái tôn xanh, mở mặt phía sân, bên trong có sân bóng, khán đài, rổ bóng
   { const cx = -51.75, cz = -31, W2 = 19.5, D2 = 21, H = 7.2, wl = mat('#f1f5f9');
@@ -6045,12 +6059,9 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     B.act({ x: cx + 9, z: cz + 6, r: 2.4, icon: '⚽', label: 'Học Thể dục với cô Diễn', fn: () => HUD.open('study', { subj: 'gdtc' }) });
     // ba trò chơi trong nhà thể chất: lưới cầu lông, khung thành, rổ bóng
     B.box(.1, 1.55, 6, '#f8fafc', cx + 1.5, 0, cz, { col: false }); B.box(.06, .9, 6, '#e2e8f0', cx + 1.5, .65, cz); for (const sz of [-1, 1]) B.cyl(.06, .06, 1.6, '#475569', cx + 1.5, 0, cz + sz * 3.05, 8);
-    B.act({ x: cx + 4.2, z: cz, r: 2.2, icon: '🏸', label: 'Chơi cầu lông', fn: () => { location.hash = '#/game/badm'; } });
     B.act({ x: cx - 3, z: cz - 7, r: 2.4, icon: '🥅', label: 'Thủ môn bắt bóng', fn: () => { location.hash = '#/game/keeper'; } });
-    B.act({ x: cx, z: cz + D2 / 2 - 3.2, r: 2.4, icon: '🏀', label: 'Ném bóng rổ', fn: () => { location.hash = '#/game/basket'; } });
-    B.act({ x: cx - 6, z: cz + 3, r: 2.2, icon: '⚽', label: 'Sút bóng vào gôn', fn: () => { location.hash = '#/game/shoot'; } });
     B.act({ x: cx + 6.5, z: cz - 6, r: 2.2, icon: '🪢', label: 'Nhảy dây', fn: () => { location.hash = '#/game/rope'; } });
-    B.act({ x: cx + 7.5, z: cz + 1, r: 2.2, icon: '🏃', label: 'Chạy nước rút', fn: () => { location.hash = '#/game/sprint'; } }); }
+    }
   // ---- NHÀ ĂN HỌC SINH: nhà mái tôn xanh lớn, mở mặt phía sân; bàn ghế inox, quầy chia cơm, bồn rửa tay
   { const cx = -39, cz = 31, W2 = 16, D2 = 24, H = 5, wl = mat('#f8fafc');
     B.plane(W2, D2, new THREE.MeshLambertMaterial({ map: realTex('tile', W2 / .9, D2 / .9), color: '#fff3df' }), cx, .026, cz, 0, -Math.PI / 2);
@@ -6068,6 +6079,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     B.box(1, 1, 10, '#e2e8f0', cx - 6.6, 0, cz - 4, { col: true }); B.box(1.1, .06, 10.2, steel, cx - 6.6, 1, cz - 4);
     for (let i = 0; i < 5; i++) { B.cyl(.32, .28, .34, '#94a3b8', cx - 6.6, 1.06, cz - 8 + i * 2, 12); B.cyl(.3, .3, .04, ['#fff7ed', '#86efac', '#fdba74', '#fde68a', '#fca5a5'][i], cx - 6.6, 1.38, cz - 8 + i * 2, 12); }
     B.box(.8, .85, 5, '#f1f5f9', cx - 6.9, 0, cz + 9, { col: true }); for (let i = 0; i < 4; i++) { B.box(.5, .08, .7, '#7dd3fc', cx - 6.9, .86, cz + 7.3 + i * 1.15); B.cyl(.02, .02, .3, '#64748b', cx - 7.15, .9, cz + 7.3 + i * 1.15, 6); }
+    frontWall(cx + W2 / 2, cz - D2 / 2, cz + D2 / 2, H - 1.1, cz, 5);
     B.sign('RỬA TAY TRƯỚC KHI ĂN', 3.6, .4, cx - 7.76, 2.2, cz + 9, Math.PI / 2, { bg: '#0d9488', fg: '#fff' });
     B.sign('THỰC ĐƠN HÔM NAY: Cơm · Thịt kho trứng · Canh rau · Chuối', 6.4, .5, cx - 7.76, 2.6, cz - 4, Math.PI / 2, { bg: '#fff7ed', fg: '#9a3412' });
     B.act({ x: cx + 3, z: cz, r: 3, icon: '🍚', label: 'Ăn trưa cùng các bạn', fn: () => { W.emote && W.emote('cheer'); Voice.speak('Chúc em ăn ngon miệng! Em nhớ rửa tay sạch trước khi ăn, ăn hết suất, không nói chuyện to và cất khay gọn gàng sau khi ăn nhé.', { style: 'normal', onSentence: x => HUD.subtitle('Cô cấp dưỡng', x) }).then(() => HUD.subtitle()); } }); }
@@ -6076,19 +6088,22 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   // ---- nhà bảo vệ cạnh cổng (mái xanh lá như ảnh)
   B.box(3.2, 2.6, 3, '#f8fafc', 13.5, 0, 42.6, { col: true }); B.box(3.8, .22, 3.6, '#0f766e', 13.5, 2.6, 42.6); B.box(1.4, 1, .06, '#bfdbfe', 13.5, 1.1, 41.08); B.sign('BẢO VỆ', 1.6, .34, 13.5, 2.25, 41.07, Math.PI, { bg: '#1e40af', fg: '#fff' });
   // ---- KHÔNG GIAN MỸ THUẬT ngoài trời: nền gạch màu, giá vẽ, tường tranh
-  { const cx = -42.5, cz = 13.5; const cols = ['#fde68a', '#bfdbfe', '#fecaca', '#bbf7d0'];
-    { const H = 5, wl = mat('#f8fafc'), x0 = -47, x1 = -31, z0 = 8, z1 = 19;   // phòng Mỹ thuật: nửa phía bắc của tòa nhà ăn – mỹ thuật
-      B.plane(16, 11, new THREE.MeshLambertMaterial({ map: realTex('tile', 16 / .9, 11 / .9) }), -39, .026, 13.5, 0, -Math.PI / 2);
-      B.box(.35, H, 11, wl, x0, 0, 13.5, { col: true }); B.box(16, H, .35, wl, -39, 0, z0, { col: true });
-      for (let i = 0; i <= 2; i++) B.box(.5, H, .5, '#5b82d6', x1, 0, z0 + i * 5.5, { col: i === 0 });
-      B.box(.5, 1.1, 11, wl, x1, H - 1.1, 13.5); B.sign('KHÔNG GIAN MỸ THUẬT', 8.4, .85, x1 + .27, H - .98, 13.5, Math.PI / 2, { bg: '#1e40af', fg: '#fde047' });
-      B.box(17.4, .28, 11.6, '#2563eb', -39, H, 13.4, { cam: true }); B.box(5, .28, 11.6, '#1d4ed8', -39, H + .45, 13.4);
+  { const cols = ['#fde68a', '#bfdbfe', '#fecaca', '#bbf7d0'];
+    const H = 5, wl = mat('#f8fafc'), x0 = -47, x1 = -31, z0 = 11.6, z1 = 19, zc = (z0 + z1) / 2, L = z1 - z0, cx = -42.5;   // phòng Mỹ thuật thu gọn lại để LỐI ĐI sang nhà thể chất rộng hơn (từ 4,8 m lên 8,4 m)
+    { B.plane(16, L, new THREE.MeshLambertMaterial({ map: realTex('tile', 16 / .9, L / .9) }), -39, .026, zc, 0, -Math.PI / 2);
+      B.box(.35, H, L, wl, x0, 0, zc, { col: true }); B.box(16, H, .35, wl, -39, 0, z0, { col: true });
+      for (let i = 0; i <= 2; i++) B.box(.5, H, .5, '#5b82d6', x1, 0, z0 + i * L / 2, { col: i === 0 });
+      B.box(.5, 1.1, L, wl, x1, H - 1.1, zc); B.sign('KHÔNG GIAN MỸ THUẬT', 6.6, .7, x1 + .27, H - .9, zc, Math.PI / 2, { bg: '#1e40af', fg: '#fde047' });
+      B.box(17.4, .28, L + .6, '#2563eb', -39, H, zc - .1, { cam: true }); B.box(5, .28, L + .6, '#1d4ed8', -39, H + .45, zc - .1);
+      frontWall(x1, z0, z1, H - 1.1, zc, 2);
       for (let i = 0; i < 4; i++) B.plane(1.5, 1.1, new THREE.MeshBasicMaterial({ map: picTex(60 + i * 9) }), -45 + i * 3.6, 2.4, z0 + .2, 0);
-      for (let r = 0; r < 2; r++) { const tz = 11 + r * 4.6; B.box(5, .08, 1.3, '#e8b46a', -37.5, .62, tz); for (const dx of [-2.3, 2.3]) B.box(.08, .62, 1.1, '#94a3b8', -37.5 + dx, 0, tz); B.col(-37.5, tz, 5, 1.3); for (const dz of [-1, 1]) B.box(4.8, .06, .34, '#f59e0b', -37.5, .38, tz + dz); for (let k = 0; k < 4; k++) B.box(.5, .02, .36, ['#fecaca', '#bfdbfe', '#fef08a', '#bbf7d0'][k], -39.3 + k * 1.2, .67, tz); } }
-    for (let i = 0; i < 4; i++) { const ez = cz - 3.4 + i * 2.2, ex = cx - 1.5 + (i % 2) * 1.6; for (const dz of [-.3, .3]) { const l = B.box(.05, 1.7, .05, '#92400e', ex - .12, 0, ez + dz); l.rotation.z = -.14; } const bk = B.box(.05, 1.6, .05, '#92400e', ex - .55, 0, ez); bk.rotation.z = .3;
+      for (let r = 0; r < 2; r++) { const tz = z0 + 1.9 + r * 3.4; B.box(5, .08, 1.1, '#e8b46a', -37.5, .62, tz); for (const dx of [-2.3, 2.3]) B.box(.08, .62, .95, '#94a3b8', -37.5 + dx, 0, tz); B.col(-37.5, tz, 5, 1.1); for (const dz of [-.85, .85]) B.box(4.8, .06, .3, '#f59e0b', -37.5, .38, tz + dz); for (let k = 0; k < 4; k++) B.box(.5, .02, .36, ['#fecaca', '#bfdbfe', '#fef08a', '#bbf7d0'][k], -39.3 + k * 1.2, .67, tz); } }
+    for (let i = 0; i < 4; i++) { const ez = z0 + 1.2 + i * 1.55, ex = cx - 1.5 + (i % 2) * 1.6; for (const dz of [-.3, .3]) { const l = B.box(.05, 1.7, .05, '#92400e', ex - .12, 0, ez + dz); l.rotation.z = -.14; } const bk = B.box(.05, 1.6, .05, '#92400e', ex - .55, 0, ez); bk.rotation.z = .3;
       B.plane(.95, .72, new THREE.MeshBasicMaterial({ map: picTex(31 + i * 7) }), ex + .02, 1.25, ez, Math.PI / 2); B.box(.04, .78, 1.0, '#fff7ed', ex - .02, .86, ez); B.cyl(.12, .1, .2, ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b'][i], ex + .5, 0, ez + .6, 10); }
-    // tường tranh (bích hoạ) của học sinh
-    B.act({ x: -33.5, z: 13.5, r: 3, icon: '🎨', label: 'Vào phòng Mĩ thuật học vẽ với cô Lan', fn: () => { W.backTo = { id: 'yard', at: { x: -28, z: 13.5, ry: -Math.PI / 2 } }; W.enter('art'); } }); }
+    B.act({ x: -33.5, z: zc, r: 3, icon: '🎨', label: 'Vào phòng Mĩ thuật học vẽ với cô Lan', fn: () => { W.backTo = { id: 'yard', at: { x: -28, z: zc, ry: -Math.PI / 2 } }; W.enter('art'); } });
+    // lối đi rộng sang nhà thể chất: vạch dẫn đường + biển chỉ lối
+    for (let i = 0; i < 9; i++) B.plane(.9, .3, mat('#fde047'), -21.5 - i * 1.6, .035, 7.3, 0, -Math.PI / 2);
+    B.cyl(.06, .06, 2.6, '#475569', -22.2, 0, 10.6, 8); B.sign('⬅ NHÀ THỂ CHẤT · NHÀ ĂN', 3.4, .5, -22.2, 2.5, 10.6, Math.PI / 2, { bg: '#16a34a', fg: '#fff' }); B.sign('⬅ NHÀ THỂ CHẤT · NHÀ ĂN', 3.4, .5, -22.25, 2.5, 10.6, -Math.PI / 2, { bg: '#16a34a', fg: '#fff' }); }
   // ---- KHU CÂY XANH: thảm cỏ, lối sỏi, bồn hoa, hồ nhỏ, ghế đá
   { const cx = 40.5, cz = -12; B.plane(13, 22, mat(texRep(TX.grass, 5, 8)), cx, .035, cz, 0, -Math.PI / 2); B.plane(1.6, 22, mat('#d6c7a8'), cx, .04, cz, 0, -Math.PI / 2); B.plane(13, 1.6, mat('#d6c7a8'), cx, .041, cz - 2, 0, -Math.PI / 2);
     const pond = B.cyl(2.1, 2.1, .12, '#7dd3fc', cx + 3.6, 0, cz + 5, 20); B.cyl(2.35, 2.35, .08, '#94a3b8', cx + 3.6, 0, cz + 5, 20); B.col(cx + 3.6, cz + 5, 4, 4);
@@ -6103,6 +6118,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   const rr = mulberry32(hashStr('campus-kids'));
   const kid = (o = {}) => { const av = randAv3(rr); if (o.g) av.g = o.g; if (o.o != null) av.o = o.o; const C = CH.build(av); const name = (av.g === 'm' ? KIDNAMES_M : KIDNAMES_F)[Math.floor(rr() * 10)]; return { C, name }; };
   // ---- NGƯỜI CHƠI THAM GIA TRÒ CHƠI NGOÀI SÂN: vào chơi bằng nút hành động, bấm di chuyển (hoặc đi ra xa) là thôi chơi
+  const yardStar = (n, why) => { const d = new Date().toDateString(), g = LS.get('dh_play', null), used = g && g.d === d ? g.n : 0, give = Math.min(n, 30 - used); if (give > 0) { LS.set('dh_play', { d, n: used + give }); Items.reward(give, why); } };
   const Join = { cur: null, start(o) { this.stop(); this.cur = o; o.begin && o.begin(); toast(o.msg, 3200); }, stop() { const c = this.cur; if (!c) return; this.cur = null; c.end && c.end(); W.P.autoTo = null; if (!['walk', 'run'].includes(W.P.state)) W.P.state = 'idle'; } };
   const follow = (x, z, dt) => { const p = W.P.root.position, dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz); W.P.autoTo = null; if (d > 2.5) { W.P.autoTo = { x, z }; return; } p.x += dx * Math.min(1, dt * 5); p.z += dz * Math.min(1, dt * 5); if (d > .02) W.P.root.rotation.y = W.turn(W.P.root.rotation.y, Math.atan2(dx, dz), dt * 8); W.P.state = 'walk'; W.P.speed = 1.3; };
   B.tick(dt => { const j = Join.cur; if (!j) return; if (W.S !== def || W.seat) { Join.stop(); return; } const [ix, iy] = W.input(); if ((ix || iy) && !j.free) { Join.stop(); return; }
@@ -6146,7 +6162,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     B.tick(dt => { const p = H.C.root.position; if (tw > 0) { tw -= dt; H.C.state = 'idle'; return; } const tx = cell(hi), dx = tx - p.x; H.C.state = 'hop'; H.C.root.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2; if (Math.abs(dx) < .04) { hi += dir; if (hi >= n || hi < 0) { dir = -dir; hi += dir * 2; tw = 1.5; } } else p.x += Math.sign(dx) * Math.min(Math.abs(dx), dt * 1.3); });
     B.act({ x: x0 - .2, z: z0 + 1.3, r: 1.6, icon: '🦶', label: 'Vào nhảy lò cò', when: () => !Join.cur, fn: () => { let i = 0;
       Join.start({ msg: '🦶 Em đang nhảy lò cò qua 8 ô. Bấm phím di chuyển để ra.', begin() { W.P.root.position.x = x0 - .5; W.P.root.position.z = z0 + .0; },
-        upd() { const p = W.P.root.position; W.P.autoTo = { x: cell(i), z: z0, click: false }; if (Math.hypot(cell(i) - p.x, z0 - p.z) < .52) { W.jump(); SFX.click && SFX.click(); i++; if (i >= n) { Join.stop(); W.P.state = 'cheer'; setTimeout(() => { if (W.P.state === 'cheer') W.P.state = 'idle'; }, 1800); toast('🦶 Giỏi quá! Em nhảy lò cò hết 8 ô rồi!', 2600); SFX.win && SFX.win(); w1.C.state = 'clap'; w2.C.state = 'cheer'; } } } }); } }); }
+        upd() { const p = W.P.root.position; W.P.autoTo = { x: cell(i), z: z0, click: false }; if (Math.hypot(cell(i) - p.x, z0 - p.z) < .52) { W.jump(); SFX.click && SFX.click(); i++; if (i >= n) { Join.stop(); W.P.state = 'cheer'; setTimeout(() => { if (W.P.state === 'cheer') W.P.state = 'idle'; }, 1800); toast('🦶 Giỏi quá! Em nhảy lò cò hết 8 ô rồi!', 2600); yardStar(2, 'Nhảy lò cò'); SFX.win && SFX.win(); w1.C.state = 'clap'; w2.C.state = 'cheer'; } } } }); } }); }
   // đi dạo
   const wanderZones = [[-12, 12, -16, 4], [2, 12, 14, 34], [-13, -3, 16, 34], [-12, 12, 36, 42]];
   for (let i = 0; i < 12; i++) {
@@ -6169,7 +6185,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     [A, Bk, J].forEach(k => { const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.base = k.C.state; n.line = 'Nhảy dây vui lắm, bạn vào nhảy cùng đi!'; });
     B.act({ x: cx, z: cz + 1.5, r: 1.5, icon: '🪢', label: 'Vào nhảy dây cùng các bạn', when: () => !Join.cur, fn: () => { let n0 = 0, said = 0;
       Join.start({ msg: '🪢 Em đang nhảy dây cùng các bạn. Bấm phím di chuyển để ra.', begin() { J.C.root.position.x = cx - .5; W.P.root.position.x = cx + .5; W.P.root.position.z = cz; W.P.root.rotation.y = 0; W.P.t = J.C.t; n0 = J.C.t; W.bubble(J.C, J.name + ': Vào đây nhảy cùng tớ!', 2500); },
-        upd() { W.P.state = 'rope'; W.P.autoTo = null; const n = Math.floor((J.C.t - n0) * 6.5 / Math.PI); if (n >= said + 10) { said = n; toast('🪢 Em đã nhảy được ' + n + ' cái!', 1500); SFX.ok && SFX.ok(); } },
+        upd() { W.P.state = 'rope'; W.P.autoTo = null; const n = Math.floor((J.C.t - n0) * 6.5 / Math.PI); if (n >= said + 10) { said = n; toast('🪢 Em đã nhảy được ' + n + ' cái!', 1500); try { SFX.click(); } catch (e) { } if (n === 30 || n === 60) yardStar(2, 'Nhảy dây ' + n + ' cái'); } },
         end() { J.C.root.position.x = cx; } }); } });
     const segs = []; const sm = mat('#f43f5e'); for (let i = 0; i < 16; i++) { const s = new THREE.Mesh(new THREE.CylinderGeometry(.018, .018, 1, 5), sm); s.userData.dyn = 1; scene.add(s); segs.push(s); }
     const p = [], up = new THREE.Vector3(0, 1, 0);
@@ -6181,13 +6197,76 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   { const P = [[-55, -35], [-47, -27], [-45, -36]].map(([x, z]) => { const k = kid({ g: 'm', o: 2 }); k.C.root.position.set(x, 0, z); const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = 'Chuyền bóng cho mình nào! Bạn vào đá cùng đi!'; return k; });
     const ball = new THREE.Mesh(new THREE.SphereGeometry(.13, 14, 10), new THREE.MeshLambertMaterial({ map: canvasTex(64, 32, (x) => { x.fillStyle = '#fff'; x.fillRect(0, 0, 64, 32); x.fillStyle = '#111'; for (let i = 0; i < 6; i++) { x.beginPath(); x.arc(i * 11 + 5, (i % 2) * 14 + 9, 4, 0, 7); x.fill(); } }) }));
     scene.add(ball); passGame(P.map(k => k.C), ball, { cx: -49, cz: -32.7, R: 9, arc: 1.1, y0: .13, dur: 1.2, icon: '⚽', label: 'Vào đá bóng cùng các bạn', what: 'đá bóng', unit: 'đường chuyền' }); }
+  // ==================== TRÒ CHƠI 3D NGAY TRONG NHÀ THỂ CHẤT: ném rổ, sút phạt, cầu lông, chạy đua ====================
+  { const gx = -51.75, gz = -31, cl = (v, a, b) => Math.max(a, Math.min(b, v));
+    const playStar = (n, why) => { const d = new Date().toDateString(), g = LS.get('dh_play', null), used = g && g.d === d ? g.n : 0, give = Math.min(n, 30 - used); if (give > 0) { LS.set('dh_play', { d, n: used + give }); Items.reward(give, why); } };
+    const modeAct = (icon, label, on, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when: on, fn });
+    const ask = (title, start, hash) => HUD.choice(title, 'Em muốn chơi kiểu nào?', [{ label: '🏟️ Chơi 3D ngay tại sân', fn: start }, { label: '🎮 Trò chơi nhỏ', fn: () => { location.hash = hash; } }]);
+    const mkBall = (r, col) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mat(col)); m.userData.dyn = 1; m.visible = false; scene.add(m); return m; };
+    const pose = (st, ms) => { W.P.state = st; W.P.t = 0; setTimeout(() => { if (W.P.state === st) W.P.state = 'idle'; }, ms); };
+    const ok = () => { try { SFX.win(); } catch (e) { } }, no = () => { try { SFX.no(); } catch (e) { } };
+    // ---- 🏀 NÉM BÓNG RỔ: đứng đâu ném đó, càng gần rổ càng dễ vào, 10 quả
+    { const hoop = new THREE.Vector3(gx, 2.75, gz + 9.05), ball = mkBall(.14, '#ea580c'); let on = false, fly = null, shots = 0, score = 0;
+      const st = { free: true, cx: gx, cz: gz + 4, R: 8.5, msg: '🏀 Em có 10 quả. Đứng càng gần rổ càng dễ vào, đứng xa vào thì được 2 điểm. Bấm nút “Ném bóng!”.', begin() { on = true; shots = score = 0; fly = null; }, end() { on = false; ball.visible = false; fly = null; } };
+      B.act({ x: gx, z: gz + 7.3, r: 2.4, icon: '🏀', label: 'Ném bóng rổ', when: () => !Join.cur, fn: () => ask('🏀 Ném bóng rổ', () => Join.start(st), '#/game/basket') });
+      modeAct('🏀', 'Ném bóng!', () => on && !fly, () => { const p = W.P.root.position, d = Math.hypot(hoop.x - p.x, hoop.z - p.z); W.face(W.P, hoop); pose('cheer', 700); const good = Math.random() < cl(1.05 - d * .1, .22, .92), a = Math.random() * 6.28;
+        fly = { t: 0, d, good, from: new THREE.Vector3(p.x, p.y + 1.25, p.z), to: good ? hoop.clone() : hoop.clone().add(new THREE.Vector3(Math.cos(a) * .5, .1, Math.sin(a) * .4 - .2)) }; ball.visible = true; try { SFX.click(); } catch (e) { } });
+      B.tick(dt => { if (!fly) return; fly.t += dt / 1.05; const u = Math.min(1, fly.t); ball.position.lerpVectors(fly.from, fly.to, u); ball.position.y += Math.sin(Math.PI * u) * (1.4 + fly.d * .14); ball.rotation.x += dt * 8;
+        if (u >= 1) { shots++; if (fly.good) { const pt = fly.d > 6 ? 2 : 1; score += pt; ok(); toast(`🏀 VÀO RỔ! +${pt} điểm · ${score} điểm (${shots}/10 quả)`, 1600); if (W.S && W.S.fx) for (let i = 0; i < 8; i++) W.S.fx.emit('star', hoop.clone().add(new THREE.Vector3((Math.random() - .5) * .5, -.2, (Math.random() - .5) * .5)), { add: 1, size: .16, life: .9 }); } else { no(); toast(`🏀 Trượt rồi, ném lại nào! (${shots}/10 quả)`, 1300); }
+          fly = null; ball.visible = false; if (shots >= 10) { toast(`🏀 Hết 10 quả: em được <b>${score} điểm</b>! ${score >= 8 ? 'Tuyệt vời!' : score >= 4 ? 'Khá lắm!' : 'Cố gắng thêm nhé!'}`, 4000); if (score >= 3) playStar(Math.min(5, Math.floor(score / 2)), 'Ném bóng rổ'); Join.stop(); } } }); }
+    // ---- ⚽ SÚT PHẠT: vòng ngắm chạy ngang khung thành, bấm “Sút!” đúng lúc; thủ môn đổ người cản phá. 5 quả
+    { const GX = -59.85, ball = mkBall(.13, '#f8fafc'); const kp = kid({ g: 'm', o: 2 }); kp.C.root.position.set(-59.2, 0, gz); kp.C.root.rotation.y = Math.PI / 2; const kn = B.npc(kp.C); kn.name = kp.name + ' (thủ môn)'; kn.talk = kidTalk; kn.line = 'Tớ là thủ môn. Bạn sút phạt thử xem có qua được tớ không!';
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(.28, .04, 6, 20), new THREE.MeshBasicMaterial({ color: '#facc15' })); ring.rotation.y = Math.PI / 2; ring.userData.dyn = 1; ring.visible = false; scene.add(ring);
+      let on = false, fly = null, shots = 0, score = 0, kz = gz, tt = 0;
+      const st = { msg: '⚽ Vòng vàng chạy qua lại trong khung thành. Bấm “Sút!” để sút vào chỗ vòng vàng. Có 5 quả. Bấm di chuyển để ra.', begin() { on = true; shots = score = 0; fly = null; kz = gz; W.P.root.position.set(-54.6, W.P.root.position.y, gz); W.P.root.rotation.y = -Math.PI / 2; ring.visible = true; ball.visible = true; ball.position.set(-55.4, .13, gz); }, end() { on = false; ring.visible = false; ball.visible = false; fly = null; kz = gz; kp.C.state = 'idle'; } };
+      B.act({ x: gx - 3.2, z: gz, r: 2, icon: '⚽', label: 'Sút phạt vào gôn', when: () => !Join.cur, fn: () => ask('⚽ Sút phạt vào gôn', () => Join.start(st), '#/game/shoot') });
+      modeAct('⚽', 'Sút!', () => on && !fly, () => { const tz = ring.position.z, ty = ring.position.y; pose('kick', 700); kz = gz + [-1.05, 0, 1.05][Math.floor(Math.random() * 3)]; kp.C.state = 'jump'; kp.C.t = 0; fly = { t: 0, tz, saved: Math.abs(kz - tz) < .62, from: new THREE.Vector3(-55.4, .13, gz), to: new THREE.Vector3(GX + .2, ty, tz) }; try { SFX.click(); } catch (e) { } });
+      B.tick(dt => { tt += dt; const kpz = kp.C.root.position; kpz.z += (kz - kpz.z) * Math.min(1, dt * 7); if (!on) return; if (!fly) { ring.position.set(GX + .15, .75 + Math.sin(tt * 1.3) * .35, gz + Math.sin(tt * (2 + shots * .35)) * 1.25); return; }
+        fly.t += dt / .55; const u = Math.min(1, fly.t), end = fly.saved ? new THREE.Vector3(kpz.x + .2, .7, kz) : fly.to; ball.position.lerpVectors(fly.from, end, u); ball.position.y += Math.sin(Math.PI * u) * .35; ball.rotation.z -= dt * 14;
+        if (u >= 1) { shots++; if (fly.saved) { no(); toast(`🧤 Thủ môn bắt được rồi! (${shots}/5 quả)`, 1500); W.bubble(kp.C, 'Bắt được rồi nhé!', 1500); } else { score++; ok(); toast(`⚽ VÀOOO! ${score} bàn (${shots}/5 quả)`, 1600); if (W.S && W.S.fx) for (let i = 0; i < 10; i++) W.S.fx.emit('star', fly.to.clone().add(new THREE.Vector3(.3, (Math.random() - .5) * .6, (Math.random() - .5) * .8)), { add: 1, size: .16, life: .9 }); }
+          fly = null; kz = gz; setTimeout(() => { kp.C.state = 'idle'; }, 500); ball.position.set(-55.4, .13, gz);
+          if (shots >= 5) { toast(`⚽ Hết 5 quả: em ghi được <b>${score} bàn</b>! ${score >= 4 ? 'Chân sút vàng!' : score >= 2 ? 'Khá lắm!' : 'Tập thêm nhé!'}`, 4000); if (score >= 2) playStar(score, 'Sút phạt'); Join.stop(); } } }); }
+    // ---- 🏸 ĐÁNH CẦU LÔNG với bạn: cầu bay sang thì bấm “Đánh cầu!” đúng lúc (quả cầu to lên và đổi màu vàng)
+    { const op = kid(); op.C.root.position.set(-53.2, 0, gz); op.C.root.rotation.y = Math.PI / 2; const on0 = B.npc(op.C); on0.name = op.name; on0.talk = kidTalk; on0.line = 'Đánh cầu lông với tớ không? Bạn đứng bên kia lưới nhé!';
+      const sh = new THREE.Group(); const hd = new THREE.Mesh(new THREE.SphereGeometry(.05, 10, 8), mat('#fde047')), sk = new THREE.Mesh(new THREE.ConeGeometry(.08, .16, 10, 1, true), new THREE.MeshLambertMaterial({ color: '#ffffff', side: THREE.DoubleSide })); sk.position.y = .1; sk.rotation.x = Math.PI; sh.add(hd, sk); sh.traverse(o => o.userData.dyn = 1); sh.visible = false; scene.add(sh);
+      let on = false, toP = true, u = 0, dur = 1.35, rally = 0, hit = false; const PX = -47.3, OX = -53.2;
+      const finish = (win) => { toast(win ? `🏸 Bạn ấy đánh hỏng rồi, em thắng! Em đánh được <b>${rally} quả</b>.` : `🏸 Cầu rơi rồi! Em đánh được <b>${rally} quả</b>. ${rally >= 10 ? 'Giỏi quá!' : 'Chơi lại nào!'}`, 3800); if (rally >= 4) playStar(Math.min(5, Math.floor(rally / 4) + (win ? 1 : 0)), 'Cầu lông'); (win ? ok : no)(); Join.stop(); };
+      const st = { msg: '🏸 Cầu bay sang phía em thì bấm “Đánh cầu!” khi quả cầu to lên và sáng vàng. Bấm di chuyển để ra.', begin() { on = true; toP = true; u = 0; dur = 1.35; rally = 0; hit = false; W.P.root.position.set(PX, W.P.root.position.y, gz); W.P.root.rotation.y = -Math.PI / 2; sh.visible = true; W.bubble(op.C, op.name + ': Tớ phát cầu nhé!', 1600); }, end() { on = false; sh.visible = false; op.C.state = 'idle'; } };
+      B.act({ x: gx + 4.2, z: gz, r: 2.2, icon: '🏸', label: 'Chơi cầu lông', when: () => !Join.cur, fn: () => ask('🏸 Cầu lông', () => Join.start(st), '#/game/badm') });
+      modeAct('🏸', 'Đánh cầu!', () => on, () => { pose('wave', 450); if (toP && u > .6 && !hit) { hit = true; try { SFX.click(); } catch (e) { } } });
+      B.tick(dt => { if (!on) return; u += dt / dur; const win = toP && u > .6 && !hit, a = toP ? OX : PX, b = toP ? PX : OX, k = Math.min(1, u);
+        sh.position.set(a + (b - a) * k, 1.25 + Math.sin(Math.PI * k) * 1.7, gz + Math.sin(k * 3 + rally) * .25); sh.rotation.z = (toP ? -1 : 1) * (1.2 - k * 2.4); sh.scale.setScalar(win ? 1.9 : 1); hd.material.color.set(win ? '#f59e0b' : '#fde047');
+        if (u >= 1) { if (toP) { if (!hit) return finish(false); rally++; toP = false; u = 0; hit = false; dur = Math.max(.78, dur - .04); if (rally % 5 === 0) toast(`🏸 ${rally} quả liên tiếp!`, 1200); }
+          else { if (rally >= 8 && Math.random() < .12) return finish(true); op.C.state = 'wave'; op.C.t = 0; setTimeout(() => { if (op.C.state === 'wave') op.C.state = 'idle'; }, 450); toP = true; u = 0; } } }); }
+    // ---- 🏃 CHẠY ĐUA 30 m với 3 bạn trên đường chạy cạnh nhà thể chất
+    { const LX = [-39.6, -38.4, -37.2, -36.0], Z0 = -30, Z1 = 0;
+      B.plane(5.2, 31.5, new THREE.MeshLambertMaterial({ map: canvasTex(128, 512, (x, w, h) => { x.fillStyle = '#e2674a'; x.fillRect(0, 0, w, h); x.fillStyle = '#fff'; for (let i = 0; i <= 4; i++) x.fillRect(4 + i * 29.5, 0, 3, h); x.fillRect(0, 8, w, 6); for (let i = 0; i < 8; i++) for (let j = 0; j < 2; j++) if ((i + j) % 2) x.fillRect(4 + i * 15, h - 22 + j * 8, 15, 8); }) }), -37.8, .028, -15, 0, -Math.PI / 2);
+      B.sign('XUẤT PHÁT', 2.2, .4, -41.2, 1.6, Z0, Math.PI / 2, { bg: '#16a34a', fg: '#fff' }); B.sign('ĐÍCH', 1.6, .4, -41.2, 1.6, Z1, Math.PI / 2, { bg: '#dc2626', fg: '#fff' }); for (const z of [Z0, Z1]) B.cyl(.05, .05, 1.9, '#475569', -41.2, 0, z, 6);
+      const R = [0, 1, 2].map(i => { const k = kid({ o: 2 }); k.C.root.position.set(LX[i], 0, Z0 - .2); k.C.root.rotation.y = 0; const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = 'Chạy đua với tụi tớ không? Bấm nút “Chạy đua” ở vạch xuất phát nhé!'; return { k, v: 0, done: 0 }; });
+      let on = false, ph = 0, tm = 0, place = 0, mine = 0, last = '';
+      const reset = () => R.forEach((r, i) => { r.k.C.root.position.set(LX[i], 0, Z0 - .2); r.k.C.root.rotation.y = 0; r.k.C.state = 'idle'; r.done = 0; });
+      const st = { free: true, cx: -37.8, cz: -15, R: 24, msg: '🏃 Chuẩn bị… Hết đếm 3-2-1 thì chạy thẳng tới vạch ĐÍCH. Giữ Shift hoặc đẩy hết cần điều khiển để chạy nhanh!', begin() { on = true; ph = 0; tm = 0; place = 0; mine = 0; last = ''; reset(); R.forEach(r => r.v = 5.0 + Math.random() * 1.1); W.P.root.position.set(LX[3], W.P.root.position.y, Z0 - .2); W.P.root.rotation.y = 0; W.yaw = Math.PI; W.lock = true; }, end() { on = false; W.lock = false; setTimeout(reset, 2500); } };
+      B.act({ x: -37.8, z: Z0 - 1.6, r: 2.6, icon: '🏃', label: 'Chạy đua 30 m với các bạn', when: () => !Join.cur, fn: () => ask('🏃 Chạy đua 30 m', () => Join.start(st), '#/game/sprint') });
+      B.tick(dt => { if (!on) return; tm += dt;
+        if (ph === 0) { const c = tm < 1.2 ? '' : tm < 2.2 ? '3' : tm < 3.2 ? '2' : tm < 4.2 ? '1' : 'go'; if (c !== last) { last = c; if (c === 'go') { ph = 1; tm = 0; W.lock = false; toast('🏁 CHẠY!', 1200); ok(); } else if (c) { toast('⏱️ ' + c + '…', 900); try { SFX.click(); } catch (e) { } } } return; }
+        R.forEach(r => { const p = r.k.C.root.position; if (r.done) return; p.z += r.v * (.85 + Math.sin(tm * 2 + r.v * 9) * .15) * dt; r.k.C.state = 'run'; r.k.C.speed = r.v; if (p.z >= Z1) { r.done = ++place; r.k.C.state = 'cheer'; } });
+        if (!mine && W.P.root.position.z >= Z1) { mine = ++place; const tx = ['', '🥇 VỀ NHẤT', '🥈 Về nhì', '🥉 Về ba', 'Về thứ tư'][mine]; toast(`🏃 ${tx}! Thời gian: <b>${tm.toFixed(1)} giây</b>`, 4000); if (mine <= 3) { playStar([0, 5, 3, 2][mine], 'Chạy đua'); ok(); } else no(); pose('cheer', 1800); Join.stop(); }
+        else if (!mine && tm > 25) { toast('🏃 Hết giờ rồi, lần sau chạy nhanh hơn nhé!', 2500); Join.stop(); } }); }
+  }
   // chạy đuổi quanh cây
-  for (let i = 0; i < 2; i++) { const k = kid(); const C = k.C; const n = B.npc(C, (dt, n) => { if (n.pause > 0) { n.pause -= dt; C.state = 'idle'; return; } n.a = (n.a ?? i * 1.2) + dt * .9; C.state = 'run'; C.speed = 3; C.root.position.set(15 + Math.cos(n.a) * 2.6, 0, -14 + Math.sin(n.a) * 2.6); C.root.rotation.y = -n.a; const pp = W.P.root.position; if (!W.seat && Math.hypot(pp.x - C.root.position.x, pp.z - C.root.position.z) < .85) { n.pause = 2.5; C.state = 'cheer'; W.bubble(C, k.name + ': Á, bạn bắt được tớ rồi! Giỏi quá!', 2400); toast('🏃 Em bắt được bạn ' + k.name + ' rồi!', 1800); SFX.ok && SFX.ok(); } }); n.name = k.name; n.talk = kidTalk; n.line = 'Đuổi bắt vui quá! Bạn chạy theo bắt tớ đi!'; }
+  for (let i = 0; i < 2; i++) { const k = kid(); const C = k.C; const n = B.npc(C, (dt, n) => { if (n.pause > 0) { n.pause -= dt; C.state = 'idle'; return; } n.a = (n.a ?? i * 1.2) + dt * .9; C.state = 'run'; C.speed = 3; C.root.position.set(15 + Math.cos(n.a) * 2.6, 0, -14 + Math.sin(n.a) * 2.6); C.root.rotation.y = -n.a; const pp = W.P.root.position; if (!W.seat && Math.hypot(pp.x - C.root.position.x, pp.z - C.root.position.z) < .85) { n.pause = 2.5; C.state = 'cheer'; W.bubble(C, k.name + ': Á, bạn bắt được tớ rồi! Giỏi quá!', 2400); toast('🏃 Em bắt được bạn ' + k.name + ' rồi!', 1800); yardStar(1, 'Đuổi bắt'); SFX.ok && SFX.ok(); } }); n.name = k.name; n.talk = kidTalk; n.line = 'Đuổi bắt vui quá! Bạn chạy theo bắt tớ đi!'; }
   B.act({ x: 15, z: -10.2, r: 1.4, icon: '🏃', label: 'Chơi đuổi bắt: chạy theo chạm vào bạn', fn: () => toast('🏃 Em chạy theo, chạm được vào bạn đang chạy là bắt được nhé!', 3200) });
+  // học sinh ngồi ăn trong nhà ăn (ngồi ghế băng hai bên bàn, tay xúc cơm)
+  { const cx = -39, cz = 31; const spots = []; for (let r = 0; r < 5; r++) for (let c = 0; c < 2; c++) { const tx = cx - 1.2 + c * 5, tz = cz - 10 + r * 5; for (const dz of [-.75, .75]) for (const dx of [-.95, 0, .95]) spots.push([tx + dx, tz + dz, dz < 0 ? 0 : Math.PI, tx + dx, tz + dz * .25]); }
+    const pick = spots.filter((s2, i) => (i * 7 + 3) % 4 === 0).slice(0, 15);
+    pick.forEach(([x, z, ry, bx, bz], i) => { const k = kid(); k.C.root.position.set(x, .04, z); k.C.root.rotation.y = ry; k.C.seatH = .43; k.C.state = 'sitWrite'; k.C.t = rr() * 10;
+      B.box(.3, .025, .22, '#e2e8f0', bx, .715, bz); const bowl = B.cyl(.06, .045, .05, ['#fde68a', '#fecaca', '#bbf7d0'][i % 3], bx + .02, .74, bz, 8); const sp = new THREE.Mesh(new THREE.BoxGeometry(.012, .012, .12), mat('#cbd5e1')); sp.position.set(0, -.2, .06); k.C.J.handR.add(sp);
+      const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? rr() * 4) - dt; if (n.cd < 0) { n.cd = 3 + Math.random() * 5; const q = Math.random(); k.C.state = q < .7 ? 'sitWrite' : q < .9 ? 'sitTalk' : 'sit'; } });
+      n.name = k.name; n.talk = kidTalk; n.base = 'sitWrite'; n.talkR = 1.3; n.line = ['Cơm hôm nay ngon quá!', 'Tớ ăn hết suất rồi nè!', 'Ăn xong nhớ rửa tay nhé bạn!', 'Canh rau ngọt ghê!'][i % 4]; }); }
   // ngồi ghế tròn trò chuyện
   for (let i = 0; i < 3; i++) { const k = kid(); const a = i * 2.1 + .4; k.C.root.position.set(-15 + Math.cos(a) * 1.25, .04, -14 + Math.sin(a) * 1.25); k.C.root.rotation.y = Math.atan2(Math.cos(a), Math.sin(a)); k.C.state = i === 1 ? 'sitTalk' : 'sit'; k.C.seatH = .38; const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.base = k.C.state; }
   // tập văn nghệ trước sân khấu
-  for (let i = 0; i < 4; i++) { const k = kid(); k.C.root.position.set(-4.5 + i * 3, 0, -19); k.C.root.rotation.y = 0; const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? i) - dt; if (n.cd < 0) { n.cd = 2 + Math.random() * 3; k.C.state = ['clap', 'cheer', 'idle', 'wave'][Math.floor(Math.random() * 4)]; } }); n.name = k.name; n.talk = kidTalk; n.line = 'Bọn mình đang tập văn nghệ chào mừng 20 tháng 11!'; }
+  for (let i = 0; i < 4; i++) { const k = kid(); k.C.root.position.set(-4.5 + i * 3, .8, -25.2 - (i % 2) * .9); k.C.root.rotation.y = 0; const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? i * .4) - dt; if (n.cd < 0) { n.cd = 1.6 + Math.random() * 1.6; k.C.state = ['clap', 'cheer', 'wave', 'jump', 'handsOut', 'cheer'][Math.floor(Math.random() * 6)]; } }); n.name = k.name; n.talk = kidTalk; n.line = 'Bọn mình đang tập văn nghệ chào mừng 20 tháng 11!'; }
   // cô giáo Thể dục
   { const C = CH.build({}, { role: 'pe', hair: 'teacherLong', skin: '#e9b98f' }); C.root.position.set(-41.6, 0, -33.4); C.root.rotation.y = -1.2; C.state = 'idle';
     const n = B.npc(C, (dt, n) => { n.cd = (n.cd ?? 3) - dt; if (n.cd < 0 && !C.talking) { n.cd = 4 + Math.random() * 4; C.state = ['idle', 'clap', 'idle', 'point'][Math.floor(Math.random() * 4)]; } });
@@ -6200,8 +6279,6 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
       if (d < 7) { W.face(C, pp); if (greeted <= 0 && !C.talking) { greeted = 45; C.state = 'wave'; const t = HI[Math.floor(Math.random() * 3)]; W.bubble(C, 'Bác bảo vệ: ' + t, 4500); Voice.speak(t, { who: C }); setTimeout(() => C.state = 'idle', 2600); } }
       else if (d > 12 && greeted < 30) greeted = Math.min(greeted, 0); });
     n.name = 'Bác bảo vệ'; n.talkLabel = 'Chào bác bảo vệ'; n.talk = () => { W.face(C); C.state = 'wave'; const t = 'Bác chào cháu! Cháu cần tìm phòng nào thì bấm nút Bản đồ, hoặc hỏi cô Hạnh hướng dẫn viên nhé.'; W.bubble(C, 'Bác bảo vệ: ' + t, 5000); Voice.speak(t, { who: C }); }; }
-  // cô bán hàng
-  { const C = CH.build({}, { role: 'seller', hair: 'teacherBob', skin: '#f0c4a0' }); C.root.position.set(-12, 0, 47.2); C.root.rotation.y = 0; const n = B.npc(C); n.name = 'Cô bán hàng'; n.talkLabel = 'Mua đồ ở Cửa hàng'; n.talk = () => { W.face(C); Voice.speak('Chào em! Em dùng điểm thưởng để mua đồ nhé.', { who: C }); HUD.open('shop'); }; }
   mergeStatic(scene);
   const heightAt = (x, z) => { if (x > -8 && x < 8 && z > -29.5 && z <= -22.5) return .8; if (Math.abs(x) <= 2.05 && z > -22.5 && z < -21.1) return .8 * (-21.1 - z) / 1.4; let h = 0; for (const s of yardSurf) { const ix = Math.max(s.x0 - x, 0, x - s.x1), iz = Math.max(s.z0 - z, 0, z - s.z1); if (!ix && !iz) return CH0; const d = s.dir[0] ? (iz ? 9 : ix) : (ix ? 9 : iz); const out = s.dir[0] ? (s.dir[0] > 0 ? x > s.x1 : x < s.x0) : z > s.z1; if (out && d < .72) h = Math.max(h, CH0 * (1 - d / .72)); } return h; };
   const def = { scene, B, id: 'yard', yard: true, heightAt, T: scene.userData.peTeacher, name: 'Sân trường', indoor: false, spawn: { x: 0, z: 59, ry: Math.PI }, cam0: { pitch: .06, dist: 11 }, bounds: { x0: -62.5, x1: 46.5, z0: -47.5, z1: 66 },
@@ -6240,11 +6317,10 @@ function yardMapImg() {
   for (const [a, b, c2, d] of [[-23, -37, 23, -34], [-23, -34, -20, 3], [20, -34, 23, 3]]) { R('#fffbeb', a, b, c2, d); x.strokeStyle = '#e7c9a0'; x.lineWidth = .25; x.strokeRect(a, b, c2 - a, d - b); }
   R('#e7e5e4', -20, -34, 20, -33.2); R('#e7e5e4', -20, -34, -19.2, 3); R('#e7e5e4', 19.2, -34, 20, 3);
   roof(-33.6, -47.6, -23, 3.4, 'z'); roof(23, -47.6, 33.6, 3.4, 'z'); roof(-23.4, -47.6, 23.4, -37, 'x');
-  roof(-62, -42, -38, -20, 'z', '#7dd3fc', '#0ea5e9'); roof(-47.6, 7.6, -30.6, 43.4, 'z'); x.strokeStyle = '#eff6ff'; x.lineWidth = .4; x.beginPath(); x.moveTo(-47.6, 19); x.lineTo(-30.6, 19); x.stroke();
+  roof(-62, -42, -38, -20, 'z', '#7dd3fc', '#0ea5e9'); roof(-47.6, 11.2, -30.6, 43.4, 'z'); x.strokeStyle = '#eff6ff'; x.lineWidth = .4; x.beginPath(); x.moveTo(-47.6, 19); x.lineTo(-30.6, 19); x.stroke();
   roof(43, 6, 47.4, 40, 'z', '#93c5fd', '#60a5fa');
   // sân khấu, quầy hàng, chòi bảo vệ, cột cờ
   R('rgba(15,23,42,.22)', -7.4, -28.9, 8.6, -21.9, 1); R('#fb923c', -8, -29.5, 8, -22.5, 1); R('#fde68a', -6.4, -28.2, 6.4, -23.8, .6); R('#dc2626', -5, -27.2, 5, -26.2, .3);
-  R('rgba(15,23,42,.22)', -13.6, 47.4, -9.4, 50.2, .5); R('#f59e0b', -14, 47, -10, 49.8, .5); x.fillStyle = '#fff'; for (let i = 0; i < 4; i++) x.fillRect(-13.8 + i * 1, 47, .5, 2.8);
   R('rgba(15,23,42,.22)', 12.2, 41.4, 15.6, 44.6, .4); R('#0f766e', 11.8, 41, 15.2, 44.2, .4);
   x.fillStyle = '#64748b'; x.beginPath(); x.arc(12, -21, .5, 0, 7); x.fill(); x.fillStyle = '#dc2626'; x.fillRect(12.2, -22.4, 2.6, 1.6); x.fillStyle = '#fde047'; x.beginPath(); x.arc(13.5, -21.6, .45, 0, 7); x.fill();
   // hàng rào + trụ + cổng
@@ -6259,7 +6335,7 @@ function yardMapImg() {
   for (let i = 0; i < 9; i++) { tree(-67.5, -44 + i * 11, 2.2); tree(51.5, -44 + i * 11, 2.2); } for (let i = 0; i < 9; i++) tree(-58 + i * 13, -52.3, 2.2);
   // huy hiệu các khu
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '4.3px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
-  for (const [t, lx, lz] of [['🏫', 0, -42.3], ['📚', -28.3, -20], ['🏛️', 28.3, -20], ['🏀', -50, -31], ['🎨', -39, 13.4], ['🍚', -39, 31], ['🌳', 40.6, -16], ['🚪', 0, 41], ['🛍️', -12, 54]]) {
+  for (const [t, lx, lz] of [['🏫', 0, -42.3], ['📚', -28.3, -20], ['🏛️', 28.3, -20], ['🏀', -50, -31], ['🎨', -39, 15.2], ['🍚', -39, 31], ['🌳', 40.6, -16], ['🚪', 0, 41]]) {
     x.fillStyle = 'rgba(15,23,42,.28)'; x.beginPath(); x.arc(lx + .5, lz + .6, 4, 0, 7); x.fill(); x.fillStyle = '#ffffff'; x.beginPath(); x.arc(lx, lz, 4, 0, 7); x.fill(); x.strokeStyle = '#f59e0b'; x.lineWidth = .45; x.stroke(); x.fillStyle = '#0f172a'; x.fillText(t, lx, lz + .3); }
   return _yardMap = c;
 }
@@ -6709,7 +6785,7 @@ const Items = {
     if ((ME.st | 0) < it.p) { toast(`Em cần thêm ${it.p - (ME.st | 0)} ⭐ nữa để mua <b>${it.n}</b>. Học bài và thi Đấu trường để có thêm điểm thưởng nhé!`, 3800); SFX.no(); return false; }
     ME.st -= it.p; ME.inv = [...(ME.inv || []), id]; this.equip(id, true); saveMe(); SFX.win(); confetti(40); toast(`🎉 Em đã mua <b>${it.i} ${it.n}</b>!`); return true;
   },
-  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
+  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; else if (on && id === 'wand') toast('🪄 Đóng cửa hàng rồi bấm nút <b>🪄 Vẫy đũa</b> (hoặc phím F) để biến ra con vật nhé!', 4500); saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
   reward(st, why) { if (!ME) return; ME.st = (ME.st | 0) + st; saveMe(); toast(`⭐ +${st} điểm thưởng${why ? ' · ' + why : ''}`); },
   /* gắn đồ lên nhân vật */
   attach(C, eq = this.eq()) {
@@ -6775,18 +6851,19 @@ const ITEM3D = {
   mask(C) { const G = CH.G(), hd = C.P.hd; C.J.head.add(imesh(G.tor, IM('#2563eb'), [0, hd * .05, 0], [hd * 1.01, hd * 1.01, hd * 1.9], [Math.PI / 2, 0, 0])); return {}; },
   angel(C) { return wings(C, '#ffffff', 'spark', 1.0); },
   butterfly(C) { const w = wings(C, '#f472b6', null, .85, 1); return { update: w.update, fx: (dt, C2, S, t) => { w.mats.forEach((m, i) => m.color.setHSL(((t * .15) + i * .2) % 1, .8, .62)); if (Math.random() < dt * 2) { const p = C.root.position.clone(); p.y += .8; S.fx.emit('spark', p, { add: 1, size: .1 }); } } }; },
-  dragon(C) { const w = wings(C, '#16a34a', null, 1.05, 2); return { update: w.update, fx: (dt, C2, S) => { if ((C.state === 'run' || C.state === 'jump') && Math.random() < dt * 10) { const p = C.root.position.clone(); p.y += .8; S.fx.emit('fire', p, { add: 1, size: .14, life: .6 }); } } }; },
+  dragon(C) { const w = wings(C, '#16a34a', null, 1.05, 2); return { update: w.update, fx: (dt, C2, S) => { if (Math.random() < dt * (C.state === 'run' || C.state === 'jump' ? 10 : 1.3)) { const p = C.root.position.clone(); p.y += .8; S.fx.emit('fire', p, { add: 1, size: .14, life: .6 }); } } }; },
   cape(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .95, -P.td - .02); C.J.spine.add(g); const m = imesh(G.box, IM('#dc2626', { ds: 1 }), [0, -P.tor * .65, 0], [P.tw * 2.2, P.tor * 1.3 + .25, .01]); g.add(m);
     return { update: (dt, C) => { const sp = C.state === 'run' ? 1 : C.state === 'walk' ? .5 : .1; g.rotation.x = -.15 - sp * .7 - Math.sin(C.t * 8) * .08 * sp; } }; },
   jet(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .5, -P.td - .08); C.J.spine.add(g); const noz = [];
     for (const sx of [-1, 1]) { g.add(imesh(G.c, IM('#94a3b8'), [sx * .06, 0, 0], [.05, .28, .05])); g.add(imesh(G.cone, IM('#ef4444'), [sx * .06, .19, 0], [.05, .1, .05])); const n = new THREE.Object3D(); n.position.set(sx * .06, -.16, 0); g.add(n); noz.push(n); }
-    return { jump: 1, fx: (dt, C, S) => { const on = C.state === 'run' || W.jumpY > 0 && C === W.P; if (on && Math.random() < dt * 30) noz.forEach(n => { const p = new THREE.Vector3(); n.getWorldPosition(p); S.fx.emit(Math.random() < .5 ? 'fire' : 'smoke', p, { add: 1, size: .12, life: .5, v: new THREE.Vector3(0, -1, 0), grow: 1.5 }); }); } }; },
+    return { jump: 1, fx: (dt, C, S) => { const on = C.state === 'run' || W.jumpY > 0 && C === W.P; if (Math.random() < dt * (on ? 30 : 2.5)) noz.forEach(n => { const p = new THREE.Vector3(); n.getWorldPosition(p); S.fx.emit(Math.random() < .5 ? 'fire' : 'smoke', p, { add: 1, size: .12, life: .5, v: new THREE.Vector3(0, -1, 0), grow: 1.5 }); }); } }; },
   balloon(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); const s = imesh(G.c, IM('#e5e7eb'), [0, .45, 0], [.004, .9, .004]); g.add(s); const b = imesh(G.s, IM('#ef4444'), [0, .95, 0], [.14, .17, .14]); g.add(b);
     return { update: (dt, C) => { g.rotation.set(-C.J.armR.rotation.x - C.J.elbowR.rotation.x + Math.sin(C.t * 1.5) * .1, 0, Math.sin(C.t) * .1); } }; },
   pinwheel(C) { const G = CH.G(), g = new THREE.Group(); g.position.y = -.05; C.J.handR.add(g); g.add(imesh(G.c, IM('#a16207'), [0, .15, 0], [.008, .3, .008])); const w = new THREE.Group(); w.position.set(0, .3, .02); g.add(w); for (let i = 0; i < 4; i++) { const b = imesh(G.box, IM(['#ef4444', '#3b82f6', '#facc15', '#22c55e'][i], { ds: 1 }), [Math.cos(i * Math.PI / 2) * .06, Math.sin(i * Math.PI / 2) * .06, 0], [.1, .05, .005], [0, 0, i * Math.PI / 2 + .5]); w.add(b); }
     return { update: (dt, C) => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; w.rotation.z += dt * (C.state === 'run' ? 22 : C.state === 'walk' ? 10 : 2); } }; },
-  wand(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#1f2937'), [0, -.02, .1], [.008, .25, .008], [Math.PI / 2, 0, 0])); const tip = imesh(G.s, IM('#fde047', { em: '#a16207' }), [0, -.02, .23], [.025, .025, .025]); g.add(tip);
-    return { fx: (dt, C, S) => { if (Math.random() < dt * 8) { const p = new THREE.Vector3(); tip.getWorldPosition(p); S.fx.emit('star', p, { add: 1, size: .07, life: .8, v: new THREE.Vector3((Math.random() - .5) * .2, .2, (Math.random() - .5) * .2) }); } } }; },
+  wand(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#7c3aed'), [0, -.02, .16], [.014, .34, .014], [Math.PI / 2, 0, 0])); g.add(imesh(G.c, IM('#fde047'), [0, -.02, .02], [.018, .05, .018], [Math.PI / 2, 0, 0])); g.add(imesh(G.c, IM('#fde047'), [0, -.02, .3], [.017, .03, .017], [Math.PI / 2, 0, 0]));
+    const tip = new THREE.Group(); tip.position.set(0, -.02, .38); g.add(tip); const gm = IM('#fde047', { em: '#f59e0b' }); for (let i = 0; i < 5; i++) { const a = i * 1.2566; tip.add(imesh(G.cone, gm, [Math.sin(a) * .04, Math.cos(a) * .04, 0], [.028, .07, .014], [0, 0, -a])); } tip.add(imesh(G.s, gm, [0, 0, 0], [.04, .04, .02])); tip.rotation.y = Math.PI / 2;
+    return { update: (dt, C) => { tip.rotation.x += dt * 3; g.rotation.x = C.state === 'idle' ? -.5 : 0; }, fx: (dt, C, S) => { if (Math.random() < dt * 10) { const p = new THREE.Vector3(); tip.getWorldPosition(p); S.fx.emit(Math.random() < .5 ? 'star' : 'spark', p, { add: 1, size: .1, life: .9, v: new THREE.Vector3((Math.random() - .5) * .3, .25, (Math.random() - .5) * .3) }); } } }; },
   teddy(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.04, .05); C.J.handR.add(g); const br = IM('#a16207'); g.add(imesh(G.s, br, [0, 0, 0], [.06, .07, .05])); g.add(imesh(G.s, br, [0, .09, 0], [.05, .05, .05])); for (const sx of [-1, 1]) g.add(imesh(G.s, br, [sx * .035, .13, 0], [.018, .018, .018])); g.add(imesh(G.s, IM('#fde68a'), [0, .08, .04], [.02, .015, .01])); return {}; },
   ice(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.02, .03); C.J.handR.add(g); g.add(imesh(G.cone, IM('#d97706'), [0, 0, 0], [.03, .1, .03], [Math.PI, 0, 0])); g.add(imesh(G.s, IM('#f9a8d4'), [0, .06, 0], [.04, .04, .04])); return { update: (dt, C) => g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x }; },
   rainbow() { return {}; }, hearts() { return {}; }, bubbles() { return {}; }, leaves() { return {}; }, notes() { return {}; },
@@ -7060,12 +7137,12 @@ const HUD = {
         <button data-a="vr"><s>5</s>📷<i>VR 360°</i></button>
         <button data-a="rank"><s>6</s>🏆<i>Xếp hạng</i></button>
         <button data-a="shop"><s>7</s>🛍️<i>Cửa hàng</i></button>
-        <button data-a="more" id="moreBtn"><s>8</s>☰<i>Thêm</i></button>
+        <button data-a="wardrobe"><s>8</s>🎒<i>Túi đồ</i></button>
+        <button data-a="more" id="moreBtn"><s>9</s>☰<i>Thêm</i></button>
       </div>
       <div class="moremenu hidden" id="more">
         <button data-a="guide">🧭<i>Cô Hạnh dẫn tham quan</i></button>
         <button data-a="books">📖<i>Thư viện truyện</i></button>
-        <button data-a="wardrobe">🎒<i>Túi đồ</i></button>
         <button data-a="games">🎮<i>Trò chơi</i></button>
         <button data-a="profile">👤<i>Nhân vật của em</i></button>
         <button data-a="help">⌨️<i>Cách điều khiển</i></button>
@@ -7084,7 +7161,7 @@ const HUD = {
       <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
       <button class="actbtn hidden" id="actBtn"></button>
       <div class="emotes" id="emotes">
-        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button><button data-e="wand" id="wandBtn" class="hidden" title="Vẫy đũa phép (F)">🪄</button>
+        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button><button data-e="wand" id="wandBtn" class="hidden wandb" title="Vẫy đũa phép (F)">🪄<i>Vẫy đũa</i></button>
       </div>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
       <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="chatX">✕</button></div>
