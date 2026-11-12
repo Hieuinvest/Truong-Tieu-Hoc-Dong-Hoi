@@ -3423,6 +3423,10 @@ const CH = (() => {
       if (OF === 'vovinam') { top = '#1d4ed8'; bottom = '#1d4ed8'; }
       if (OF === 'jersey') { top = '#dc2626'; bottom = '#ffffff'; legStyle = 'shorts'; sleeveLong = false; socks = true; }
       if (OF === 'dino') { top = '#22c55e'; bottom = '#16a34a'; hood = true; }
+      if (OF === 'police') { top = '#a3b18a'; bottom = '#3f4a2e'; legStyle = 'pants'; socks = false; }
+      if (OF === 'fireman') { top = '#dc2626'; bottom = '#1f2937'; legStyle = 'pants'; sleeveLong = true; socks = false; }
+      if (OF === 'hero') { top = '#2563eb'; bottom = '#dc2626'; legStyle = 'pants'; sleeveLong = true; socks = false; }
+      if (OF === 'sailor') { top = '#ffffff'; bottom = '#1e3a8a'; }
       if (OF === 'doctor') { top = '#ffffff'; bottom = '#7dd3fc'; }
       if (OF === 'ninja') { top = '#111827'; bottom = '#111827'; }
       if (OF === 'bee') { top = '#facc15'; bottom = '#1f2937'; }
@@ -3491,6 +3495,10 @@ const CH = (() => {
       add(spine, m(G.cone, M('#dc2626'), [.02, P.tor - .085, P.td * .92], [.022, .12, .01], [0, 0, -.25 + Math.PI]));
       add(spine, m(G.cone, M('#dc2626'), [0, P.tor - .02, -P.td * .7], [.09, .12, .02], [Math.PI, 0, 0]));
     }
+    if (OF === 'police') { add(spine, m(G.s, M('#facc15'), [-P.tw * .45, P.tor * .72, P.td * .98], [.022, .026, .008])); add(spine, m(G.tor, M('#1f2937'), [0, .07, 0], [P.tw * 1.0, P.td * 1.05, .1], [Math.PI / 2, 0, 0])); }
+    if (OF === 'fireman') for (const yy of [.3, .75]) add(spine, m(G.tor, M('#fde047'), [0, P.tor * yy, 0], [P.tw * 1.02, P.td * 1.06, .07], [Math.PI / 2, 0, 0]));
+    if (OF === 'hero') { add(spine, m(G.s, M('#facc15'), [0, P.tor * .62, P.td * .99], [.045, .045, .01])); add(spine, m(G.tor, M('#facc15'), [0, .07, 0], [P.tw * 1.0, P.td * 1.05, .1], [Math.PI / 2, 0, 0])); }
+    if (OF === 'sailor') { add(spine, m(G.box, M('#1e3a8a'), [0, P.tor * .9, -P.td * .8], [P.tw * 1.5, P.tor * .28, .02])); add(spine, m(G.cone, M('#dc2626'), [0, P.tor * .7, P.td * .98], [.03, .08, .01], [0, 0, Math.PI])); }
     if (OF === 'ninja') add(spine, m(G.tor, M('#dc2626'), [0, .06, 0], [P.tw * 1.05, P.tw * 1.05, P.td * 1.2], [Math.PI / 2, 0, 0]));
     if (OF === 'doctor') add(spine, m(G.box, M('#ef4444'), [0, P.tor * .6, P.td * 1.02], [.07, .02, .01]));
     if (OF === 'vovinam') add(spine, m(G.tor, M('#facc15'), [0, .06, 0], [P.tw * 1.05, P.tw * 1.05, P.td * 1.2], [Math.PI / 2, 0, 0]));
@@ -3610,6 +3618,7 @@ const CH = (() => {
       if (st === 'hop') { const p = Math.abs(Math.sin(t * 5)); T.bodyY = p * .2; T.legL = -.5; T.kneeL = 1.5; T.legR = -(1 - p) * .2; T.kneeR = (1 - p) * .5; T.armLz = -.6; T.armRz = .6; }
       if (st === 'think') { T.armRx = -1.6; T.elR = -2.0; T.armRz = -.2; T.hdZ = .15; T.hdX = -.1; }
     }
+    if (C.ridePose) C.ridePose(T, st, sit);
     J.hips.position.y = lerp(J.hips.position.y, T.hipY, k);
     J.body.position.y = lerp(J.body.position.y, T.bodyY, Math.min(1, dt * 20));
     J.legL.rotation.x = lerp(J.legL.rotation.x, T.legL, k); J.legR.rotation.x = lerp(J.legR.rotation.x, T.legR, k);
@@ -4433,6 +4442,11 @@ function fxTex(k) {
     smoke: x => { const g = x.createRadialGradient(32, 32, 0, 32, 32, 30); g.addColorStop(0, 'rgba(230,230,230,.8)'); g.addColorStop(1, 'rgba(200,200,200,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); },
     fire: x => { const g = x.createRadialGradient(32, 32, 0, 32, 32, 30); g.addColorStop(0, 'rgba(255,255,200,1)'); g.addColorStop(.4, 'rgba(255,160,40,.9)'); g.addColorStop(1, 'rgba(255,60,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); },
     note: x => { x.fillStyle = '#7c3aed'; x.font = 'bold 50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('♪', 32, 34); },
+    flower: x => { x.fillStyle = '#f472b6'; for (let i = 0; i < 5; i++) { const a = i * 1.257; x.beginPath(); x.arc(32 + Math.cos(a) * 14, 32 + Math.sin(a) * 14, 11, 0, 7); x.fill(); } x.fillStyle = '#fde047'; x.beginPath(); x.arc(32, 32, 8, 0, 7); x.fill(); },
+    bolt: x => { x.fillStyle = '#fde047'; x.strokeStyle = '#f59e0b'; x.lineWidth = 3; x.beginPath(); x.moveTo(38, 4); x.lineTo(14, 36); x.lineTo(30, 36); x.lineTo(24, 60); x.lineTo(50, 26); x.lineTo(34, 26); x.closePath(); x.fill(); x.stroke(); },
+    paw: x => { x.fillStyle = '#92400e'; x.beginPath(); x.ellipse(32, 40, 14, 12, 0, 0, 7); x.fill(); for (const [a, b] of [[14, 22], [26, 12], [40, 12], [52, 22]]) { x.beginPath(); x.arc(a, b, 6, 0, 7); x.fill(); } },
+    butter: x => { for (const [c, sx] of [['#a855f7', -1], ['#ec4899', 1]]) { x.fillStyle = c; x.beginPath(); x.ellipse(32 + sx * 13, 24, 12, 15, sx * .5, 0, 7); x.fill(); x.beginPath(); x.ellipse(32 + sx * 10, 44, 9, 10, sx * -.4, 0, 7); x.fill(); } x.fillStyle = '#1f2937'; x.fillRect(30, 14, 4, 38); },
+    gift: x => { x.fillStyle = '#ef4444'; x.fillRect(10, 24, 44, 32); x.fillStyle = '#fde047'; x.fillRect(28, 24, 8, 32); x.fillRect(8, 18, 48, 9); x.beginPath(); x.arc(24, 14, 8, 0, 7); x.arc(40, 14, 8, 0, 7); x.fill(); },
     leaf: x => { x.fillStyle = '#22c55e'; x.beginPath(); x.ellipse(32, 32, 26, 12, .6, 0, Math.PI * 2); x.fill(); },
     snow: x => { x.strokeStyle = '#e0f2fe'; x.lineWidth = 4; for (let i = 0; i < 3; i++) { x.save(); x.translate(32, 32); x.rotate(i * Math.PI / 3); x.beginPath(); x.moveTo(-24, 0); x.lineTo(24, 0); x.stroke(); x.restore(); } },
   };
@@ -4665,7 +4679,7 @@ const W = {
       const l = Math.min(1, Math.hypot(ix, iy)); const fx = -Math.sin(this.yaw), fz = -Math.cos(this.yaw), rx = Math.cos(this.yaw), rz = -Math.sin(this.yaw);
       let dx = fx * iy + rx * ix, dz = fz * iy + rz * ix; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
       const run = this.run || this.keys.ShiftLeft || this.keys.ShiftRight || l > .95 && this.joy.run;
-      const want = (run ? 5.6 : 3.2) * l; this.vel = (this.vel || 0) + (want - (this.vel || 0)) * Math.min(1, dt * 5); const sp = this.vel;
+      const want = (run ? 5.6 : 3.2) * l * (P.rideOn ? P.rideK || 1 : 1); this.vel = (this.vel || 0) + (want - (this.vel || 0)) * Math.min(1, dt * 5); const sp = this.vel;
       // xoay người mượt về hướng đi rồi bước theo hướng đang nhìn (đi vòng cung tự nhiên, không trượt ngang)
       const ta = Math.atan2(dx, dz); P.root.rotation.y = this.turn(P.root.rotation.y, ta, dt * 14); const fa = P.root.rotation.y; let df = Math.atan2(Math.sin(ta - fa), Math.cos(ta - fa));
       const k = Math.max(.25, Math.cos(Math.min(Math.abs(df), 1.4)));
@@ -5580,7 +5594,7 @@ function buildRoom(id) {
     const big = type === 'class' || type === 'english', cols = big ? [-4.1, 0, 4.1] : [-3.2, 0, 3.2], rows = type === 'doi' ? [-1.6, .2, 2.0] : big ? [-2.3, -.6, 1.1, 2.8] : [-2.0, -.55, .9, 2.35];
     for (const cx of cols) for (const rz of rows) { desk2(B, cx, rz); for (const sx of [-1, 1]) { chair(B, cx + sx * .3, rz + .5); addSeat(cx + sx * .3, rz + .5, Math.PI, sx * 1.2, 0); }
       if (type === 'it') for (const sx of [-1, 1]) { B.box(.42, .28, .03, '#111827', cx + sx * .3, .62, rz - .12); B.plane(.38, .24, mat('#60a5fa', { emissive: '#1d4ed8' }), cx + sx * .3, .76, rz - .1, 0); B.box(.3, .015, .1, '#334155', cx + sx * .3, .6, rz + .1); } }
-    kidsN = type === 'class' ? 19 : type === 'english' ? 16 : 10;
+    kidsN = type === 'class' || type === 'english' ? 12 : 10;   // lớp học để trống một nửa số ghế (24 ghế, 12 bạn)
   }
   if (type === 'library') {
     for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) B.box(.4, 2.1, 1.8, mat(TX.books), sx * (w / 2 - .25), 0, -2 + i * 2, { col: true });
@@ -6352,8 +6366,8 @@ const Net = {
     if (this.ready) return; this.ready = true;
     if (!DB.on) { this.msgs = LS.get('dh_chat', []).slice(-50); return; }
     try {
-      const oref = DB.ref('online/' + ME.id); oref.onDisconnect().remove(); oref.set({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP });
-      setInterval(() => { if (ME) oref.set({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
+      const oref = DB.ref('online/' + ME.id); oref.onDisconnect().remove(); oref.update({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP }); if (typeof Gift !== 'undefined') Gift.listen();
+      setInterval(() => { if (ME) oref.update({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
       DB.ref('online').on('value', s => { let n = 0; const now = DB.now(); s.forEach(c => { if (now - (c.val().t || 0) < 180000) n++; }); this.online = n; HUD.chatOnline(n); });
       DB.ref('chat').limitToLast(50).on('child_added', s => this.onMsg({ id: s.key, ...s.val() }));
       // dọn tin nhắn cũ hơn 1 ngày
@@ -6563,7 +6577,7 @@ function readQ(q, n) { return `${n ? 'Câu ' + n + '. ' : ''}${q.q.replace(/_+/g
 /* ======================================================================
    ĐIỂM THƯỞNG ⭐ · CỬA HÀNG · VẬT PHẨM CÓ HIỆU ỨNG · THÚ CƯNG
    ====================================================================== */
-const SLOTS = { outfit: '👕 Trang phục', head: '👑 Mũ & đầu', face: '🕶️ Mặt', back: '🪽 Lưng', hand: '🎈 Đồ chơi', pet: '🐶 Thú cưng', trail: '✨ Hiệu ứng' };
+const SLOTS = { outfit: '👕 Trang phục', head: '👑 Mũ & đầu', face: '🕶️ Mặt', back: '🪽 Lưng', hand: '🎈 Đồ chơi', pet: '🐶 Thú cưng', ride: '🛵 Xe', trail: '✨ Hiệu ứng' };
 const SHOP = [
   // trang phục
   { id: 'aodai', slot: 'outfit', n: 'Áo dài truyền thống', p: 175, i: '👘', d: 'Áo dài đỏ (nữ) / xanh có khăn xếp (nam), lấp lánh khi đi.' },
@@ -6576,6 +6590,10 @@ const SHOP = [
   { id: 'ninja', slot: 'outfit', n: 'Chiến binh ninja', p: 190, i: '🥷', d: 'Bộ đồ đen, đai đỏ.' },
   { id: 'bee', slot: 'outfit', n: 'Chú ong chăm chỉ', p: 110, i: '🐝', d: 'Áo vàng, quần đen như chú ong.' },
   { id: 'farmer', slot: 'outfit', n: 'Bác nông dân', p: 120, i: '🧑‍🌾', d: 'Áo đỏ, quần yếm xanh.' },
+  { id: 'police', slot: 'outfit', n: 'Chú cảnh sát', p: 130, i: '👮', d: 'Đồng phục cảnh sát, huy hiệu vàng lấp lánh.' },
+  { id: 'fireman', slot: 'outfit', n: 'Lính cứu hoả', p: 140, i: '🧑‍🚒', d: 'Áo đỏ có vạch phản quang sáng.' },
+  { id: 'hero', slot: 'outfit', n: 'Siêu nhân', p: 190, i: '🦸', d: 'Bộ đồ siêu nhân xanh đỏ, toả sao khi chạy.' },
+  { id: 'sailor', slot: 'outfit', n: 'Thuỷ thủ', p: 120, i: '⚓', d: 'Áo thuỷ thủ trắng cổ xanh, bong bóng biển.' },
   // đầu
   { id: 'crown', slot: 'head', n: 'Vương miện vàng', p: 150, i: '👑', d: 'Vương miện vàng toả tia sáng lấp lánh.' },
   { id: 'wizard', slot: 'head', n: 'Mũ phù thuỷ', p: 110, i: '🧙', d: 'Mũ tím có ngôi sao bay quanh.' },
@@ -6587,6 +6605,12 @@ const SHOP = [
   { id: 'chef', slot: 'head', n: 'Mũ đầu bếp', p: 70, i: '👨‍🍳', d: 'Mũ trắng cao của đầu bếp.' },
   { id: 'cowboy', slot: 'head', n: 'Mũ cao bồi', p: 85, i: '🤠', d: 'Mũ nâu rộng vành.' },
   { id: 'catear', slot: 'head', n: 'Tai mèo', p: 55, i: '🐱', d: 'Tai mèo xinh, ngoe nguẩy.' },
+  { id: 'headphone', slot: 'head', n: 'Tai nghe nhạc', p: 80, i: '🎧', d: 'Tai nghe phát ra nốt nhạc.' },
+  { id: 'santa', slot: 'head', n: 'Mũ ông già Noel', p: 90, i: '🎅', d: 'Mũ đỏ quả bông trắng, tuyết rơi.' },
+  { id: 'pirate', slot: 'head', n: 'Mũ cướp biển', p: 100, i: '🏴‍☠️', d: 'Mũ thuyền trưởng đen viền vàng.' },
+  { id: 'propeller', slot: 'head', n: 'Mũ chong chóng', p: 85, i: '🚁', d: 'Chong chóng trên mũ quay tít.' },
+  { id: 'helmet', slot: 'head', n: 'Mũ bảo hiểm', p: 60, i: '⛑️', d: 'Đội mũ khi đi xe cho an toàn.' },
+  { id: 'starclip', slot: 'head', n: 'Kẹp tóc ngôi sao', p: 45, i: '⭐', d: 'Ngôi sao vàng phát sáng trên tóc.' },
   // mặt
   { id: 'shades', slot: 'face', n: 'Kính râm', p: 40, i: '🕶️', d: 'Kính râm thật ngầu.' },
   { id: 'heartgl', slot: 'face', n: 'Kính trái tim', p: 75, i: '😍', d: 'Kính trái tim, trái tim bay lên.' },
@@ -6594,6 +6618,8 @@ const SHOP = [
   { id: 'glasses', slot: 'face', n: 'Kính cận học giỏi', p: 45, i: '👓', d: 'Kính tròn thông minh.' },
   { id: 'mustache', slot: 'face', n: 'Ria mép', p: 35, i: '🥸', d: 'Bộ ria mép hài hước.' },
   { id: 'clown', slot: 'face', n: 'Mũi hề', p: 30, i: '🤡', d: 'Mũi đỏ tròn vui nhộn.' },
+  { id: 'stargl', slot: 'face', n: 'Kính ngôi sao', p: 55, i: '🤩', d: 'Kính hình sao lấp lánh.' },
+  { id: 'snorkel', slot: 'face', n: 'Kính bơi', p: 50, i: '🤿', d: 'Kính bơi xanh, thổi bong bóng.' },
   // lưng
   { id: 'angel', slot: 'back', n: 'Cánh thiên thần', p: 225, i: '🪽', d: 'Đôi cánh trắng vỗ nhẹ, toả sáng.' },
   { id: 'butterfly', slot: 'back', n: 'Cánh bướm', p: 190, i: '🦋', d: 'Cánh bướm đổi màu sắc cầu vồng.' },
@@ -6603,6 +6629,10 @@ const SHOP = [
   { id: 'bag', slot: 'back', n: 'Cặp sách xanh', p: 80, i: '🎒', d: 'Cặp sách đeo sau lưng.' },
   { id: 'fairy', slot: 'back', n: 'Cánh tiên', p: 210, i: '🧚', d: 'Cánh tiên xanh, rắc bụi lấp lánh.' },
   { id: 'bat', slot: 'back', n: 'Cánh dơi', p: 180, i: '🦇', d: 'Cánh dơi tím đậm.' },
+  { id: 'guitar', slot: 'back', n: 'Đàn ghi-ta', p: 110, i: '🎸', d: 'Đeo đàn sau lưng, nốt nhạc bay ra.' },
+  { id: 'shell', slot: 'back', n: 'Mai rùa', p: 90, i: '🐢', d: 'Mai rùa xanh, lá bay theo.' },
+  { id: 'kite', slot: 'back', n: 'Cánh diều', p: 120, i: '🪁', d: 'Diều bay lượn phía sau em.' },
+  { id: 'capeb', slot: 'back', n: 'Áo choàng sao xanh', p: 100, i: '🌠', d: 'Áo choàng xanh rắc sao.' },
   // cầm tay
   { id: 'balloon', slot: 'hand', n: 'Bóng bay', p: 30, i: '🎈', d: 'Bóng bay đỏ lơ lửng.' },
   { id: 'pinwheel', slot: 'hand', n: 'Chong chóng', p: 35, i: '🌀', d: 'Chong chóng quay tít khi chạy.' },
@@ -6615,6 +6645,13 @@ const SHOP = [
   { id: 'flower', slot: 'hand', n: 'Bó hoa', p: 40, i: '💐', d: 'Bó hoa hồng tặng cô giáo.' },
   { id: 'ball', slot: 'hand', n: 'Quả bóng đá', p: 50, i: '⚽', d: 'Quả bóng đá đen trắng.' },
   { id: 'lantern', slot: 'hand', n: 'Đèn lồng ngôi sao', p: 60, i: '🏮', d: 'Đèn lồng Trung thu phát sáng.' },
+  { id: 'saber', slot: 'hand', n: 'Kiếm ánh sáng', p: 110, i: '⚔️', d: 'Lưỡi kiếm phát sáng xanh.' },
+  { id: 'umbrella', slot: 'hand', n: 'Ô cầu vồng', p: 70, i: '🌂', d: 'Ô bảy màu, rơi hạt cầu vồng.' },
+  { id: 'bubblegun', slot: 'hand', n: 'Súng bong bóng', p: 75, i: '🔫', d: 'Bắn ra thật nhiều bong bóng.' },
+  { id: 'sparkler', slot: 'hand', n: 'Pháo bông que', p: 60, i: '🎇', d: 'Que pháo bông toé sáng.' },
+  { id: 'mic', slot: 'hand', n: 'Micro ca sĩ', p: 65, i: '🎤', d: 'Cầm micro, nốt nhạc bay lên.' },
+  { id: 'trophy', slot: 'hand', n: 'Cúp vàng', p: 150, i: '🏆', d: 'Cúp vô địch toả sáng.' },
+  { id: 'cotton', slot: 'hand', n: 'Kẹo bông', p: 35, i: '🍥', d: 'Kẹo bông hồng, tim bay bay.' },
   // thú cưng
   { id: 'puppy', slot: 'pet', n: 'Cún con', p: 150, i: '🐶', d: 'Đi theo em, vẫy đuôi.' },
   { id: 'kitten', slot: 'pet', n: 'Mèo con', p: 150, i: '🐱', d: 'Mèo xám đi theo em.' },
@@ -6624,6 +6661,29 @@ const SHOP = [
   { id: 'rabbit', slot: 'pet', n: 'Thỏ trắng', p: 140, i: '🐰', d: 'Thỏ trắng tai dài chạy theo em.' },
   { id: 'panda', slot: 'pet', n: 'Gấu trúc', p: 225, i: '🐼', d: 'Gấu trúc đen trắng đáng yêu.' },
   { id: 'fox', slot: 'pet', n: 'Cáo nhỏ', p: 190, i: '🦊', d: 'Cáo cam đuôi xù.' },
+  { id: 'pig', slot: 'pet', n: 'Heo hồng', p: 130, i: '🐷', d: 'Heo con hồng ụt ịt đi theo.' },
+  { id: 'frog', slot: 'pet', n: 'Ếch xanh', p: 110, i: '🐸', d: 'Ếch xanh mắt to.' },
+  { id: 'penguin', slot: 'pet', n: 'Chim cánh cụt', p: 170, i: '🐧', d: 'Cánh cụt lạch bạch.' },
+  { id: 'bear', slot: 'pet', n: 'Gấu nâu', p: 160, i: '🐻', d: 'Gấu nâu tai tròn.' },
+  { id: 'duck', slot: 'pet', n: 'Vịt vàng', p: 100, i: '🦆', d: 'Vịt vàng mỏ cam.' },
+  { id: 'tiger', slot: 'pet', n: 'Hổ con', p: 210, i: '🐯', d: 'Hổ con vằn đen oai vệ.' },
+  { id: 'cow', slot: 'pet', n: 'Bò sữa', p: 150, i: '🐮', d: 'Bò sữa đốm đen trắng.' },
+  { id: 'mouse', slot: 'pet', n: 'Chuột nhắt', p: 90, i: '🐭', d: 'Chuột xám tai to.' },
+  { id: 'turtle', slot: 'pet', n: 'Rùa con', p: 120, i: '🐢', d: 'Rùa con chậm mà chắc.' },
+  { id: 'beepet', slot: 'pet', n: 'Ong mật', p: 140, i: '🐝', d: 'Ong mật bay vo ve quanh em.' },
+  { id: 'dragonpet', slot: 'pet', n: 'Rồng con', p: 260, i: '🐲', d: 'Rồng tím bay quanh, phun lửa nhỏ.' },
+  { id: 'pony', slot: 'pet', n: 'Ngựa kì lân nhỏ', p: 240, i: '🦄', d: 'Kì lân trắng bờm cầu vồng.' },
+  // xe
+  { id: 'skate', slot: 'ride', n: 'Ván trượt', p: 90, i: '🛹', d: 'Lướt ván, toé tia lửa. Đi nhanh hơn.' },
+  { id: 'bike', slot: 'ride', n: 'Xe đạp', p: 150, i: '🚲', d: 'Xe đạp đỏ, bánh quay khi đi. Đi nhanh hơn.' },
+  { id: 'scooter', slot: 'ride', n: 'Xe máy điện mini', p: 220, i: '🛵', d: 'Xe máy điện xinh có đèn sáng. Đi rất nhanh.' },
+  { id: 'car', slot: 'ride', n: 'Ô tô đồ chơi', p: 260, i: '🚗', d: 'Ô tô mui trần đỏ, đèn pha sáng. Đi rất nhanh.' },
+  { id: 'hover', slot: 'ride', n: 'Ván bay', p: 240, i: '🛸', d: 'Ván bay lơ lửng phát sáng xanh.' },
+  { id: 'cloud', slot: 'ride', n: 'Đám mây thần', p: 250, i: '☁️', d: 'Cưỡi mây bay như Tôn Ngộ Không.' },
+  { id: 'carpet', slot: 'ride', n: 'Thảm bay', p: 230, i: '🧞', d: 'Thảm thần bay lượn, rắc sao.' },
+  { id: 'broom', slot: 'ride', n: 'Chổi phù thuỷ', p: 200, i: '🧹', d: 'Cưỡi chổi bay, sao lấp lánh.' },
+  { id: 'uniride', slot: 'ride', n: 'Ngựa kì lân', p: 300, i: '🦄', d: 'Cưỡi kì lân, để lại cầu vồng.' },
+  { id: 'rocket', slot: 'ride', n: 'Tên lửa mini', p: 320, i: '🚀', d: 'Cưỡi tên lửa phụt lửa. Nhanh nhất!' },
   // hiệu ứng
   { id: 'rainbow', slot: 'trail', n: 'Vệt cầu vồng', p: 160, i: '🌈', d: 'Để lại vệt cầu vồng khi đi.' },
   { id: 'hearts', slot: 'trail', n: 'Dấu chân trái tim', p: 80, i: '💗', d: 'Trái tim bay lên theo bước chân.' },
@@ -6634,6 +6694,10 @@ const SHOP = [
   { id: 'notes', slot: 'trail', n: 'Nốt nhạc', p: 65, i: '🎵', d: 'Nốt nhạc bay lên khi em đi.' },
   { id: 'fire', slot: 'trail', n: 'Dấu chân lửa', p: 130, i: '🔥', d: 'Ngọn lửa nhỏ bốc lên sau bước chân.' },
   { id: 'stars', slot: 'trail', n: 'Mưa sao', p: 120, i: '🌟', d: 'Những ngôi sao nhỏ bay lên.' },
+  { id: 'flowers', slot: 'trail', n: 'Hoa nở theo chân', p: 90, i: '🌸', d: 'Hoa hồng nở theo bước chân.' },
+  { id: 'bolt', slot: 'trail', n: 'Tia chớp', p: 110, i: '⚡', d: 'Tia chớp vàng loé theo chân.' },
+  { id: 'paw', slot: 'trail', n: 'Dấu chân mèo', p: 60, i: '🐾', d: 'Dấu chân mèo dễ thương.' },
+  { id: 'butter', slot: 'trail', n: 'Bươm bướm', p: 100, i: '🦋', d: 'Bướm bay lên theo em.' },
 ];
 const SHOPMAP = Object.fromEntries(SHOP.map(x => [x.id, x]));
 const Items = {
@@ -6645,24 +6709,42 @@ const Items = {
     if ((ME.st | 0) < it.p) { toast(`Em cần thêm ${it.p - (ME.st | 0)} ⭐ nữa để mua <b>${it.n}</b>. Học bài và thi Đấu trường để có thêm điểm thưởng nhé!`, 3800); SFX.no(); return false; }
     ME.st -= it.p; ME.inv = [...(ME.inv || []), id]; this.equip(id, true); saveMe(); SFX.win(); confetti(40); toast(`🎉 Em đã mua <b>${it.i} ${it.n}</b>!`); return true;
   },
-  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
+  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
   reward(st, why) { if (!ME) return; ME.st = (ME.st | 0) + st; saveMe(); toast(`⭐ +${st} điểm thưởng${why ? ' · ' + why : ''}`); },
   /* gắn đồ lên nhân vật */
   attach(C, eq = this.eq()) {
     C.items = []; C.eq = { ...eq };
-    for (const slot of ['head', 'face', 'back', 'hand', 'trail']) { const id = eq[slot]; if (id && ITEM3D[id]) { const it = ITEM3D[id](C) || {}; it.id = id; C.items.push(it); } }
-    if (eq.outfit && ITEM3D['o_' + eq.outfit]) { const it = ITEM3D['o_' + eq.outfit](C) || {}; C.items.push(it); }
+    for (const slot of ['head', 'face', 'back', 'hand', 'trail']) { const id = eq[slot]; if (id && ITEM3D[id]) { const it = ITEM3D[id](C) || {}; it.id = id; if (!it.fx && slot !== 'trail') it.fx = defFx(slot, id); C.items.push(it); } }
+    if (eq.outfit) { const it = (ITEM3D['o_' + eq.outfit] && ITEM3D['o_' + eq.outfit](C)) || {}; if (!it.fx) it.fx = defFx('outfit', eq.outfit); C.items.push(it); }
     if (eq.pet && PETS[eq.pet]) C.pet = PETS[eq.pet]();
+    C.ride = null; C.ridePose = null; C.rideOn = false; if (eq.ride && RIDES[eq.ride]) { const r = RIDES[eq.ride](C); r.id = eq.ride; C.ride = r; C.rideK = r.k || 1.2; C.root.add(r.g); C.ridePose = (T, st, sit) => ridePose(C, T, st); }
+    C.sums = []; if (eq.hand === 'wand' && Array.isArray(eq.sum)) eq.sum.slice(0, 3).forEach((id, i) => { if (PETS[id]) C.sums.push(mkSum(id, i)); });
   },
-  detach(C) { if (C.pet && C.pet.g.parent) C.pet.g.parent.remove(C.pet.g); C.pet = null; },
-  enterScene(C, S) { if (C.pet) { S.scene.add(C.pet.g); const p = C.root.position; C.pet.g.position.set(p.x + .8, 0, p.z + .8); } C.fxS = S.fx; },
+  detach(C) { if (C.pet && C.pet.g.parent) C.pet.g.parent.remove(C.pet.g); C.pet = null; (C.sums || []).forEach(p => p.g.parent && p.g.parent.remove(p.g)); C.sums = []; },
+  enterScene(C, S) { const p = C.root.position; if (C.pet) { S.scene.add(C.pet.g); C.pet.g.position.set(p.x + .8, 0, p.z + .8); } (C.sums || []).forEach((q, i) => { S.scene.add(q.g); q.g.position.set(p.x - .6 + i * .6, 0, p.z - .8); }); C.fxS = S.fx; C.scn = S.scene; },
   update(C, dt, S) {
     C._t = (C._t || 0) + dt;
-    for (const it of C.items) if (it.fx) it.fx(dt, C, S || { fx: C.fxS }, C._t);
-    if (C.pet) C.pet.update(dt, C);
+    const SS = S && S.fx ? S : { fx: C.fxS }; if (!SS.fx) return;
+    for (const it of C.items) if (it.fx) it.fx(dt, C, SS, C._t);
+    const y0 = C.root.position.y - (C.isMe && typeof W !== 'undefined' ? W.jumpY || 0 : 0);
+    const petFx = (q, k) => { q.g.position.y = y0; if (Math.random() < dt * .45) { const v = q.g.position.clone(); v.y += q.fly ? 1.7 : .5; SS.fx.emit(k, v, { size: .11, life: 1.1, v: new THREE.Vector3(0, .35, 0) }); } };
+    if (C.pet) { C.pet.update(dt, C); petFx(C.pet, 'heart'); }
+    for (const q of C.sums || []) { q.update(dt, C); petFx(q, 'star'); if (q.born < 1) { q.born = Math.min(1, q.born + dt * 2.5); q.g.scale.setScalar(.2 + .8 * q.born); } }
+    if (C.ride) { const r = C.ride, st = C.state || 'idle', ok = ['idle', 'walk', 'run', 'wave', 'cheer', 'point', 'talk', 'jump'].includes(st) && !(S && S.room) && !(C.isMe && typeof W !== 'undefined' && W.seat);
+      C.rideOn = ok; r.g.visible = ok; if (ok) { const mv = st === 'walk' || st === 'run'; r.upd && r.upd(dt, C, mv, C._t); if (r.fx && (mv || r.always)) r.fx(dt, C, SS, C._t, mv); } }
+    if (C.isMe && typeof document !== 'undefined') { const b = document.getElementById('wandBtn'), on = C.eq && C.eq.hand === 'wand'; if (b && b._on !== on) { b._on = on; b.classList.toggle('hidden', !on); } }
   },
-  footstep(C, S) { const id = C.eq?.trail; if (!id) return; const p = C.root.position.clone(); p.y = .1; const k = { rainbow: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], hearts: 'heart', sparkle: 'spark', bubbles: 'bubble', leaves: 'leaf', snow: 'snow', notes: 'note', fire: 'fire', stars: 'star' }[id];
-    S.fx.emit(k, p, { size: id === 'rainbow' ? .32 : .2, add: id === 'sparkle' || id === 'rainbow' || id === 'fire' || id === 'stars', v: new THREE.Vector3((Math.random() - .5) * .3, id === 'snow' ? -.1 : .5 + Math.random() * .4, (Math.random() - .5) * .3), life: id === 'rainbow' ? 1.6 : 1.3, grow: id === 'rainbow' ? 1 : .4 }); },
+  footstep(C, S) { const id = C.eq?.trail; if (!id) return; const p = C.root.position.clone(); p.y = .1; const k = { rainbow: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], hearts: 'heart', sparkle: 'spark', bubbles: 'bubble', leaves: 'leaf', snow: 'snow', notes: 'note', fire: 'fire', stars: 'star', flowers: 'flower', bolt: 'bolt', paw: 'paw', butter: 'butter' }[id];
+    S.fx.emit(k, p, { size: id === 'rainbow' ? .32 : .2, add: id === 'sparkle' || id === 'rainbow' || id === 'fire' || id === 'stars' || id === 'bolt', v: new THREE.Vector3((Math.random() - .5) * .3, id === 'snow' ? -.1 : .5 + Math.random() * .4, (Math.random() - .5) * .3), life: id === 'rainbow' ? 1.6 : 1.3, grow: id === 'rainbow' ? 1 : .4 }); },
+  /* ĐŨA PHÉP: vẫy đũa biến ra con vật chibi ngẫu nhiên (tối đa 3 con, con thứ 4 thay con cũ nhất) – bạn bè cùng thấy */
+  cast() { if (typeof W === 'undefined' || !W.P || !W.S || !W.S.fx) return; const C = W.P, eq = this.eq(); if (eq.hand !== 'wand') return; const now = Date.now(); if (now - (this._cast || 0) < 1500) return; this._cast = now;
+    if (W.seat) { toast('Em đứng dậy rồi vẫy đũa phép nhé!', 1800); return; }
+    const cur = (eq.sum || []).filter(id => PETS[id]).slice(0, 3), pool = Object.keys(PETS).filter(id => !cur.includes(id) && id !== eq.pet), id = pool[Math.floor(Math.random() * pool.length)];
+    if (cur.length >= 3) { const old = C.sums.shift(); cur.shift(); if (old) { poof(W.S, old.g.position, 'smoke'); old.g.parent && old.g.parent.remove(old.g); } }
+    cur.push(id); eq.sum = cur; C.eq.sum = cur.slice();
+    C.state = 'point'; setTimeout(() => { if (C.state === 'point') C.state = 'idle'; }, 900);
+    const q = mkSum(id, 0); q.born = 0; q.g.scale.setScalar(.2); const a = C.root.rotation.y, p = C.root.position; q.g.position.set(p.x + Math.sin(a) * .9, p.y, p.z + Math.cos(a) * .9); W.S.scene.add(q.g); C.sums.push(q); C.sums.forEach((s2, i) => setSumSlot(s2, i));
+    poof(W.S, q.g.position, 'star'); poof(W.S, q.g.position, 'spark'); SFX.win && SFX.win(); const it = SHOPMAP[id]; toast(`🪄 Úm ba la! Biến ra <b>${it ? it.i + ' ' + it.n : 'một con vật'}</b> (${cur.length}/3)`, 2200); saveMe(); },
   burst(C, S, n) { if (!S) return; const p = C.root.position.clone(); for (let i = 0; i < n; i++) S.fx.emit(C.eq?.trail === 'hearts' ? 'heart' : 'star', p.clone().add(new THREE.Vector3((Math.random() - .5) * .6, .8 + Math.random() * .6, (Math.random() - .5) * .6)), { size: .14, add: 1, v: new THREE.Vector3((Math.random() - .5) * 1.2, 1 + Math.random(), (Math.random() - .5) * 1.2), g: 2.5, life: 1 }); },
 };
 /* ---- mô hình 3D của vật phẩm ---- */
@@ -6733,7 +6815,44 @@ const ITEM3D = {
   ball(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.07, .06); C.J.handR.add(g); g.add(imesh(G.s, IM('#f8fafc'), [0, 0, 0], [.09, .09, .09])); for (const [x, y, z] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) g.add(imesh(G.s, IM('#111827'), [x * .08, y * .08, z * .08], [.035, .035, .035])); return { update: () => g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x }; },
   lantern(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.02, .02); C.J.handR.add(g); g.add(imesh(G.c, IM('#a16207'), [0, .2, 0], [.006, .4, .006])); const l = imesh(G.s, IM('#ef4444', { em: '#ef4444' }), [0, .4, 0], [.1, .1, .1]); g.add(l); g.add(imesh(G.s, IM('#facc15', { em: '#facc15' }), [0, .4, 0], [.06, .06, .06]));
     return { update: () => g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x, fx: (dt, C, S) => { if (Math.random() < dt * 4) { const p = new THREE.Vector3(); l.getWorldPosition(p); S.fx.emit('spark', p, { add: 1, size: .1, life: .7, v: new THREE.Vector3(0, .2, 0) }); } } }; },
-  fire() { return {}; }, stars() { return {}; },
+  fire() { return {}; }, stars() { return {}; }, flowers() { return {}; }, bolt() { return {}; }, paw() { return {}; }, butter() { return {}; },
+  headphone(C) { const G = CH.G(), hd = C.P.hd, h = C.J.head; const b = imesh(G.arc, IM('#1f2937'), [0, hd * .05, 0], [hd * 1.1, hd * 1.12, hd * .3]); h.add(b); for (const sx of [-1, 1]) { h.add(imesh(G.s, IM('#ef4444'), [sx * hd * 1.1, -hd * .05, 0], [hd * .16, hd * .28, hd * .28])); }
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 1.6) { const p = new THREE.Vector3(); h.getWorldPosition(p); S.fx.emit('note', p.add(new THREE.Vector3((Math.random() - .5) * .5, .25, 0)), { size: .12, life: 1.2 }); } } }; },
+  santa(C) { const G = CH.G(), hd = C.P.hd, g = new THREE.Group(); g.position.y = hd * .7; C.J.head.add(g); g.add(imesh(G.tor, IM('#ffffff'), [0, 0, 0], [hd * .98, hd * .98, hd * 1.1], [Math.PI / 2, 0, 0])); g.add(imesh(G.cone, IM('#dc2626'), [0, hd * .55, -hd * .15], [hd * .9, hd * 1.2, hd * .9], [-.45, 0, 0])); const pom = imesh(G.s, IM('#ffffff'), [0, hd * .95, -hd * .7], [hd * .2, hd * .2, hd * .2]); g.add(pom);
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 2.5) { const p = C.root.position.clone(); S.fx.emit('snow', p.add(new THREE.Vector3((Math.random() - .5) * .9, 1.5, (Math.random() - .5) * .9)), { size: .1, life: 1.5, v: new THREE.Vector3(0, -.5, 0), grow: 0 }); } } }; },
+  pirate(C) { const G = CH.G(), hd = C.P.hd, g = new THREE.Group(); g.position.y = hd * .85; C.J.head.add(g); g.add(imesh(G.s, IM('#111827'), [0, hd * .1, 0], [hd * 1.25, hd * .42, hd * .75])); g.add(imesh(G.tor, IM('#facc15'), [0, -.0, 0], [hd * 1.2, hd * .7, hd * .5], [Math.PI / 2, 0, 0])); g.add(imesh(G.s, IM('#f8fafc'), [0, hd * .18, hd * .72], [hd * .14, hd * .14, hd * .04])); return {}; },
+  propeller(C) { const G = CH.G(), hd = C.P.hd, g = new THREE.Group(); g.position.y = hd * .55; C.J.head.add(g); g.add(imesh(G.hcap, IM('#22c55e'), [0, 0, 0], [hd * 1.12, hd * .95, hd * 1.12])); g.add(imesh(G.c, IM('#facc15'), [0, hd * .98, 0], [hd * .04, hd * .25, hd * .04])); const pr = new THREE.Group(); pr.position.y = hd * 1.12; g.add(pr); for (const [c, r] of [['#ef4444', 0], ['#3b82f6', Math.PI / 2]]) pr.add(imesh(G.box, IM(c), [0, 0, 0], [hd * 1.1, hd * .03, hd * .16], [0, r, 0]));
+    return { update: (dt, C) => { pr.rotation.y += dt * (C.state === 'run' ? 30 : C.state === 'walk' ? 18 : 6); } }; },
+  helmet(C) { const G = CH.G(), hd = C.P.hd, g = new THREE.Group(); g.position.y = hd * .12; C.J.head.add(g); g.add(imesh(G.hcap, IM('#f97316'), [0, 0, 0], [hd * 1.16, hd * 1.14, hd * 1.16], [-.12, 0, 0])); g.add(imesh(G.box, IM('#ffffff'), [0, hd * .62, hd * .5], [hd * .16, hd * .9, hd * .1], [-.9, 0, 0])); g.add(imesh(G.c, IM('#1f2937'), [0, hd * .5, hd * 1.0], [hd * .5, hd * .04, hd * .3])); return {}; },
+  starclip(C) { const G = CH.G(), hd = C.P.hd, st = new THREE.Group(); st.position.set(hd * .68, hd * .62, hd * .5); C.J.head.add(st); for (let i = 0; i < 5; i++) { const a = i * 1.257; st.add(imesh(G.cone, IM('#fde047', { em: '#a16207' }), [Math.sin(a) * hd * .1, Math.cos(a) * hd * .1, 0], [hd * .07, hd * .16, hd * .03], [0, 0, -a])); } st.add(imesh(G.s, IM('#fde047', { em: '#a16207' }), [0, 0, 0], [hd * .1, hd * .1, hd * .04]));
+    return { update: (dt, C) => { st.rotation.z = Math.sin(C.t * 3) * .3; } }; },
+  stargl(C) { const G = CH.G(), hd = C.P.hd, h = C.J.head; for (const sx of [-1, 1]) { const st = new THREE.Group(); st.position.set(sx * hd * .34, hd * .0, hd * .98); st.rotation.y = sx * .3; h.add(st); for (let i = 0; i < 5; i++) { const a = i * 1.257; st.add(imesh(G.cone, IM('#f472b6'), [Math.sin(a) * hd * .13, Math.cos(a) * hd * .13, 0], [hd * .09, hd * .2, hd * .02], [0, 0, -a])); } st.add(imesh(G.s, IM('#fbcfe8', { op: .7 }), [0, 0, 0], [hd * .16, hd * .16, hd * .02])); } h.add(imesh(G.box, IM('#f472b6'), [0, hd * .02, hd * 1.0], [hd * .2, hd * .03, hd * .03])); return {}; },
+  snorkel(C) { const G = CH.G(), hd = C.P.hd, h = C.J.head; h.add(imesh(G.box, IM('#38bdf8', { op: .55 }), [0, -hd * .05, hd * .96], [hd * 1.2, hd * .5, hd * .12])); h.add(imesh(G.tor, IM('#0369a1'), [0, hd * .0, 0], [hd * 1.06, hd * 1.06, hd * .4], [Math.PI / 2, 0, 0])); h.add(imesh(G.c, IM('#f97316'), [hd * .95, hd * .5, 0], [hd * .06, hd * 1.2, hd * .06]));
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 1.5) { const p = new THREE.Vector3(); h.getWorldPosition(p); S.fx.emit('bubble', p.add(new THREE.Vector3(.2, .3, 0)), { size: .1, life: 1.3 }); } } }; },
+  guitar(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .45, -P.td - .06); g.rotation.z = .6; C.J.spine.add(g); g.add(imesh(G.s, IM('#b45309'), [0, -.07, 0], [.1, .12, .035])); g.add(imesh(G.s, IM('#b45309'), [0, .05, 0], [.075, .09, .035])); g.add(imesh(G.s, IM('#451a03'), [0, -.03, -.03], [.03, .03, .01])); g.add(imesh(G.box, IM('#78350f'), [0, .25, 0], [.03, .3, .02])); g.add(imesh(G.box, IM('#f8fafc'), [0, .42, 0], [.05, .06, .02]));
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 1.5) { const p = C.root.position.clone(); p.y += 1; S.fx.emit('note', p.add(new THREE.Vector3((Math.random() - .5) * .6, Math.random() * .3, 0)), { size: .13, life: 1.3 }); } } }; },
+  shell(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .5, -P.td - .03); C.J.spine.add(g); g.add(imesh(G.s, IM('#15803d'), [0, 0, 0], [P.tw * 1.5, P.tor * .6, .11])); for (const [x, y] of [[0, 0], [-.07, .07], [.07, .07], [-.07, -.07], [.07, -.07]]) g.add(imesh(G.s, IM('#4ade80'), [x, y, -.07], [.04, .04, .04]));
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 1.2) { const p = C.root.position.clone(); p.y += .7; S.fx.emit('leaf', p, { size: .12, life: 1.3 }); } } }; },
+  kite(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .7, -P.td); C.J.spine.add(g); const k = new THREE.Group(); k.position.set(0, .75, -.55); g.add(k); k.add(imesh(G.box, IM('#ef4444', { ds: 1 }), [0, 0, 0], [.3, .3, .008], [0, 0, Math.PI / 4])); k.add(imesh(G.box, IM('#fde047'), [0, 0, .006], [.02, .42, .006])); k.add(imesh(G.box, IM('#fde047'), [0, 0, .006], [.42, .02, .006])); const tails = []; for (let i = 0; i < 4; i++) { const t = imesh(G.s, IM(['#3b82f6', '#22c55e', '#f472b6', '#facc15'][i]), [0, -.26 - i * .09, 0], [.03, .03, .01]); k.add(t); tails.push(t); }
+    const line = imesh(G.c, IM('#e5e7eb'), [0, .375, -.275], [.003, .93, .003], [-.63, 0, 0]); g.add(line);
+    return { update: (dt, C) => { k.rotation.z = Math.sin(C.t * 1.7) * .25; k.position.x = Math.sin(C.t * 1.1) * .08; tails.forEach((t, i) => t.position.x = Math.sin(C.t * 5 + i) * .03 * (i + 1)); }, fx: (dt, C, S) => { if (Math.random() < dt * 1.2) { const p = new THREE.Vector3(); k.getWorldPosition(p); S.fx.emit('spark', p, { add: 1, size: .1, life: .8 }); } } }; },
+  capeb(C) { const G = CH.G(), P = C.P, g = new THREE.Group(); g.position.set(0, P.tor * .95, -P.td * .9); C.J.spine.add(g); g.add(imesh(G.box, IM('#1d4ed8', { ds: 1 }), [0, -P.tor * .55, -.02], [P.tw * 2.2, P.tor * 1.25, .012])); for (const [x, y] of [[-.05, -.1], [.06, -.2], [-.02, -.3], [.07, -.05]]) g.add(imesh(G.s, IM('#fde047', { em: '#a16207' }), [x, y, -.03], [.015, .015, .005]));
+    return { update: (dt, C) => { g.rotation.x = (C.state === 'run' ? .75 : C.state === 'walk' ? .4 : .12) + Math.sin(C.t * 6) * .06; }, fx: (dt, C, S) => { if (Math.random() < dt * 1.5) { const p = C.root.position.clone(); p.y += .7; S.fx.emit('star', p.add(new THREE.Vector3((Math.random() - .5) * .4, 0, 0)), { add: 1, size: .09, life: 1 }); } } }; },
+  saber(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#6b7280'), [0, -.02, .05], [.012, .1, .012], [Math.PI / 2, 0, 0])); const bl = imesh(G.c, IM('#67e8f9', { em: '#22d3ee' }), [0, -.02, .32], [.011, .45, .011], [Math.PI / 2, 0, 0]); g.add(bl);
+    return { fx: (dt, C, S) => { if (Math.random() < dt * 5) { const p = new THREE.Vector3(); bl.getWorldPosition(p); S.fx.emit('rbb', p, { add: 1, size: .12, life: .5 }); } } }; },
+  umbrella(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#78350f'), [0, .25, 0], [.008, .6, .008])); const top = new THREE.Group(); top.position.y = .52; g.add(top); const cs = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7']; for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; top.add(imesh(G.s, IM(cs[i]), [Math.cos(a) * .12, 0, Math.sin(a) * .12], [.14, .05, .14])); }
+    return { update: () => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; }, fx: (dt, C, S) => { if (Math.random() < dt * 2) { const p = new THREE.Vector3(); top.getWorldPosition(p); S.fx.emit('rb' + 'roygbv'[Math.floor(Math.random() * 6)], p.add(new THREE.Vector3((Math.random() - .5) * .5, -.05, (Math.random() - .5) * .5)), { size: .08, life: 1, v: new THREE.Vector3(0, -.5, 0), grow: 0 }); } } }; },
+  bubblegun(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.03, .04); C.J.handR.add(g); g.add(imesh(G.box, IM('#ec4899'), [0, 0, .05], [.035, .05, .14])); g.add(imesh(G.box, IM('#be185d'), [0, -.045, 0], [.03, .07, .035])); const tip = imesh(G.tor, IM('#fde047'), [0, .0, .14], [.035, .035, .035]); g.add(tip);
+    return { update: () => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; }, fx: (dt, C, S) => { if (Math.random() < dt * 5) { const p = new THREE.Vector3(); tip.getWorldPosition(p); const a = C.root.rotation.y; S.fx.emit('bubble', p, { size: .09 + Math.random() * .08, life: 1.6, v: new THREE.Vector3(Math.sin(a) * .7 + (Math.random() - .5) * .3, .25, Math.cos(a) * .7 + (Math.random() - .5) * .3) }); } } }; },
+  sparkler(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#9ca3af'), [0, -.02, .14], [.004, .3, .004], [Math.PI / 2, 0, 0])); const tip = imesh(G.s, IM('#fde047', { em: '#f59e0b' }), [0, -.02, .29], [.018, .018, .018]); g.add(tip);
+    return { fx: (dt, C, S) => { for (let i = 0; i < 2; i++) if (Math.random() < dt * 9) { const p = new THREE.Vector3(); tip.getWorldPosition(p); S.fx.emit(Math.random() < .5 ? 'spark' : 'fire', p, { add: 1, size: .07, life: .45, g: 1.5, v: new THREE.Vector3((Math.random() - .5) * .9, Math.random() * .8, (Math.random() - .5) * .9) }); } } }; },
+  mic(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.02, .03); C.J.handR.add(g); g.add(imesh(G.c, IM('#1f2937'), [0, .05, 0], [.014, .12, .014])); g.add(imesh(G.s, IM('#9ca3af'), [0, .13, 0], [.03, .03, .03]));
+    return { update: () => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; }, fx: (dt, C, S) => { if (Math.random() < dt * 1.8) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('note', p.add(new THREE.Vector3(0, .2, 0)), { size: .12, life: 1.2 }); } } }; },
+  trophy(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.03, .04); C.J.handR.add(g); const gd = IM('#facc15', { em: '#5a4300' }); g.add(imesh(G.box, IM('#78350f'), [0, 0, 0], [.07, .025, .07])); g.add(imesh(G.c, gd, [0, .04, 0], [.012, .06, .012])); g.add(imesh(G.s, gd, [0, .12, 0], [.055, .065, .055])); for (const sx of [-1, 1]) g.add(imesh(G.tor, gd, [sx * .06, .12, 0], [.025, .03, .03]));
+    return { update: () => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; }, fx: (dt, C, S) => { if (Math.random() < dt * 3) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('spark', p.add(new THREE.Vector3((Math.random() - .5) * .15, .15, (Math.random() - .5) * .15)), { add: 1, size: .1, life: .7 }); } } }; },
+  cotton(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.02, .03); C.J.handR.add(g); g.add(imesh(G.c, IM('#f8fafc'), [0, .05, 0], [.006, .14, .006])); for (const [x, y, z, r] of [[0, .17, 0, .06], [.03, .14, .01, .045], [-.03, .15, -.01, .045], [0, .21, 0, .04]]) g.add(imesh(G.s, IM('#f9a8d4'), [x, y, z], [r, r, r]));
+    return { update: () => { g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x; }, fx: (dt, C, S) => { if (Math.random() < dt * 1.2) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('heart', p.add(new THREE.Vector3(0, .25, 0)), { size: .09, life: 1.1 }); } } }; },
+
   o_aodai() { return { fx: (dt, C, S) => { if (C.state === 'walk' && Math.random() < dt * 3) { const p = C.root.position.clone(); p.y += .5; S.fx.emit('spark', p, { add: 1, size: .08 }); } } }; },
   o_royal() { return { fx: (dt, C, S) => { if (Math.random() < dt * 5) { const p = C.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * .5, .2 + Math.random() * .9, (Math.random() - .5) * .5)); S.fx.emit('spark', p, { add: 1, size: .09 }); } } }; },
   o_astro() { return { jump: 1 }; },
@@ -6754,16 +6873,16 @@ function petBase(col, o = {}) {
   head.add(imesh(G.s, M2, [0, 0, 0], [.1, .09, .09])); for (const sx of [-1, 1]) head.add(imesh(G.s, IM('#111827'), [sx * .04, .02, .08], [.015, .02, .01])); head.add(imesh(G.s, IM('#111827'), [0, -.015, .095], [.015, .012, .01]));
   const legs = []; for (const [x, z] of [[-.06, .09], [.06, .09], [-.06, -.09], [.06, -.09]]) { const l = imesh(G.c, M2, [x, .05, z], [.025, .1, .025]); body.add(l); legs.push(l); }
   const sh = new THREE.Mesh(G.disc, new THREE.MeshBasicMaterial({ map: TX.shadowDisc, transparent: true, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.position.y = .01; sh.scale.setScalar(.2); g.add(sh);
-  const P = { g, body, head, legs, t: 0, fly: o.fly };
+  const P = { g, body, head, legs, t: 0, fly: o.fly, born: 1 };
   P.update = (dt, C) => {
-    P.t += dt; const tp = C.root.position, a = C.root.rotation.y; const tx = tp.x + Math.cos(a) * .7 - Math.sin(a) * .5, tz = tp.z - Math.sin(a) * .7 - Math.cos(a) * .5;
+    P.t += dt; const tp = C.root.position, a = C.root.rotation.y; const ox = P.ox ?? .7, oz = P.oz ?? .5; const tx = tp.x + Math.cos(a) * ox - Math.sin(a) * oz, tz = tp.z - Math.sin(a) * ox - Math.cos(a) * oz;
     const p = g.position, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
     if (d > 6) { p.set(tx, 0, tz); }
     const mv = d > .25; if (mv) { const sp = Math.min(d * 3, 5) * dt; p.x += dx / d * sp; p.z += dz / d * sp; g.rotation.y = W.turn(g.rotation.y, Math.atan2(dx, dz), dt * 8); }
     legs.forEach((l, i) => l.rotation.x = mv ? Math.sin(P.t * 14 + i * Math.PI) * .6 : 0);
     body.position.y = mv ? Math.abs(Math.sin(P.t * 14)) * .03 : 0; head.rotation.y = Math.sin(P.t * 1.3) * .3;
     if (P.tail) P.tail.rotation.y = Math.sin(P.t * (mv ? 18 : 8)) * .7;
-    if (P.fly) { const fa = P.t * 1.6; p.set(tp.x + Math.cos(fa) * .9, 0, tp.z + Math.sin(fa) * .9); body.position.y = 1.5 + Math.sin(P.t * 3) * .15; g.rotation.y = -fa; P.wings.forEach((w, i) => w.rotation.z = (i ? -1 : 1) * Math.sin(P.t * 22) * .8); sh.visible = false; }
+    if (P.fly) { const fa = P.t * 1.6 + (P.fa0 || 0), fr = P.fr || .9; p.set(tp.x + Math.cos(fa) * fr, p.y, tp.z + Math.sin(fa) * fr); body.position.y = 1.5 + Math.sin(P.t * 3) * .15; g.rotation.y = -fa; P.wings.forEach((w, i) => w.rotation.z = (i ? -1 : 1) * Math.sin(P.t * 22) * .8); sh.visible = false; }
   };
   return P;
 }
@@ -6775,7 +6894,100 @@ const PETS = {
   rabbit() { const P = petBase('#f8fafc'); const G = CH.G(); for (const sx of [-1, 1]) { P.head.add(imesh(G.cap, IM('#f8fafc'), [sx * .035, .13, -.01], [.02, .08, .015])); P.head.add(imesh(G.cap, IM('#f9a8d4'), [sx * .035, .13, .002], [.01, .06, .01])); } P.tail = new THREE.Group(); P.tail.position.set(0, .2, -.17); P.body.add(P.tail); P.tail.add(imesh(G.s, IM('#ffffff'), [0, 0, 0], [.04, .04, .04])); return P; },
   panda() { const P = petBase('#f8fafc'); const G = CH.G(); const bl = IM('#111827'); for (const sx of [-1, 1]) { P.head.add(imesh(G.s, bl, [sx * .07, .08, -.01], [.03, .03, .02])); P.head.add(imesh(G.s, bl, [sx * .04, .02, .085], [.022, .028, .01])); } for (const l of P.legs) l.material = bl; P.body.add(imesh(G.s, bl, [0, .2, .06], [.125, .045, .05])); P.tail = new THREE.Group(); P.tail.position.set(0, .2, -.17); P.body.add(P.tail); P.tail.add(imesh(G.s, bl, [0, 0, 0], [.03, .03, .03])); return P; },
   fox() { const P = petBase('#f97316'); const G = CH.G(); for (const sx of [-1, 1]) P.head.add(imesh(G.cone, IM('#c2410c'), [sx * .05, .09, 0], [.03, .07, .03])); P.head.add(imesh(G.s, IM('#ffffff'), [0, -.03, .075], [.05, .03, .025])); P.tail = new THREE.Group(); P.tail.position.set(0, .22, -.17); P.body.add(P.tail); P.tail.add(imesh(G.s, IM('#f97316'), [0, .02, -.06], [.04, .04, .1])); P.tail.add(imesh(G.s, IM('#ffffff'), [0, .02, -.13], [.035, .035, .04])); return P; },
+  pig() { const P = petBase('#f9a8d4'); const G = CH.G(); P.head.add(imesh(G.c, IM('#f472b6'), [0, -.01, .09], [.035, .025, .035], [Math.PI / 2, 0, 0])); for (const sx of [-1, 1]) P.head.add(imesh(G.cone, IM('#f472b6'), [sx * .06, .08, 0], [.03, .05, .02], [0, 0, sx * -.5])); P.tail = new THREE.Group(); P.tail.position.set(0, .22, -.17); P.body.add(P.tail); P.tail.add(imesh(G.tor, IM('#f472b6'), [0, 0, -.02], [.02, .02, .02])); return P; },
+  frog() { const P = petBase('#22c55e'); const G = CH.G(); P.body.scale.set(.9, .8, .85); for (const sx of [-1, 1]) { P.head.add(imesh(G.s, IM('#22c55e'), [sx * .05, .08, .03], [.04, .04, .04])); P.head.add(imesh(G.s, IM('#ffffff'), [sx * .05, .085, .06], [.026, .026, .02])); P.head.add(imesh(G.s, IM('#111827'), [sx * .05, .085, .078], [.012, .014, .008])); } P.head.add(imesh(G.s, IM('#bbf7d0'), [0, -.035, .06], [.07, .03, .04])); return P; },
+  penguin() { const P = petBase('#1f2937'); const G = CH.G(); P.body.add(imesh(G.s, IM('#f8fafc'), [0, .17, .07], [.09, .085, .12])); P.head.add(imesh(G.s, IM('#f8fafc'), [0, -.01, .05], [.07, .06, .05])); P.head.add(imesh(G.cone, IM('#f59e0b'), [0, -.01, .11], [.02, .05, .02], [Math.PI / 2, 0, 0])); P.legs.forEach(l => l.material = IM('#f59e0b')); for (const sx of [-1, 1]) P.body.add(imesh(G.s, IM('#1f2937'), [sx * .13, .19, 0], [.02, .07, .05], [0, 0, sx * .4])); return P; },
+  bear() { const P = petBase('#92400e'); const G = CH.G(); P.body.scale.set(1.15, 1.15, 1.1); for (const sx of [-1, 1]) P.head.add(imesh(G.s, IM('#78350f'), [sx * .07, .08, -.01], [.032, .032, .02])); P.head.add(imesh(G.s, IM('#fde68a'), [0, -.02, .075], [.045, .035, .03])); return P; },
+  duck() { const P = petBase('#fde047'); const G = CH.G(); P.body.scale.set(.9, .9, .9); P.head.add(imesh(G.box, IM('#f97316'), [0, -.015, .11], [.05, .018, .05])); P.legs.forEach(l => l.material = IM('#f97316')); P.tail = new THREE.Group(); P.tail.position.set(0, .22, -.16); P.body.add(P.tail); P.tail.add(imesh(G.cone, IM('#fde047'), [0, .02, -.02], [.04, .07, .03], [-.9, 0, 0])); return P; },
+  tiger() { const P = petBase('#f97316'); const G = CH.G(); for (const sx of [-1, 1]) P.head.add(imesh(G.s, IM('#ea580c'), [sx * .065, .08, -.01], [.028, .03, .02])); for (let i = 0; i < 4; i++) P.body.add(imesh(G.tor, IM('#111827'), [0, .18, .1 - i * .07], [.118, .1, .05])); P.head.add(imesh(G.s, IM('#ffffff'), [0, -.03, .075], [.045, .03, .025])); P.tail = new THREE.Group(); P.tail.position.set(0, .2, -.16); P.body.add(P.tail); P.tail.add(imesh(G.c, IM('#f97316'), [0, .07, -.02], [.016, .16, .016], [-.4, 0, 0])); P.tail.add(imesh(G.s, IM('#111827'), [0, .15, -.055], [.02, .02, .02])); return P; },
+  cow() { const P = petBase('#f8fafc'); const G = CH.G(); P.body.scale.set(1.1, 1.05, 1.1); for (const [x, y, z] of [[.06, .24, .05], [-.07, .2, -.06], [.03, .22, -.12], [-.03, .26, .1]]) P.body.add(imesh(G.s, IM('#111827'), [x, y, z], [.045, .03, .045])); for (const sx of [-1, 1]) { P.head.add(imesh(G.cone, IM('#fde68a'), [sx * .05, .1, 0], [.014, .05, .014], [0, 0, sx * -.4])); P.head.add(imesh(G.s, IM('#111827'), [sx * .09, .03, -.01], [.03, .02, .02])); } P.head.add(imesh(G.s, IM('#f9a8d4'), [0, -.03, .075], [.055, .035, .03])); return P; },
+  mouse() { const P = petBase('#9ca3af'); const G = CH.G(); P.body.scale.set(.7, .7, .7); for (const sx of [-1, 1]) { P.head.add(imesh(G.s, IM('#9ca3af'), [sx * .08, .09, -.01], [.055, .055, .012])); P.head.add(imesh(G.s, IM('#f9a8d4'), [sx * .08, .09, .002], [.035, .035, .008])); } P.tail = new THREE.Group(); P.tail.position.set(0, .16, -.16); P.body.add(P.tail); P.tail.add(imesh(G.c, IM('#f9a8d4'), [0, .0, -.1], [.008, .2, .008], [Math.PI / 2, 0, 0])); return P; },
+  turtle() { const P = petBase('#84cc16'); const G = CH.G(); P.body.add(imesh(G.s, IM('#15803d'), [0, .22, -.01], [.14, .09, .17])); for (const [x, z] of [[0, 0], [.06, .07], [-.06, .07], [.06, -.08], [-.06, -.08]]) P.body.add(imesh(G.s, IM('#4ade80'), [x, .29, z - .01], [.035, .02, .035])); P.head.position.set(0, .2, .2); return P; },
+  beepet() { const P = petBase('#facc15', { fly: 1 }); const G = CH.G(); P.body.scale.set(.55, .55, .55); P.legs.forEach(l => l.visible = false); for (const z of [-.05, .05]) P.body.add(imesh(G.tor, IM('#111827'), [0, .18, z], [.118, .1, .06])); P.body.add(imesh(G.cone, IM('#111827'), [0, .18, -.2], [.03, .07, .03], [-Math.PI / 2, 0, 0])); P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .06, .27, 0); P.body.add(w); w.add(imesh(G.s, IM('#e0f2fe', { op: .7 }), [sx * .08, 0, 0], [.1, .012, .06])); P.wings.push(w); } return P; },
+  dragonpet() { const P = petBase('#a855f7', { fly: 1 }); const G = CH.G(); P.body.scale.set(.8, .8, .8); P.legs.forEach(l => l.scale.y *= .6); for (let i = 0; i < 4; i++) P.body.add(imesh(G.cone, IM('#fde047'), [0, .29 - i * .01, .08 - i * .07], [.022, .05, .022])); for (const sx of [-1, 1]) P.head.add(imesh(G.cone, IM('#fde047'), [sx * .04, .1, -.02], [.014, .06, .014])); P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .1, .24, 0); P.body.add(w); w.add(imesh(G.s, IM('#7e22ce'), [sx * .12, 0, 0], [.14, .015, .09])); P.wings.push(w); } P.tail = new THREE.Group(); P.tail.position.set(0, .18, -.17); P.body.add(P.tail); P.tail.add(imesh(G.cone, IM('#a855f7'), [0, 0, -.09], [.045, .2, .045], [-Math.PI / 2, 0, 0])); P.fire = 1; return P; },
+  pony() { const P = petBase('#f8fafc'); const G = CH.G(); P.body.scale.set(1.1, 1.2, 1.1); P.head.add(imesh(G.cone, IM('#fde047', { em: '#a16207' }), [0, .13, .03], [.016, .09, .016], [.25, 0, 0])); for (const sx of [-1, 1]) P.head.add(imesh(G.cone, IM('#f8fafc'), [sx * .05, .09, -.01], [.02, .05, .02])); const cs = ['#ef4444', '#facc15', '#22c55e', '#3b82f6', '#a855f7']; for (let i = 0; i < 5; i++) P.head.add(imesh(G.s, IM(cs[i]), [0, .08 - i * .035, -.07 - i * .012], [.025, .03, .03])); P.tail = new THREE.Group(); P.tail.position.set(0, .22, -.17); P.body.add(P.tail); for (let i = 0; i < 3; i++) P.tail.add(imesh(G.s, IM(cs[i * 2]), [(i - 1) * .02, -.03, -.05], [.018, .07, .03])); return P; },
   bird() { const P = petBase('#3b82f6', { fly: 1 }); const G = CH.G(); P.body.scale.set(.6, .6, .6); P.legs.forEach(l => l.visible = false); P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .1, .2, 0); P.body.add(w); w.add(imesh(G.s, IM('#60a5fa'), [sx * .1, 0, 0], [.12, .02, .07])); P.wings.push(w); } P.head.add(imesh(G.cone, IM('#f59e0b'), [0, -.01, .11], [.02, .05, .02], [Math.PI / 2, 0, 0])); return P; },
+};
+
+/* ---- hiệu ứng mặc định: món nào cũng phải có hiệu ứng ---- */
+function defFx(slot, id) { const kind = { head: 'spark', face: 'star', back: 'spark', hand: 'star', outfit: id === 'sailor' ? 'bubble' : id === 'hero' || id === 'police' ? 'star' : id === 'fireman' ? 'fire' : 'spark' }[slot] || 'spark';
+  const jn = { head: 'head', face: 'head', back: 'spine', hand: 'handR', outfit: 'spine' }[slot], v = new THREE.Vector3();
+  return (dt, C, S) => { const mv = C.state === 'walk' || C.state === 'run'; if (Math.random() < dt * (slot === 'outfit' ? (mv ? 2.4 : .7) : 1.1)) { C.J[jn].getWorldPosition(v); v.x += (Math.random() - .5) * .3; v.y += slot === 'head' ? .3 : slot === 'outfit' ? Math.random() * .3 : .1; v.z += (Math.random() - .5) * .3; S.fx.emit(kind, v, { add: kind !== 'bubble', size: .09, life: .9 }); } }; }
+function poof(S, pos, k) { if (!S || !S.fx) return; for (let i = 0; i < 12; i++) S.fx.emit(k, pos.clone().add(new THREE.Vector3((Math.random() - .5) * .4, .2 + Math.random() * .4, (Math.random() - .5) * .4)), { add: k !== 'smoke', size: k === 'smoke' ? .3 : .14, life: .9, v: new THREE.Vector3((Math.random() - .5) * 1.4, .6 + Math.random(), (Math.random() - .5) * 1.4), g: k === 'smoke' ? 0 : 2 }); }
+/* ---- con vật do đũa phép biến ra: đi theo chủ, mỗi con một chỗ ---- */
+function setSumSlot(q, i) { const o = [[-.75, .55], [0, 1.15], [.8, 1.25]][i % 3]; q.ox = o[0]; q.oz = o[1]; q.fr = 1.15 + i * .25; q.fa0 = i * 2.1 + 1; }
+function mkSum(id, i) { const q = PETS[id](); q.sid = id; setSumSlot(q, i); return q; }
+/* ---- XE: mô hình + tư thế ngồi/đứng + hiệu ứng; đi nhanh hơn khi cưỡi ---- */
+function ridePose(C, T, st) { const r = C.ride; if (!r || !C.rideOn) return; const mv = st === 'walk' || st === 'run', t = C.t, free = st === 'idle' || mv;
+  if (r.pose === 'stand') { T.hipY = C.hipH + r.lift + (r.bob ? Math.sin(t * 3) * .03 : 0); T.legL = -.12; T.legR = .12; T.kneeL = T.kneeR = .25; T.bodyY = 0; if (free) { T.armLx = T.armRx = 0; T.armLz = -.6; T.armRz = .6; T.elL = T.elR = -.2; T.spX = mv ? .12 : 0; T.spY = .5; T.hdY = -.45; } }
+  else { T.hipY = r.seat + (r.bob ? Math.sin(t * 3) * .03 : 0); T.bodyY = 0; const pd = r.pedal && mv ? Math.sin(t * 9) * .35 : 0; T.legL = (r.leg ?? -1.2) + pd; T.legR = (r.leg ?? -1.2) - pd; T.kneeL = (r.knee ?? 1.3) - pd * .6; T.kneeR = (r.knee ?? 1.3) + pd * .6;
+    if (free) { T.armLx = T.armRx = r.arm ?? -1.0; T.elL = T.elR = -.3; T.armLz = .1; T.armRz = -.1; T.spX = r.lean ?? .1; T.spY = 0; } } }
+function wheel(g, x, y, z, r, col = '#1f2937') { const G = CH.G(), w = new THREE.Group(); w.position.set(x, y, z); g.add(w); w.add(imesh(G.tor, IM(col), [0, 0, 0], [r, r, r * 1.2], [0, Math.PI / 2, 0])); w.add(imesh(G.c, IM('#cbd5e1'), [0, 0, 0], [r * .5, .02, r * .5], [0, 0, Math.PI / 2])); for (let i = 0; i < 3; i++) w.add(imesh(G.box, IM('#e5e7eb'), [0, 0, 0], [.012, r * 1.9, .012], [i * 1.047, 0, 0])); return w; }
+const rideFx = (k, o = {}) => (dt, C, S) => { if (Math.random() < dt * (o.rate || 6)) { const a = C.root.rotation.y, p = C.root.position.clone(); p.x -= Math.sin(a) * (o.back ?? .35); p.z -= Math.cos(a) * (o.back ?? .35); p.y += o.y ?? .1; const kk = Array.isArray(k) ? k[Math.floor(Math.random() * k.length)] : k; S.fx.emit(kk, p.add(new THREE.Vector3((Math.random() - .5) * .25, 0, (Math.random() - .5) * .25)), { add: o.add ?? 1, size: o.size || .14, life: o.life || .8, v: new THREE.Vector3(0, o.vy ?? .25, 0), grow: o.grow ?? .5 }); } };
+const RIDES = {
+  skate(C) { const G = CH.G(), g = new THREE.Group(); g.add(imesh(G.box, IM('#f97316'), [0, .075, 0], [.2, .022, .62])); g.add(imesh(G.box, IM('#1f2937'), [0, .088, 0], [.17, .004, .5])); const ws = []; for (const x of [-.08, .08]) for (const z of [-.2, .2]) { const w = imesh(G.c, IM('#fde047'), [x, .035, z], [.035, .03, .035], [0, 0, Math.PI / 2]); g.add(w); ws.push(w); }
+    return { g, pose: 'stand', lift: .1, k: 1.2, upd: (dt, C, mv) => { if (mv) ws.forEach(w => w.rotation.x += dt * 20); }, fx: rideFx(['spark', 'fire'], { rate: 5, y: .04, size: .08, life: .4 }) }; },
+  hover(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); b.add(imesh(G.s, IM('#0ea5e9'), [0, 0, 0], [.2, .035, .36])); b.add(imesh(G.s, IM('#67e8f9', { em: '#22d3ee' }), [0, -.02, 0], [.16, .02, .3])); for (const z of [-.2, .2]) b.add(imesh(G.tor, IM('#e0f2fe', { em: '#38bdf8' }), [0, -.03, z], [.07, .07, .07], [Math.PI / 2, 0, 0]));
+    return { g, pose: 'stand', lift: .3, bob: 1, k: 1.3, always: 1, upd: (dt, C, mv, t) => { b.position.y = .26 + Math.sin(t * 3) * .03; b.rotation.z = Math.sin(t * 2) * .06; }, fx: rideFx(['rbb', 'spark'], { rate: 7, back: 0, y: .12, vy: -.3, size: .13, life: .6 }) }; },
+  cloud(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); for (const [x, y, z, r] of [[0, 0, 0, .22], [.2, -.02, .05, .16], [-.2, -.02, -.03, .17], [.05, -.01, .22, .15], [-.06, -.02, -.23, .16], [.14, .03, -.14, .13], [-.15, .03, .15, .13]]) b.add(imesh(G.s, IM('#ffffff', { em: '#64748b' }), [x, y, z], [r, r * .62, r]));
+    return { g, pose: 'stand', lift: .38, bob: 1, k: 1.3, always: 1, upd: (dt, C, mv, t) => { b.position.y = .28 + Math.sin(t * 3) * .03; }, fx: rideFx('smoke', { rate: 5, y: .25, add: 0, size: .28, life: 1, vy: .05 }) }; },
+  carpet(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); b.add(imesh(G.box, IM('#7c3aed'), [0, 0, 0], [.5, .018, .8])); b.add(imesh(G.box, IM('#facc15'), [0, .002, 0], [.42, .018, .72])); b.add(imesh(G.box, IM('#be123c'), [0, .004, 0], [.32, .018, .6])); for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.add(imesh(G.s, IM('#facc15'), [sx * .25, -.02, sz * .4], [.025, .04, .025]));
+    return { g, pose: 'sit', seat: .4, bob: 1, leg: -1.5, knee: .15, arm: -.6, lean: -.05, k: 1.25, always: 1, upd: (dt, C, mv, t) => { b.position.y = .3 + Math.sin(t * 3) * .03; b.rotation.x = Math.sin(t * 4) * .05; b.rotation.z = Math.sin(t * 2.3) * .05; }, fx: rideFx('star', { rate: 5, y: .25, size: .1, life: 1 }) }; },
+  bike(C) { const G = CH.G(), g = new THREE.Group(), red = IM('#dc2626'); const w1 = wheel(g, 0, .17, .3, .16), w2 = wheel(g, 0, .17, -.3, .16);
+    g.add(imesh(G.c, red, [0, .3, .02], [.014, .5, .014], [1.15, 0, 0])); g.add(imesh(G.c, red, [0, .27, -.14], [.014, .34, .014], [-.55, 0, 0])); g.add(imesh(G.c, red, [0, .4, .0], [.014, .36, .014], [Math.PI / 2, 0, 0])); g.add(imesh(G.c, red, [0, .36, .26], [.014, .4, .014], [-.2, 0, 0])); g.add(imesh(G.c, IM('#1f2937'), [0, .55, .22], [.012, .32, .012], [0, 0, Math.PI / 2])); g.add(imesh(G.s, IM('#1f2937'), [0, .44, -.16], [.05, .02, .09])); g.add(imesh(G.s, IM('#fde047', { em: '#fde047' }), [0, .5, .3], [.025, .025, .02]));
+    const pd = new THREE.Group(); pd.position.set(0, .2, .0); g.add(pd); for (const sx of [-1, 1]) pd.add(imesh(G.box, IM('#111827'), [sx * .07, sx * .06, 0], [.05, .012, .03]));
+    return { g, pose: 'sit', seat: .5, leg: -.75, knee: 1.1, pedal: 1, arm: -1.05, lean: .25, k: 1.3, upd: (dt, C, mv) => { if (mv) { w1.rotation.x += dt * 12; w2.rotation.x += dt * 12; pd.rotation.x += dt * 9; } }, fx: rideFx('spark', { rate: 3, y: .05, size: .07, life: .5 }) }; },
+  scooter(C) { const G = CH.G(), g = new THREE.Group(), col = IM('#f472b6'), wt = IM('#f8fafc'); const w1 = wheel(g, 0, .12, .34, .11), w2 = wheel(g, 0, .12, -.3, .11);
+    g.add(imesh(G.s, col, [0, .22, -.22], [.11, .13, .22])); g.add(imesh(G.box, wt, [0, .12, .05], [.16, .03, .34])); g.add(imesh(G.s, col, [0, .3, .3], [.1, .2, .07])); g.add(imesh(G.c, IM('#9ca3af'), [0, .5, .27], [.012, .25, .012], [-.2, 0, 0])); g.add(imesh(G.c, IM('#1f2937'), [0, .62, .25], [.012, .3, .012], [0, 0, Math.PI / 2])); g.add(imesh(G.s, IM('#1f2937'), [0, .37, -.2], [.085, .025, .16])); const lamp = imesh(G.s, IM('#fef9c3', { em: '#fde047' }), [0, .42, .36], [.04, .04, .02]); g.add(lamp); g.add(imesh(G.s, IM('#ef4444', { em: '#ef4444' }), [0, .27, -.44], [.03, .02, .01])); for (const sx of [-1, 1]) g.add(imesh(G.s, IM('#cbd5e1'), [sx * .15, .68, .25], [.025, .03, .01]));
+    return { g, pose: 'sit', seat: .45, leg: -1.3, knee: 1.25, arm: -1.15, lean: .1, k: 1.4, upd: (dt, C, mv) => { if (mv) { w1.rotation.x += dt * 16; w2.rotation.x += dt * 16; } }, fx: rideFx(['smoke', 'heart'], { rate: 4, back: .5, y: .15, add: 0, size: .13, life: .8 }) }; },
+  car(C) { const G = CH.G(), g = new THREE.Group(), red = IM('#ef4444'); const ws = [];
+    for (const x of [-.21, .21]) for (const z of [-.26, .28]) ws.push(wheel(g, x, .1, z, .09)); g.add(imesh(G.box, red, [0, .17, 0], [.4, .1, .82])); g.add(imesh(G.s, red, [0, .2, .3], [.2, .08, .16])); g.add(imesh(G.s, red, [0, .2, -.32], [.2, .08, .13])); for (const sx of [-1, 1]) g.add(imesh(G.box, red, [sx * .19, .27, -.02], [.03, .1, .42])); g.add(imesh(G.box, IM('#bae6fd', { op: .5 }), [0, .34, .2], [.36, .14, .012], [-.35, 0, 0])); g.add(imesh(G.box, IM('#1f2937'), [0, .2, -.14], [.3, .04, .22])); g.add(imesh(G.tor, IM('#111827'), [0, .32, .1], [.05, .05, .05], [-.5, 0, 0])); for (const sx of [-1, 1]) { g.add(imesh(G.s, IM('#fef9c3', { em: '#fde047' }), [sx * .13, .2, .42], [.04, .035, .02])); g.add(imesh(G.s, IM('#fca5a5', { em: '#dc2626' }), [sx * .13, .2, -.43], [.035, .03, .015])); } g.add(imesh(G.box, IM('#f8fafc'), [0, .225, 0], [.06, .004, .8]));
+    return { g, pose: 'sit', seat: .3, leg: -1.5, knee: .25, arm: -1.15, lean: -.1, k: 1.4, upd: (dt, C, mv) => { if (mv) ws.forEach(w => w.rotation.x += dt * 18); }, fx: rideFx('smoke', { rate: 5, back: .5, y: .12, add: 0, size: .16, life: .8 }) }; },
+  broom(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); b.add(imesh(G.c, IM('#92400e'), [0, 0, .1], [.015, .95, .015], [Math.PI / 2, 0, 0])); b.add(imesh(G.cone, IM('#fbbf24'), [0, 0, -.5], [.09, .34, .09], [Math.PI / 2, 0, 0])); b.add(imesh(G.tor, IM('#dc2626'), [0, 0, -.36], [.035, .035, .05]));
+    return { g, pose: 'sit', seat: .62, bob: 1, leg: -.55, knee: 1.0, arm: -1.0, lean: .25, k: 1.4, always: 1, upd: (dt, C, mv, t) => { b.position.y = .52 + Math.sin(t * 3) * .03; b.rotation.x = -.06; }, fx: rideFx(['star', 'spark'], { rate: 7, back: .6, y: .5, size: .1, life: .9 }) }; },
+  uniride(C) { const G = CH.G(), g = new THREE.Group(), wt = IM('#f8fafc'), cs = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7']; g.add(imesh(G.s, wt, [0, .36, 0], [.13, .13, .28])); const hd = new THREE.Group(); hd.position.set(0, .5, .26); g.add(hd); hd.add(imesh(G.s, wt, [0, 0, -.02], [.06, .13, .07], [.5, 0, 0])); hd.add(imesh(G.s, wt, [0, .1, .06], [.07, .07, .11])); hd.add(imesh(G.cone, IM('#fde047', { em: '#a16207' }), [0, .22, .06], [.018, .13, .018], [.2, 0, 0])); for (const sx of [-1, 1]) { hd.add(imesh(G.cone, wt, [sx * .04, .17, .01], [.02, .05, .02])); hd.add(imesh(G.s, IM('#111827'), [sx * .055, .11, .1], [.012, .016, .012])); } for (let i = 0; i < 6; i++) hd.add(imesh(G.s, IM(cs[i]), [0, .13 - i * .04, -.04 - i * .02], [.025, .035, .035]));
+    const legs = []; for (const [x, z] of [[-.07, .17], [.07, .17], [-.07, -.17], [.07, -.17]]) { const l = new THREE.Group(); l.position.set(x, .3, z); g.add(l); l.add(imesh(G.c, wt, [0, -.14, 0], [.03, .28, .03])); l.add(imesh(G.c, IM('#f9a8d4'), [0, -.28, 0], [.034, .04, .034])); legs.push(l); }
+    const tail = new THREE.Group(); tail.position.set(0, .42, -.27); g.add(tail); for (let i = 0; i < 3; i++) tail.add(imesh(G.s, IM(cs[i * 2 + 1]), [(i - 1) * .025, -.1, -.04], [.022, .13, .04]));
+    return { g, pose: 'sit', seat: .56, leg: -.6, knee: .9, arm: -.9, lean: .12, k: 1.35, upd: (dt, C, mv, t) => { legs.forEach((l, i) => l.rotation.x = mv ? Math.sin(t * 12 + (i % 2 ? Math.PI : 0) + (i > 1 ? 1 : 0)) * .6 : 0); g.position.y = mv ? Math.abs(Math.sin(t * 12)) * .03 : 0; tail.rotation.z = Math.sin(t * 5) * .4; hd.rotation.x = Math.sin(t * 6) * (mv ? .08 : .03); },
+      fx: (dt, C, S) => { if (Math.random() < dt * 8) { const a = C.root.rotation.y, p = C.root.position.clone(); p.x -= Math.sin(a) * .4; p.z -= Math.cos(a) * .4; p.y += .15 + Math.random() * .3; S.fx.emit('rb' + 'roygbv'[Math.floor(Math.random() * 6)], p, { add: 1, size: .22, life: 1.2, grow: .8, v: new THREE.Vector3(0, .1, 0) }); } } }; },
+  rocket(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); b.add(imesh(G.cap, IM('#f8fafc'), [0, 0, 0], [.12, .22, .12], [Math.PI / 2, 0, 0])); b.add(imesh(G.cone, IM('#ef4444'), [0, 0, .5], [.12, .26, .12], [Math.PI / 2, 0, 0])); b.add(imesh(G.c, IM('#64748b'), [0, 0, -.38], [.09, .1, .09], [Math.PI / 2, 0, 0])); for (let i = 0; i < 3; i++) { const a = i * 2.094 + Math.PI; b.add(imesh(G.box, IM('#3b82f6'), [Math.sin(a) * .13, Math.cos(a) * .13, -.28], [.02, .16, .2], [0, 0, -a])); } b.add(imesh(G.tor, IM('#ef4444'), [0, 0, .15], [.125, .125, .08])); const fl = imesh(G.cone, new THREE.MeshBasicMaterial({ color: '#fb923c' }), [0, 0, -.58], [.07, .3, .07], [-Math.PI / 2, 0, 0]); b.add(fl);
+    return { g, pose: 'sit', seat: .66, bob: 1, leg: -.5, knee: 1.0, arm: -1.0, lean: .3, k: 1.5, always: 1, upd: (dt, C, mv, t) => { b.position.y = .5 + Math.sin(t * 3) * .03; fl.scale.y = (mv ? .4 : .2) * (1 + Math.sin(t * 40) * .25); fl.visible = true; }, fx: rideFx(['fire', 'smoke'], { rate: 12, back: .75, y: .5, size: .2, life: .6, vy: .05 }) }; },
+};
+if (typeof document !== 'undefined') document.addEventListener('keydown', e => { if (e.code === 'KeyF' && typeof HUD !== 'undefined' && !HUD.typing() && typeof W !== 'undefined' && W.ok && !W.lock) Items.cast(); });
+
+/* ======================================================================
+   TẶNG QUÀ CHO BẠN ĐANG ONLINE (vật phẩm hoặc ⭐) – quà tới ngay, có hiệu ứng
+   ====================================================================== */
+const Gift = {
+  MAX: 5, STARS: [10, 20, 50],
+  left() { const d = new Date().toDateString(), g = LS.get('dh_gift', null); return g && g.d === d ? Math.max(0, this.MAX - g.n) : this.MAX; },
+  used() { const d = new Date().toDateString(), g = LS.get('dh_gift', null); LS.set('dh_gift', { d, n: (g && g.d === d ? g.n : 0) + 1 }); },
+  async friends() { if (!DB.on) return []; const s = await DB.ref('online').once('value'), now = DB.now(), o = []; s.forEach(c => { const v = c.val(); if (c.key !== ME.id && v && v.n && now - (v.t || 0) < 180000) o.push({ id: c.key, n: String(v.n).slice(0, 20), g: v.g | 0 }); }); return o.sort((a, b) => a.n.localeCompare(b.n)); },
+  cost(p) { return p.st ? p.st : (SHOPMAP[p.id] || {}).p || 0; },
+  label(p) { const it = SHOPMAP[p.id]; return p.st ? `${p.st} ⭐` : it ? `${it.i} ${it.n}` : 'quà'; },
+  async send(to, p) {
+    const cost = this.cost(p); if (!DB.on) { toast('Cần chơi online mới tặng quà được em nhé.', 2600); return false; }
+    if (!this.left()) { toast('Hôm nay em đã tặng đủ ' + this.MAX + ' món quà rồi. Mai tặng tiếp nhé!', 3000); return false; }
+    if ((ME.st | 0) < cost) { toast(`Em cần thêm ${cost - (ME.st | 0)} ⭐ nữa để tặng món quà này.`, 3000); SFX.no(); return false; }
+    try { await DB.ref('online/' + to.id + '/gf').push({ f: ME.n, u: ME.id, id: p.id || null, st: p.st || null, t: firebase.database.ServerValue.TIMESTAMP }); }
+    catch (e) { toast('Bạn ' + esc(to.n) + ' vừa rời trường nên chưa nhận được quà. Em thử lại sau nhé.', 3200); return false; }
+    ME.st -= cost; this.used(); saveMe(); SFX.win(); confetti(40); toast(`🎁 Em đã tặng <b>${this.label(p)}</b> cho bạn <b>${esc(to.n)}</b>!`, 3200);
+    if (typeof W !== 'undefined' && W.P && W.S && W.S.fx) { poof(W.S, W.P.root.position, 'heart'); poof(W.S, W.P.root.position, 'gift'); }
+    try { DB.ref('chat').push({ u: ME.id, n: ME.n, g: ME.g, m: `🎁 tặng ${p.st ? p.st + ' sao' : (SHOPMAP[p.id] || {}).n} cho bạn ${to.n}`.slice(0, 120), w: 'Quà tặng', t: firebase.database.ServerValue.TIMESTAMP }).catch(() => { }); } catch (e) { }
+    return true; },
+  listen() { if (this._on || !DB.on || !ME) return; this._on = true; DB.ref('online/' + ME.id + '/gf').on('child_added', s => { const v = s.val(); s.ref.remove().catch(() => { }); try { this.receive(v); } catch (e) { } }); },
+  receive(v) { if (!v || !ME) return; const d = new Date().toDateString(), r = LS.get('dh_giftrx', null), n = r && r.d === d ? r.n : 0; if (n >= 20) return; LS.set('dh_giftrx', { d, n: n + 1 });
+    const from = esc(String(v.f || 'Một bạn').slice(0, 20)); let msg = '';
+    if (v.id && SHOPMAP[v.id]) { const it = SHOPMAP[v.id]; if (Items.has(v.id)) { const st = Math.round(it.p / 2); ME.st = (ME.st | 0) + st; msg = `🎁 Bạn <b>${from}</b> tặng em <b>${it.i} ${it.n}</b>. Em đã có món này nên được đổi thành <b>${st} ⭐</b>.`; } else { ME.inv = [...(ME.inv || []), v.id]; msg = `🎁 Bạn <b>${from}</b> tặng em <b>${it.i} ${it.n}</b>! Em mở Tủ đồ để dùng nhé.`; } }
+    else if (this.STARS.includes(+v.st)) { ME.st = (ME.st | 0) + +v.st; msg = `🎁 Bạn <b>${from}</b> tặng em <b>${+v.st} ⭐</b>!`; } else return;
+    saveMe(); SFX.win(); confetti(80); toast(msg, 6000); if (typeof W !== 'undefined' && W.P && W.S && W.S.fx) { poof(W.S, W.P.root.position, 'gift'); poof(W.S, W.P.root.position, 'heart'); W.P.state = 'cheer'; setTimeout(() => { if (W.P.state === 'cheer') W.P.state = 'idle'; }, 1800); } },
+  // chọn bạn để tặng (vẽ ngay trong khung cửa hàng)
+  async pick(B, p, back) { B.innerHTML = '<p class="muted">Đang tìm các bạn đang online…</p>'; let fr = []; try { fr = await this.friends(); } catch (e) { }
+    const cost = this.cost(p);
+    B.innerHTML = `<div class="wallet">🎁 Tặng <b>${this.label(p)}</b> (hết <b>${cost} ⭐</b>) · Em có <b>${ME.st | 0} ⭐</b> · Hôm nay còn tặng được <b>${this.left()}</b> lần</div>
+      ${!DB.on ? '<p class="muted">Cần chơi online (đã nối Firebase) mới tặng quà được.</p>' : fr.length ? `<p class="muted small">Chọn bạn đang online để tặng:</p><div class="shopg">${fr.slice(0, 40).map((f, i) => `<div class="sitem"><div class="si">🧒</div><b>${esc(f.n)}</b><small>Lớp ${f.g || '?'}</small><button class="btn sm sun" data-f="${i}">🎁 Tặng</button></div>`).join('')}</div>` : '<p class="muted">Hiện chưa có bạn nào khác đang online. Em rủ bạn vào chơi rồi tặng nhé!</p>'}
+      <button class="btn ghost" style="width:100%;margin-top:8px" id="gfBack">← Quay lại cửa hàng</button>`;
+    B.querySelector('#gfBack').onclick = back; B.querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { b.disabled = true; await this.send(fr[+b.dataset.f], p); back(); }); },
 };
 
 /* ======================================================================
@@ -6872,7 +7084,7 @@ const HUD = {
       <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
       <button class="actbtn hidden" id="actBtn"></button>
       <div class="emotes" id="emotes">
-        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button>
+        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button><button data-e="wand" id="wandBtn" class="hidden" title="Vẫy đũa phép (F)">🪄</button>
       </div>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
       <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="chatX">✕</button></div>
@@ -6913,7 +7125,7 @@ const HUD = {
     $('#rail').onclick = railClick; $('#more').onclick = railClick; $('.h-trb').onclick = railClick;
     addEventListener('keydown', e => { if (!W.on || this.typing() || !$('#rail')) return; const n = +e.key; if (n >= 1 && n <= 8) { const b = $$('#rail button')[n - 1]; if (b) b.click(); } });
     $('#emotes').onclick = e => { const b = e.target.closest('button'); if (!b) return; const k = b.dataset.e;
-      if (k === 'jump') W.jump(); else if (k === 'run') { W.run = !W.run; b.classList.toggle('on', W.run); } else if (k === 'stand') { Lesson.end(); W.standUp(); } else W.emote(k); };
+      if (k === 'wand') Items.cast(); else if (k === 'jump') W.jump(); else if (k === 'run') { W.run = !W.run; b.classList.toggle('on', W.run); } else if (k === 'stand') { Lesson.end(); W.standUp(); } else W.emote(k); };
     $('#actBtn').onclick = () => W.doAct();
     $('#camTog').onclick = () => $('#camctl').classList.toggle('hidden'); if (innerHeight < 700 || innerWidth < 760) $('#camctl').classList.add('hidden');
     $('#camctl').onclick = e => { const b = e.target.closest('button'); if (b) W.camCmd(b.dataset.c); };
@@ -7067,11 +7279,13 @@ const HUD = {
       B.innerHTML = `<div class="pv3" id="pv3"></div><div class="wallet">⭐ Điểm thưởng: <b>${ME.st | 0}</b> <small class="muted">· kiếm thêm khi học bài, tham quan, thi Đấu trường</small></div>
         <div class="rtabs">${wardrobe ? `<button data-c="all" class="${cat === 'all' ? 'on' : ''}">Tất cả</button>` : ''}${Object.entries(SLOTS).map(([k, n]) => `<button data-c="${k}" class="${cat === k ? 'on' : ''}">${n}</button>`).join('')}</div>
         <div class="shopg">${list.length ? list.map(x => { const own = Items.has(x.id), on = eq[x.slot] === x.id; return `<div class="sitem ${on ? 'on' : ''}" data-id="${x.id}"><div class="si">${x.i}</div><b>${x.n}</b><small>${x.d}</small>
-          ${own ? `<button class="btn sm ${on ? 'ghost' : 'green'}" data-act="${on ? 'off' : 'on'}">${on ? 'Bỏ ra' : 'Mặc / dùng'}</button>` : `<button class="btn sm sun" data-act="buy">⭐ ${x.p}</button>`}</div>`; }).join('') : `<p class="muted">${wardrobe ? 'Tủ đồ còn trống. Ghé Cửa hàng để mua đồ nhé!' : 'Chưa có món nào.'}</p>`}</div>
-        ${wardrobe ? '<button class="btn sun" style="width:100%;margin-top:8px" id="goShop">🛍️ Đến Cửa hàng</button>' : ''}`;
+          ${own ? `<button class="btn sm ${on ? 'ghost' : 'green'}" data-act="${on ? 'off' : 'on'}">${on ? 'Bỏ ra' : 'Mặc / dùng'}</button>` : `<button class="btn sm sun" data-act="buy">⭐ ${x.p}</button>`}${wardrobe ? '' : `<button class="btn sm ghost" data-gift="${x.id}">🎁 Tặng bạn</button>`}</div>`; }).join('') : `<p class="muted">${wardrobe ? 'Tủ đồ còn trống. Ghé Cửa hàng để mua đồ nhé!' : 'Chưa có món nào.'}</p>`}</div>
+        ${wardrobe ? '<button class="btn sun" style="width:100%;margin-top:8px" id="goShop">🛍️ Đến Cửa hàng</button>' : `<div class="wallet" style="margin-top:8px">🎁 Tặng ⭐ cho bạn: ${Gift.STARS.map(n => `<button class="btn sm ghost" data-gst="${n}">${n} ⭐</button>`).join(' ')}</div>`}`;
       Preview.mount($('#pv3'), ME.av, eq);
       B.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { cat = b.dataset.c; draw(); });
       B.querySelectorAll('.sitem').forEach(el => { el.onmouseenter = () => { const x = SHOPMAP[el.dataset.id]; Preview.set(ME.av, { ...eq, [x.slot]: x.id }); }; el.onmouseleave = () => Preview.set(ME.av, eq); });
+      B.querySelectorAll('[data-gift]').forEach(b => b.onclick = () => Gift.pick(B, { id: b.dataset.gift }, () => { this.renderMe(); draw(); }));
+      B.querySelectorAll('[data-gst]').forEach(b => b.onclick = () => Gift.pick(B, { st: +b.dataset.gst }, () => { this.renderMe(); draw(); }));
       B.querySelectorAll('[data-act]').forEach(b => b.onclick = () => { const id = b.closest('.sitem').dataset.id, a = b.dataset.act; if (a === 'buy') Items.buy(id); else Items.equip(id, a === 'on'); this.renderMe(); draw(); });
       const gs = $('#goShop'); if (gs) gs.onclick = () => this.open('shop');
     };
