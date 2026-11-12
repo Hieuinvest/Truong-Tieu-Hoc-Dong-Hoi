@@ -6217,7 +6217,6 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     for (let i = 0; i < 4; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(.16, 10, 8), mat(['#ea580c', '#f8fafc', '#facc15', '#22c55e'][i])); b.position.set(cx + 9.6, .18, cz - 8 + i * .5); scene.add(b); }
     B.act({ x: cx + 9, z: cz + 6, r: 2.4, icon: '⚽', label: 'Học Thể dục với cô Diễn', fn: () => HUD.open('study', { subj: 'gdtc' }) });
     // ba trò chơi trong nhà thể chất: lưới cầu lông, khung thành, rổ bóng
-    B.box(.1, 1.55, 6, '#f8fafc', cx + 1.5, 0, cz, { col: false }); B.box(.06, .9, 6, '#e2e8f0', cx + 1.5, .65, cz); for (const sz of [-1, 1]) B.cyl(.06, .06, 1.6, '#475569', cx + 1.5, 0, cz + sz * 3.05, 8);
     B.act({ x: cx - 3, z: cz - 7, r: 2.4, icon: '🥅', label: 'Thủ môn bắt bóng', fn: () => { location.hash = '#/game/keeper'; } });
     B.act({ x: cx + 6.5, z: cz - 6, r: 2.2, icon: '🪢', label: 'Nhảy dây', fn: () => { location.hash = '#/game/rope'; } });
     }
