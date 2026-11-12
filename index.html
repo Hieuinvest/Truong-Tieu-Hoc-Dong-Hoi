@@ -511,6 +511,11 @@ body.seated .h-place{display:none}
   .h-me small{display:none}
 }
 @media (max-width:760px){.emotes button i{display:none}.emotes button{padding:0;justify-content:center}}
+/* ===== nút "Sử dụng …" (đũa phép): nằm ngay phía trên thanh chức năng ===== */
+.usebtn{position:fixed;left:50%;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 86px);transform:translateX(calc(-50% + 235px));background:linear-gradient(180deg,#fde68a,#f59e0b);color:#422006;font-weight:800;font-size:14px;border-radius:999px;padding:9px 16px;border:2px solid #fff7ed;box-shadow:0 6px 16px rgba(0,0,0,.3);white-space:nowrap;animation:wandp 1.6s ease-in-out infinite;z-index:2}
+.usebtn.hidden{display:none}
+@media (max-width:760px){.usebtn{transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 156px);font-size:13px;padding:8px 14px}}
+@media (max-height:500px) and (min-width:600px){.usebtn{transform:translateX(calc(-50% + 190px));bottom:calc(max(12px,env(safe-area-inset-bottom)) + 60px);font-size:12px;padding:6px 12px}}
 </style>
 </head>
 <body>
@@ -853,14 +858,14 @@ const QB = [
 [3,'tnxh',5,'Trái Đất có dạng hình gì?','Hình cầu','Hình vuông','Hình tam giác','Hình trụ'],
 [3,'tnxh',5,'Đới khí hậu nóng nhất trên Trái Đất là:','Nhiệt đới','Ôn đới','Hàn đới','Cận cực'],
 [3,'tnxh',5,'Mặt Trời mọc ở hướng nào?','Đông','Tây','Nam','Bắc'],
-[3,'ta',0,'"Hello! My name ___ Nam."','is','am','are','be'],
+[3,'ta',0,'"Hello! My name ... Nam."','is','am','are','be'],
 [3,'ta',0,'What is this? ✏️','It is a pencil.','It is a book.','It is a ruler.','It is a bag.'],
 [3,'ta',0,'"Goodbye" nghĩa là gì?','Tạm biệt','Xin chào','Cảm ơn','Xin lỗi'],
 [3,'ta',0,'"How old are you?" – Câu trả lời đúng:','I am eight years old.','I am fine.','My name is Mai.','It is red.'],
 [3,'ta',1,'Màu đỏ trong tiếng Anh là:','red','blue','green','yellow'],
 [3,'ta',1,'"seven" là số mấy?','7','6','8','9'],
 [3,'ta',1,'"mother" nghĩa là:','mẹ','bố','chị gái','bà'],
-[3,'ta',2,'"I can ___ a bike."','ride','swim','sing','read'],
+[3,'ta',2,'"I can ... a bike."','ride','swim','sing','read'],
 [3,'ta',2,'Con mèo trong tiếng Anh là:','cat','dog','fish','bird'],
 [3,'th',0,'Bộ phận nào dùng để hiển thị hình ảnh?','Màn hình','Bàn phím','Chuột','Loa'],
 [3,'th',0,'Thân máy tính chứa:','Bộ xử lí – "bộ não" của máy tính','Màn hình','Bàn phím','Tai nghe'],
@@ -915,13 +920,13 @@ const QB = [
 [4,'lsdl',4,'Di sản văn hóa nào của Tây Nguyên được UNESCO ghi danh?','Không gian văn hóa Cồng chiêng','Dân ca Quan họ','Ca trù','Đờn ca tài tử'],
 [4,'lsdl',5,'Đồng bằng sông Cửu Long được bồi đắp bởi:','Sông Mê Công (sông Tiền, sông Hậu)','Sông Hồng','Sông Đà','Sông Thái Bình'],
 [4,'lsdl',5,'Chợ nổi trên sông là nét đặc trưng của vùng:','Nam Bộ','Tây Bắc','Tây Nguyên','Đồng bằng Bắc Bộ'],
-[4,'ta',0,'"Where are you from?" – "I am from ___."','Viet Nam','Vietnamese','fine','ten'],
+[4,'ta',0,'"Where are you from?" – "I am from ...."','Viet Nam','Vietnamese','fine','ten'],
 [4,'ta',1,'Thứ Hai trong tiếng Anh là:','Monday','Sunday','Tuesday','Friday'],
-[4,'ta',1,'"What time is it?" – "It is ___."','seven o\'clock','Monday','blue','ten years old'],
+[4,'ta',1,'"What time is it?" – "It is ...."','seven o\'clock','Monday','blue','ten years old'],
 [4,'ta',1,'"I get up at six o\'clock." nghĩa là:','Tôi thức dậy lúc 6 giờ.','Tôi đi ngủ lúc 6 giờ.','Tôi đi học lúc 6 giờ.','Tôi ăn tối lúc 6 giờ.'],
-[4,'ta',1,'"My birthday is in ___."','May','Monday','the morning','school'],
-[4,'ta',2,'"He is a ___. He works in a hospital."','doctor','farmer','pilot','driver'],
-[4,'ta',3,'"What would you like to drink?" – "I\'d like some ___."','milk','rice','bread','chicken'],
+[4,'ta',1,'"My birthday is in ...."','May','Monday','the morning','school'],
+[4,'ta',2,'"He is a .... He works in a hospital."','doctor','farmer','pilot','driver'],
+[4,'ta',3,'"What would you like to drink?" – "I\'d like some ...."','milk','rice','bread','chicken'],
 [4,'th',0,'Chuột, bàn phím, màn hình là:','Phần cứng','Phần mềm','Trò chơi','Trang web'],
 [4,'th',0,'Phần mềm dùng để soạn thảo văn bản là:','Microsoft Word','Paint','Máy in','Loa'],
 [4,'th',1,'Hai phím có gờ nổi để đặt ngón trỏ là:','F và J','A và L','G và H','D và K'],
@@ -978,14 +983,14 @@ const QB = [
 [5,'lsdl',4,'Quốc gia nào có chung biên giới đất liền với Việt Nam?','Lào','Thái Lan','Nhật Bản','Ấn Độ'],
 [5,'lsdl',4,'ASEAN là tên viết tắt của:','Hiệp hội các quốc gia Đông Nam Á','Liên minh châu Âu','Liên hợp quốc','Tổ chức Y tế Thế giới'],
 [5,'lsdl',4,'Châu lục rộng lớn nhất thế giới là:','Châu Á','Châu Phi','Châu Âu','Châu Đại Dương'],
-[5,'ta',0,'"What\'s your address?" – "It\'s ___."','25 Le Loi Street','eleven years old','in the morning','a doctor'],
-[5,'ta',0,'"What do you like doing?" – "I like ___ books."','reading','read','reads','readed'],
+[5,'ta',0,'"What\'s your address?" – "It\'s ...."','25 Le Loi Street','eleven years old','in the morning','a doctor'],
+[5,'ta',0,'"What do you like doing?" – "I like ... books."','reading','read','reads','readed'],
 [5,'ta',1,'Quá khứ của động từ "go" là:','went','goed','gone','goes'],
-[5,'ta',1,'"Where did you go last summer?" – "I ___ to Ha Long Bay."','went','go','goes','going'],
-[5,'ta',2,'"What will the weather be like tomorrow?" – "It ___ sunny."','will be','was','is being','be'],
-[5,'ta',2,'"What\'s the matter with you?" – "I have a ___."','headache','teacher','pencil','birthday'],
+[5,'ta',1,'"Where did you go last summer?" – "I ... to Ha Long Bay."','went','go','goes','going'],
+[5,'ta',2,'"What will the weather be like tomorrow?" – "It ... sunny."','will be','was','is being','be'],
+[5,'ta',2,'"What\'s the matter with you?" – "I have a ...."','headache','teacher','pencil','birthday'],
 [5,'ta',3,'Môn Toán trong tiếng Anh là:','Maths','Science','Music','Art'],
-[5,'ta',3,'"How often do you have English?" – "___ a week."','Four times','At seven o\'clock','In May','By bike'],
+[5,'ta',3,'"How often do you have English?" – "... a week."','Four times','At seven o\'clock','In May','By bike'],
 [5,'th',0,'Để tìm kiếm thông tin trên Internet, em dùng:','Máy tìm kiếm (Google, Cốc Cốc…)','Phần mềm vẽ','Máy in','Bàn phím số'],
 [5,'th',0,'Thông tin trên mạng:','Cần kiểm tra từ nguồn tin cậy','Luôn đúng 100%','Không bao giờ đúng','Không cần kiểm tra'],
 [5,'th',1,'Thư mục dùng để:','Chứa và sắp xếp các tệp','Chơi trò chơi','In tài liệu','Phát nhạc'],
@@ -1687,27 +1692,27 @@ QB.push(
 [5,'mt',0,'Bảng màu của họa sĩ dùng để:','Pha trộn màu','Đựng nước uống','Viết chữ','Cắt giấy'],
 // ---- TIẾNG ANH (câu, mẫu câu) ----
 [1,'ta',1,'"Thank you!" nghĩa là:','Cảm ơn!','Xin chào!','Tạm biệt!','Xin lỗi!'],
-[1,'ta',1,'"one, two, ___" – số tiếp theo là:','three','four','five','ten'],
+[1,'ta',1,'"one, two, ..." – số tiếp theo là:','three','four','five','ten'],
 [2,'ta',1,'"I can sing." nghĩa là:','Tôi có thể hát.','Tôi có thể bơi.','Tôi có thể chạy.','Tôi có thể vẽ.'],
-[2,'ta',0,'"Is it a goat?" – "Yes, ___."','it is','I am','it isn\'t','they are'],
-[3,'ta',0,'"What\'s your name?" – "___ name is Linh."','My','Your','His','I'],
+[2,'ta',0,'"Is it a goat?" – "Yes, ...."','it is','I am','it isn\'t','they are'],
+[3,'ta',0,'"What\'s your name?" – "... name is Linh."','My','Your','His','I'],
 [3,'ta',0,'"May I come in?" – Câu trả lời lịch sự:','Yes, you can.','No, thanks.','I\'m fine.','Goodbye.'],
-[3,'ta',1,'"Who\'s this?" – "___ my brother."','It\'s','I\'m','They\'re','We\'re'],
-[3,'ta',1,'"How old is your sister?" – "She\'s ___."','ten','fine','tall','Lan'],
-[3,'ta',2,'"Do you have a dog?" – "No, I ___."','don\'t','do','am not','isn\'t'],
-[3,'ta',2,'"What do you do at break time?" – "I play ___."','football','a pencil','my mother','blue'],
-[4,'ta',1,'"What day is it today?" – "It\'s ___."','Monday','May','morning','seven o\'clock'],
-[4,'ta',1,'"When is your birthday?" – "It\'s in ___."','October','Sunday','the classroom','ten'],
-[4,'ta',2,'"What does your father do?" – "He\'s a ___."','farmer','tall','Monday','school'],
-[4,'ta',3,'"What\'s your favourite food?" – "It\'s ___."','chicken','milk tea time','Monday','a doctor'],
+[3,'ta',1,'"Who\'s this?" – "... my brother."','It\'s','I\'m','They\'re','We\'re'],
+[3,'ta',1,'"How old is your sister?" – "She\'s ...."','ten','fine','tall','Lan'],
+[3,'ta',2,'"Do you have a dog?" – "No, I ...."','don\'t','do','am not','isn\'t'],
+[3,'ta',2,'"What do you do at break time?" – "I play ...."','football','a pencil','my mother','blue'],
+[4,'ta',1,'"What day is it today?" – "It\'s ...."','Monday','May','morning','seven o\'clock'],
+[4,'ta',1,'"When is your birthday?" – "It\'s in ...."','October','Sunday','the classroom','ten'],
+[4,'ta',2,'"What does your father do?" – "He\'s a ...."','farmer','tall','Monday','school'],
+[4,'ta',3,'"What\'s your favourite food?" – "It\'s ...."','chicken','milk tea time','Monday','a doctor'],
 [4,'ta',0,'"I am Japanese." nghĩa là:','Tôi là người Nhật Bản.','Tôi đến từ Việt Nam.','Tôi là người Anh.','Tôi thích Nhật Bản.'],
-[4,'ta',1,'"I go to school ___ seven o\'clock."','at','in','on','to'],
-[5,'ta',0,'"I live ___ 25 Tran Phu Street."','at','in','on','to'],
-[5,'ta',0,'"What\'s your hobby?" – "I like ___."','collecting stamps','a doctor','yesterday','Monday'],
-[5,'ta',1,'"What did you do yesterday?" – "I ___ my homework."','did','do','does','doing'],
-[5,'ta',1,'"Where will you be this weekend?" – "I\'ll be ___ the beach."','at','on','in','to'],
-[5,'ta',2,'"You should ___ to the dentist." (khi bị đau răng)','go','goes','went','going'],
-[5,'ta',3,'"Why do you like Science?" – "Because I like ___ experiments."','doing','do','did','does'],
+[4,'ta',1,'"I go to school ... seven o\'clock."','at','in','on','to'],
+[5,'ta',0,'"I live ... 25 Tran Phu Street."','at','in','on','to'],
+[5,'ta',0,'"What\'s your hobby?" – "I like ...."','collecting stamps','a doctor','yesterday','Monday'],
+[5,'ta',1,'"What did you do yesterday?" – "I ... my homework."','did','do','does','doing'],
+[5,'ta',1,'"Where will you be this weekend?" – "I\'ll be ... the beach."','at','on','in','to'],
+[5,'ta',2,'"You should ... to the dentist." (khi bị đau răng)','go','goes','went','going'],
+[5,'ta',3,'"Why do you like Science?" – "Because I like ... experiments."','doing','do','did','does'],
 // ---- PHÒNG KỸ NĂNG ----
 [0,'kns',0,'Khi có người lạ cho quà và rủ đi chơi, em nên:','Từ chối, rời đi và báo ngay cho bố mẹ, thầy cô','Nhận quà và đi theo','Nói địa chỉ nhà','Đi một mình với người đó'],
 [0,'kns',0,'Lời xin lỗi chân thành là:','Nhận lỗi và hứa sửa sai','Nói cho có rồi tiếp tục','Đổ lỗi cho người khác','Im lặng'],
@@ -3960,7 +3965,8 @@ const Voice = {
       const score = v => (v.name === want ? 100 : 0) + (v.name === okv ? 20 : 0) + (this.MALE.test(v.name) ? 0 : 8) + (/HoaiMy|Hoài My|Google/i.test(v.name) ? 2 : 0) + (v.localService ? 1 : 0) - (this.bad[v.name] ? 500 : 0);
       this.list = vi.filter(v => !this.MALE.test(v.name) && !this.bad[v.name]).sort((a, b) => score(b) - score(a));   // loại hẳn giọng nam
       this.v = this.list[0] || null; this.female = !!this.v;
-      const en = vs.filter(v => /^en/i.test(v.lang)); this.enV = en.find(v => /Zira|Aria|Jenny|Samantha|Google US|Female|Sonia|Libby|Ava|Emma|Michelle|Karen|Moira|Tessa/i.test(v.name)) || null;
+      const en = vs.filter(v => /^en/i.test(v.lang)); const enUS = en.filter(v => /en[-_](US|GB)/i.test(v.lang)), fem = /Aria|Jenny|Zira|Samantha|Google US|Google UK English Female|Female|Sonia|Libby|Ava|Emma|Michelle|Karen|Moira|Tessa|Ana\b|Allison|Susan/i, male = /David|Mark|George|Guy|Ryan|James|Daniel|Fred|Alex\b|Tom\b|Male|Eric|Roger|Steffan|Brian|Christopher|Andrew/i;
+      this.enV = enUS.find(v => fem.test(v.name)) || en.find(v => fem.test(v.name)) || enUS.find(v => !male.test(v.name)) || null;
     } catch { this.v = null; }
   },
   // mỗi cô giáo một chất giọng nữ riêng: khác giọng đọc (nếu máy có nhiều giọng nữ), khác độ cao và nhịp nói
@@ -3978,6 +3984,23 @@ const Voice = {
     contest: { rate: 1.05, pitch: 1.03, gap: 110 },
     kid: { rate: 1.0, pitch: 1.35, gap: 150 },
   },
+  /* TIẾNG ANH ĐỌC BẰNG GIỌNG ANH: tự tách từng đoạn tiếng Anh trong câu cô nói (từ vựng, mẫu câu) để đọc đúng giọng bản ngữ */
+  ENW: null,
+  VNA: new Set('em con cho ba hai to anh ta khi sau ra ai cao hay mai nam hoa xe tay tai tin vui ca thi kem nay xanh cam nho theo trong lan an ban do no on in me so hat mau cay la qua xa ong chim be ho tre dao sao trang den nong lanh long son ha hung kim thu my van tu chi tan man mat ten hang sang bay bat cot net pin gas sin cos kg cm km lit hon bao the nha ghe co di ve tham hoc sinh lop bai chu tap sach vo but thuoc bang cua tu dien toan van su dia tin bi dau cuoi than thi'.split(' ')),
+  enSet() { if (this.ENW) return this.ENW; const S = new Set(('a an the i you he she it we they me my your his her its our their this that these those is am are was were be do does did have has had can cannot will would like love want need go goes went come comes see look listen read write speak say tell ask answer open close sit stand up down in on under behind next near between at to from with for of and or but not no yes please thank thanks sorry hello hi goodbye bye good morning afternoon evening night fine great nice well how what where when who whose why which many much old new big small tall short long young happy sad hot cold warm cool sunny rainy cloudy windy snowy stormy weather one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred first second third red blue green yellow orange pink purple brown black white grey gray colour color name age year years class school teacher pupil student friend friends family father mother dad mum mom brother sister grandfather grandmother grandpa grandma baby boy girl man woman people book books pen pencil ruler rubber eraser bag schoolbag notebook desk chair board table door window room classroom library playground computer music art gym home house flat kitchen bedroom bathroom living garden cat dog bird fish rabbit goat duck chicken pig cow horse monkey tiger lion elephant bear parrot animal animals pet pets toy toys ball doll car bus bike bicycle plane train boat ship kite robot teddy apple banana orange mango grapes milk water juice rice bread noodles chicken beef pork egg eggs cake food drink breakfast lunch dinner eat drink play plays playing run jump swim sing dance draw paint cook ride fly skip walk sleep get gets wake wash brush clean watch study learn football badminton basketball volleyball chess tennis game games sport sports head eye eyes ear ears nose mouth hand hands arm leg foot feet hair face body monday tuesday wednesday thursday friday saturday sunday today tomorrow yesterday week month january february march april may june july august september october november december birthday time clock oclock day days there here some any every always usually often sometimes never very too also let us lets let\'s it\'s i\'m he\'s she\'s we\'re they\'re you\'re what\'s where\'s who\'s that\'s isn\'t aren\'t don\'t doesn\'t can\'t there\'s these english vietnamese viet america japan australia britain england london hanoi city town village country street road park zoo shop supermarket cinema hospital doctor nurse farmer worker driver singer pilot job jobs subject subjects maths science favourite favorite hobby hobbies would point repeat again together welcome ready set listen right wrong correct excellent done job try best stand take put give make help turn left show count spell').split(' '));
+    try { for (const g of Object.values(typeof KNTT_EN !== 'undefined' ? KNTT_EN : {})) for (const t of g) { const p = String(t).split('|'); for (const w of ((p[0] || '') + ' ' + (p[1] || '').split(/[–—]/).filter(x => !/[à-ỹđ]/i.test(x)).join(' ') + ' ' + (p[2] || '').split(';').map(x => x.split('=')[0]).join(' ')).toLowerCase().match(/[a-z']+/g) || []) if (w.length > 1) S.add(w); } } catch (e) { }
+    return this.ENW = S; },
+  segs(s) { const S = this.enSet(), toks = [...String(s).matchAll(/[\p{L}\p{N}'’]+/gu)], runs = []; let cur = null;
+    for (let i = 0; i < toks.length; i++) { const w = toks[i][0], asc = /^[A-Za-z][A-Za-z'’]*$/.test(w), gap = cur ? s.slice(cur.e, toks[i].index) : '';
+      if (asc && cur && /^[\s,\-–'’"“”?!.…]*$/.test(gap) && !/[.?!…]\s*["”]?\s+["“]?$/.test(gap + ' ') ) { cur.w.push(w); cur.e = toks[i].index + w.length; }
+      else { if (cur) runs.push(cur); cur = asc ? { b: toks[i].index, e: toks[i].index + w.length, w: [w] } : null; } }
+    if (cur) runs.push(cur);
+    const en = runs.filter(r => { const ws = r.w.map(x => x.toLowerCase().replace(/’/g, "'")), hit = ws.filter(x => S.has(x)).length, amb = ws.every(x => this.VNA.has(x) || x.length < 2);
+      return ws.length === 1 ? (ws[0].length > 1 && S.has(ws[0]) && !this.VNA.has(ws[0])) : (hit / ws.length >= .5 && !amb); });
+    if (!en.length) return [{ t: s, en: false }];
+    const out = []; let at = 0; const push = (t, e) => { if (!t.trim()) return; if (!/[\p{L}\p{N}]/u.test(t)) { if (out.length) out[out.length - 1].t += t; return; } out.push({ t, en: e }); };
+    for (const r of en) { push(s.slice(at, r.b), false); let e = r.e; const m = s.slice(e).match(/^[?!.]+/); if (m) e += m[0].length; push(s.slice(r.b, e), true); at = e; }
+    push(s.slice(at), false); return out.map(x => ({ t: x.t.trim(), en: x.en })); },
   split(t) {
     const out = [];
     String(t).replace(/\s+\n/g, '\n').split(/\n+|(?<=[.!?…;:])\s+/).forEach(s => {
@@ -4021,25 +4044,26 @@ const Voice = {
   // trả về Promise khi đọc xong (hoặc bị dừng)
   speak(text, o = {}) {
     try { if (ME && ME.n && o.lang !== 'en') { const sg = vnSuggest(ME.n); if (sg !== ME.n) text = String(text).split(ME.n).join(sg); } } catch { }   // tên chưa có dấu: cô đọc theo tên có dấu, không đánh vần
-    this.stop(); const my = this.gen; const st = { ...this.STY[o.style || 'normal'] }; const en = o.lang === 'en';
+    this.stop(); const my = this.gen; const st = { ...this.STY[o.style || 'normal'] }; const allEn = o.lang === 'en';
     let parts = this.split(text); const who = o.who || null;
     if (o.merge || o.style === 'contest') { const m = []; for (const p of parts) { if (m.length && (m[m.length - 1] + ' ' + p).length <= 170) m[m.length - 1] += ' ' + p; else m.push(p); } parts = m; }   // gộp câu ngắn để đọc liền mạch, không trễ giữa từng câu this._who = who; this.busy = true;
+    const units = []; parts.forEach((p, si) => { const g = allEn ? [{ t: p, en: true }] : (() => { try { return this.segs(p); } catch (e) { return [{ t: p, en: false }]; } })(); g.forEach((x, j) => units.push({ t: x.t, en: x.en, first: j === 0, last: j === g.length - 1, full: p, si })); });
     const canTalk = SOUND && 'speechSynthesis' in window;
     return new Promise(done => {
       let i = 0;
       const fin = () => { if (who) who.talking = false; if (my === this.gen) this.busy = false; done(my === this.gen); };
       const next = () => {
         if (my !== this.gen) return fin();
-        if (i >= parts.length) return fin();
-        const s = parts[i++]; if (o.onSentence) o.onSentence(s, i - 1, parts.length);
+        if (i >= units.length) return fin();
+        const U = units[i++], s = U.t, en = U.en; if (U.first && o.onSentence) o.onSentence(U.full, U.si, parts.length);
         if (who) who.talking = true;
-        const after = () => { if (who) who.talking = false; if (my !== this.gen) return fin(); setTimeout(next, st.gap); };
+        const after = () => { if (who) who.talking = false; if (my !== this.gen) return fin(); setTimeout(next, U.last ? st.gap : 60); };
         const quiet = () => setTimeout(after, Math.min(9000, 380 + s.length * 62 / st.rate));
         if (!SOUND) return quiet();
         // CHỈ GIỌNG NỮ: giọng nữ của máy → giọng nữ qua mạng → chỉ hiện chữ. Không bao giờ dùng giọng nam.
         const pf = this.prof(who); let v = en ? this.enV : this.v;
         if (!en && v && pf.k && !LS.get('dh_voice') && this.list.length > 1) v = this.list[pf.k % this.list.length];
-        const preload = () => { try { const nx = parts[i]; if (nx && navigator.onLine) { const p = this._pre = this._pre || new Audio(); p.preload = 'auto'; p.src = this.url(nx, en); } } catch { } };
+        const preload = () => { try { const nx = units[i]; if (nx && navigator.onLine) { const p = this._pre = this._pre || new Audio(); p.preload = 'auto'; p.src = this.url(nx.t, nx.en); } } catch { } };
         const netTry = (fallback) => { if (my !== this.gen) return fin(); preload(); this.net(s, st, en).then(ok => { if (my !== this.gen) return fin(); if (ok) { this.mode = 'net'; after(); } else if (fallback) fallback(); else { this.mode = ''; quiet(); } }); };
         const sys = (fallback) => {
           let ended = false, started = false, guard = 0, wd = 0;
@@ -4047,7 +4071,7 @@ const Voice = {
           const bail = (bad) => { if (ended) return; this.log('máy: không phát' + (bad ? ' (lỗi ' + Voice.lastErr + ')' : ' (chờ quá lâu)')); ended = true; clearTimeout(guard); clearTimeout(wd); try { speechSynthesis.cancel(); } catch { } if (bad && !en) { this.bad[v.name] = 1; this.pick(); } this.sysSlow = (this.sysSlow || 0) + 1; fallback ? fallback() : quiet(); };
           try {
             const u = new SpeechSynthesisUtterance(s); this._keep = u;     // giữ tham chiếu để trình duyệt không huỷ giữa chừng
-            u.voice = v; u.lang = v.lang; u.rate = (en ? Math.min(.95, st.rate + .05) : st.rate) + pf.dr; u.pitch = st.pitch + pf.dp; u.volume = 1;
+            u.voice = v; u.lang = v.lang; u.rate = (en ? Math.min(.9, st.rate) : st.rate + pf.dr); u.pitch = st.pitch + pf.dp; u.volume = 1;
             const ts = performance.now(); this.log('máy: gọi ' + v.name.replace(/Microsoft | - Vietnamese \(Vietnam\)| Online \(Natural\)/g, ''));
             u.onstart = () => { this.log(`máy: phát sau ${Math.round(performance.now() - ts)}ms`); started = true; clearTimeout(wd); Voice.ok = true; Voice.mode = 'sys'; this.sysSlow = 0; if (!en) LS.set('dh_voice_ok', v.name); };
             u.onend = () => { if (started) end(); else bail(false); };
@@ -6606,7 +6630,7 @@ const Lesson = {
       HUD.progress(i, qs.length, res);
       const pick = new Promise(r => HUD.answers(q.opts, r));
       T.state = 'teach'; setTimeout(() => { if (my === this.gen) kidsDo('sitRaise', .35); }, 1800);
-      Voice.speak(readQ(q, i + 1), { who: T, style: 'normal', merge: true, onSentence: x => HUD.subtitle('Cô giáo', x) });
+      if (s === 'ta' && typeof readQmix === 'function') this.biSpeak(readQmix(q, i + 1), { who: T, style: 'normal', merge: true, onSentence: x => HUD.subtitle('Cô giáo', x) }); else Voice.speak(readQ(q, i + 1), { who: T, style: 'normal', merge: true, onSentence: x => HUD.subtitle('Cô giáo', x) });
       const k = await pick; if (my !== this.gen) return; Voice.stop();
       const right = k === q.ans; res.push(right); if (right) ok++;
       drawB({ sub: `Câu ${i + 1}/${qs.length}`, q: q.q, opts: q.opts, right: q.ans, wrong: right ? -1 : k });
@@ -6647,7 +6671,7 @@ const Lesson = {
   skipLecture() { this.skip = true; Voice.stop(); },
   sleep(ms, my) { return new Promise(r => setTimeout(r, ms)); },
 };
-function readQ(q, n) { return `${n ? 'Câu ' + n + '. ' : ''}${q.q.replace(/_+/g, ' chỗ trống ').replace(/\?$/, '?')} ${q.opts.map((o, i) => `${LETTERS[i]}, ${o}.`).join(" ")}`; }
+function readQ(q, n) { return `${n ? 'Câu ' + n + '. ' : ''}${q.q.replace(/_+/g, ' ... ').replace(/\?$/, '?')} ${q.opts.map((o, i) => `${LETTERS[i]}, ${o}.`).join(" ")}`; }
 
 /* ======================================================================
    ĐIỂM THƯỞNG ⭐ · CỬA HÀNG · VẬT PHẨM CÓ HIỆU ỨNG · THÚ CƯNG
@@ -6784,7 +6808,7 @@ const Items = {
     if ((ME.st | 0) < it.p) { toast(`Em cần thêm ${it.p - (ME.st | 0)} ⭐ nữa để mua <b>${it.n}</b>. Học bài và thi Đấu trường để có thêm điểm thưởng nhé!`, 3800); SFX.no(); return false; }
     ME.st -= it.p; ME.inv = [...(ME.inv || []), id]; this.equip(id, true); saveMe(); SFX.win(); confetti(40); toast(`🎉 Em đã mua <b>${it.i} ${it.n}</b>!`); return true;
   },
-  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; else if (on && id === 'wand') toast('🪄 Đóng cửa hàng rồi bấm nút <b>🪄 Vẫy đũa</b> (hoặc phím F) để biến ra con vật nhé!', 4500); saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
+  equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; else if (on && id === 'wand') toast('🪄 Đóng cửa hàng rồi bấm nút <b>🪄 Sử dụng đũa phép</b> phía trên thanh chức năng (hoặc phím F) để biến ra con vật nhé!', 4500); saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
   reward(st, why) { if (!ME) return; ME.st = (ME.st | 0) + st; saveMe(); toast(`⭐ +${st} điểm thưởng${why ? ' · ' + why : ''}`); },
   /* gắn đồ lên nhân vật */
   attach(C, eq = this.eq()) {
@@ -6807,7 +6831,7 @@ const Items = {
     for (const q of C.sums || []) { q.update(dt, C); petFx(q, 'star'); if (q.born < 1) { q.born = Math.min(1, q.born + dt * 2.5); q.g.scale.setScalar(.2 + .8 * q.born); } }
     if (C.ride) { const r = C.ride, st = C.state || 'idle', ok = ['idle', 'walk', 'run', 'wave', 'cheer', 'point', 'talk', 'jump'].includes(st) && !(S && S.room) && !(C.isMe && typeof W !== 'undefined' && W.seat);
       C.rideOn = ok; r.g.visible = ok; if (ok) { const mv = st === 'walk' || st === 'run'; r.upd && r.upd(dt, C, mv, C._t); if (r.fx && (mv || r.always)) r.fx(dt, C, SS, C._t, mv); } }
-    if (C.isMe && typeof document !== 'undefined') { const b = document.getElementById('wandBtn'), on = C.eq && C.eq.hand === 'wand'; if (b && b._on !== on) { b._on = on; b.classList.toggle('hidden', !on); } }
+    if (C.isMe && typeof document !== 'undefined') { const b = document.getElementById('wandBtn'), on = !!(C.eq && C.eq.hand === 'wand' && typeof W !== 'undefined' && !W.seat && !(W.S && W.S.pano) && !(typeof Lesson !== 'undefined' && Lesson.on)); if (b && b._on !== on) { b._on = on; b.classList.toggle('hidden', !on); } }
   },
   footstep(C, S) { const id = C.eq?.trail; if (!id) return; const p = C.root.position.clone(); p.y = .1; const k = { rainbow: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], hearts: 'heart', sparkle: 'spark', bubbles: 'bubble', leaves: 'leaf', snow: 'snow', notes: 'note', fire: 'fire', stars: 'star', flowers: 'flower', bolt: 'bolt', paw: 'paw', butter: 'butter' }[id];
     S.fx.emit(k, p, { size: id === 'rainbow' ? .32 : .2, add: id === 'sparkle' || id === 'rainbow' || id === 'fire' || id === 'stars' || id === 'bolt', v: new THREE.Vector3((Math.random() - .5) * .3, id === 'snow' ? -.1 : .5 + Math.random() * .4, (Math.random() - .5) * .3), life: id === 'rainbow' ? 1.6 : 1.3, grow: id === 'rainbow' ? 1 : .4 }); },
@@ -7160,8 +7184,9 @@ const HUD = {
       <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
       <button class="actbtn hidden" id="actBtn"></button>
       <div class="emotes" id="emotes">
-        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button><button data-e="wand" id="wandBtn" class="hidden wandb" title="Vẫy đũa phép (F)">🪄<i>Vẫy đũa</i></button>
+        <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button>
       </div>
+      <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.cast()">🪄 Sử dụng đũa phép</button>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
       <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="chatX">✕</button></div>
         <div class="ch-l" id="chatList"></div>
