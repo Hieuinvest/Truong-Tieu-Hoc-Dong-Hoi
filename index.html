@@ -6325,6 +6325,26 @@ const Civil = {
   },
   hidden: '(tin nhắn không phù hợp đã bị ẩn)',
 };
+/* ---------- CHỐNG SPAM: gửi quá nhanh, gửi lặp lại, gõ linh tinh, dán đường link ---------- */
+const Spam = {
+  GAP: 2000, BURST: 6, WIN: 20000, DUP: 60000, rx: {},
+  key(t) { return Civil.strip(String(t || '').toLowerCase()).replace(/(.)\1+/gu, '$1').replace(/[^\p{L}\p{N}]+/gu, ''); },
+  junk(t) { const c = [...t.replace(/\s/g, '')]; if (c.length >= 8 && new Set(c).size <= 2) return true; if (/(.{2,6}?)\1{4,}/u.test(t.replace(/\s/g, ''))) return true; return false; },   // aaaaaaaa, hahahahahaha…, kkkkkkkk
+  link(t) { return /(https?:|www\.|\.com\b|\.vn\b|\.net\b|\.io\b|t\.me|zalo\.me|bit\.ly)/i.test(t); },
+  wait() { const u = +LS.get('dh_spam', 0) || 0; return u > Date.now() ? Math.ceil((u - Date.now()) / 1000) : 0; },
+  // kiểm tra trước khi gửi: trả về lời nhắc (không gửi) hoặc '' (cho gửi)
+  check(text) { const now = Date.now(), w = this.wait(); if (w) return `Em gửi nhiều tin quá. Em chờ ${w} giây nữa rồi nhắn tiếp nhé.`;
+    let h = (LS.get('dh_sent', []) || []).filter(x => now - x.t < this.DUP);
+    if (h.length && now - h[h.length - 1].t < this.GAP) return 'Em gửi chậm lại một chút nhé!';
+    if (this.link(text)) return 'Em không gửi đường link trong trò chuyện nhé.';
+    if (this.junk(text)) return 'Em viết thành câu rõ ràng, không gõ lặp lại nhiều chữ nhé.';
+    const k = this.key(text); if (k && h.some(x => x.k === k)) return 'Em vừa gửi tin này rồi, không gửi lặp lại nhé.';
+    if (h.filter(x => now - x.t < this.WIN).length >= this.BURST) { const n = (+LS.get('dh_spamN', 0) || 0) + 1; LS.set('dh_spamN', n); const sec = n >= 3 ? 300 : n === 2 ? 120 : 30; LS.set('dh_spam', now + sec * 1000); return `Em gửi quá nhiều tin liên tục. Em nghỉ ${sec} giây rồi nhắn tiếp nhé.`; }
+    h.push({ t: now, k }); LS.set('dh_sent', h.slice(-12)); return ''; },
+  // tin của bạn khác gửi tới: ẩn tin lặp lại / dồn dập / có link (kể cả khi máy bạn ấy dùng bản cũ)
+  drop(m) { if (!m.u || m.u === (ME && ME.id)) return false; if (this.link(m.m) || this.junk(m.m)) return true; const t = m.t || Date.now(), k = this.key(m.m); const a = (this.rx[m.u] = (this.rx[m.u] || []).filter(x => t - x.t < this.DUP && t >= x.t));
+    const bad = (k && a.some(x => x.k === k)) || a.filter(x => t - x.t < this.WIN).length >= this.BURST || (a.length && t - a[a.length - 1].t < 1000); a.push({ t, k }); if (a.length > 12) a.shift(); return bad; },
+};
 function cleanText(t) { return String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120); }
 const Net = {
   sid: null, sref: null, myRef: null, remotes: {}, last: 0, lastKey: '', msgs: [], start: Date.now(), online: 0, lastSend: 0, ready: false,
@@ -6399,7 +6419,7 @@ const Net = {
     text = cleanText(text); if (!text) return false;
     const ms = Civil.muted(); if (ms) { toast(`Cô Hiệu trưởng cho em nghỉ trò chuyện, còn ${ms} giây nữa nhé.`, 2600); return false; }
     if (Civil.bad(text)) { Civil.warn(); return false; }
-    if (Date.now() - this.lastSend < 1500) { toast('Em gửi chậm lại một chút nhé!'); return false; } this.lastSend = Date.now();
+    { const sp = Spam.check(text); if (sp) { toast('✋ ' + sp, 3000); return false; } } this.lastSend = Date.now();
     const m = { u: ME.id, n: ME.n, g: ME.g, m: text, w: W.S ? W.S.name : '' };
     if (DB.on) DB.ref('chat').push({ ...m, t: firebase.database.ServerValue.TIMESTAMP }).catch(() => toast('Không gửi được tin nhắn.'));
     else this.onMsg({ ...m, t: Date.now(), id: 'l' + Date.now() });
@@ -6407,6 +6427,7 @@ const Net = {
   },
   onMsg(m) {
     if (!m || !m.m) return; if (this.msgs.some(x => x.id === m.id)) return;
+    m.m = String(m.m).slice(0, 120); if (Spam.drop(m)) return;
     if (Civil.bad(m.m)) m = { ...m, m: Civil.hidden };
     this.msgs.push(m); if (this.msgs.length > 50) this.msgs.shift();
     if (!DB.on) LS.set('dh_chat', this.msgs);
