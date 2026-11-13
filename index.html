@@ -7517,8 +7517,8 @@ if (typeof document !== 'undefined') document.addEventListener('keydown', e => {
    ====================================================================== */
 const Gift = {
   MAX: 5, STARS: [10, 20, 50],
-  left() { const d = new Date().toDateString(), g = LS.get('dh_gift', null); return g && g.d === d ? Math.max(0, this.MAX - g.n) : this.MAX; },
-  used() { const d = new Date().toDateString(), g = LS.get('dh_gift', null); LS.set('dh_gift', { d, n: (g && g.d === d ? g.n : 0) + 1 }); },
+  left() { if (isOwner()) return 999; const d = new Date().toDateString(), g = LS.get('dh_gift', null); return g && g.d === d ? Math.max(0, this.MAX - g.n) : this.MAX; },
+  used() { if (isOwner()) return; const d = new Date().toDateString(), g = LS.get('dh_gift', null); LS.set('dh_gift', { d, n: (g && g.d === d ? g.n : 0) + 1 }); },
   async friends() { if (!DB.on) return []; const s = await DB.ref('online').once('value'), now = DB.now(), o = []; s.forEach(c => { const v = c.val(); if (c.key !== ME.id && v && v.n && now - (v.t || 0) < 180000) o.push({ id: c.key, n: String(v.n).slice(0, 20), g: v.g | 0 }); }); return o.sort((a, b) => a.n.localeCompare(b.n)); },
   cost(p) { return p.st ? p.st : (SHOPMAP[p.id] || {}).p || 0; },
   label(p) { const it = SHOPMAP[p.id]; return p.st ? `${p.st} ⭐` : it ? `${it.i} ${it.n}` : 'quà'; },
@@ -7541,7 +7541,7 @@ const Gift = {
   // chọn bạn để tặng (vẽ ngay trong khung cửa hàng)
   async pick(B, p, back) { B.innerHTML = '<p class="muted">Đang tìm các bạn đang online…</p>'; let fr = []; try { fr = await this.friends(); } catch (e) { }
     const cost = this.cost(p);
-    B.innerHTML = `<div class="wallet">🎁 Tặng <b>${this.label(p)}</b> (hết <b>${cost} ⭐</b>) · Em có <b>${ME.st | 0} ⭐</b> · Hôm nay còn tặng được <b>${this.left()}</b> lần</div>
+    B.innerHTML = `<div class="wallet">🎁 Tặng <b>${this.label(p)}</b> (hết <b>${cost} ⭐</b>) · Em có <b>${ME.st | 0} ⭐</b> · Hôm nay còn tặng được <b>${isOwner() ? '∞' : this.left()}</b> lần</div>
       ${!DB.on ? '<p class="muted">Cần chơi online (đã nối Firebase) mới tặng quà được.</p>' : fr.length ? `<p class="muted small">Chọn bạn đang online để tặng:</p><div class="shopg">${fr.slice(0, 40).map((f, i) => `<div class="sitem"><div class="si">🧒</div><b>${esc(f.n)}</b><small>Lớp ${f.g || '?'}</small><button class="btn sm sun" data-f="${i}">🎁 Tặng</button></div>`).join('')}</div>` : '<p class="muted">Hiện chưa có bạn nào khác đang online. Em rủ bạn vào chơi rồi tặng nhé!</p>'}
       <button class="btn ghost" style="width:100%;margin-top:8px" id="gfBack">← Quay lại cửa hàng</button>`;
     B.querySelector('#gfBack').onclick = back; B.querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { b.disabled = true; await this.send(fr[+b.dataset.f], p); back(); }); },
