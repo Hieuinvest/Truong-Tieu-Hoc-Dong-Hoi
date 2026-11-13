@@ -5502,7 +5502,7 @@ function folkGames(zid, scene, B, mkKid, rr, placed) {
 
 /* ======================================================================
    BA TÒA NHÀ HỌC TẬP 3 TẦNG NỐI LIỀN HÌNH CHỮ U (38 lớp học, 5 khối)
-   – Tòa A (dãy trái): Khối 1 · Tòa B (dãy giữa): Khối 2, Khối 3 · Tòa C (dãy phải): Khối 4, Khối 5
+   – Tòa A (dãy trái): Khối 2, 3 · Tòa B (dãy giữa): Khối 1, 4 · Tòa C (dãy phải): Khối 5 + phòng chức năng
    – Mỗi tòa có cầu thang ở GIỮA tòa; hành lang các tòa nối liền ở hai góc chữ U,
      đi bộ từ tòa này sang tòa kia ở mọi tầng.
    ====================================================================== */
@@ -5511,7 +5511,7 @@ const GRADE_COL = { 1: '#f97316', 2: '#16a34a', 3: '#2563eb', 4: '#7c3aed', 5: '
 const CLASS_LIST = [
   ['1A1', 'Cô Hằng'], ['1A2', 'Cô Phương'], ['1A3', 'Cô Sang'], ['1A4', 'Cô Hà'], ['1A5', 'Cô Yến'], ['1A6', 'Cô Hoàn'], ['1A7', 'Cô Thảo'], ['1A8', 'Cô Tuyết'], ['1A9', 'Cô Vân Anh'],
   ['2A1', 'Cô Nhung'], ['2A2', 'Cô Ninh'], ['2A3', 'Cô Phương'], ['2A4', 'Cô Lan'], ['2A5', 'Cô Thái Ninh'], ['2A6', 'Cô Quỳnh Anh'], ['2A7', 'Cô Tâm'], ['2A8', 'Cô Dương'], ['2A9', 'Cô Hương'],
-  ['3A1', 'Cô Diễn'], ['3A2', 'Cô Hoài'], ['3A3', 'Cô Linh'], ['3A4', 'Cô Hạnh'], ['3A5', 'Cô Yến'], ['3A6', 'Cô Phương'], ['3A7', 'Cô Hạnh'],
+  ['3A1', 'Cô Nga'], ['3A2', 'Cô Hoài'], ['3A3', 'Cô Linh'], ['3A4', 'Cô Hạnh'], ['3A5', 'Cô Yến'], ['3A6', 'Cô Phương'], ['3A7', 'Cô Hạnh'],
   ['4A1', 'Cô Hương'], ['4A2', 'Cô Trang'], ['4A3', 'Cô Trang'], ['4A4', 'Cô Thảo'], ['4A5', 'Cô Thúy'], ['4A6', 'Cô Linh'], ['4A7', 'Cô Thuần'],
   ['5A1', 'Cô Hương'], ['5A2', 'Cô Lâm'], ['5A3', 'Cô Hương'], ['5A4', 'Cô Diệp'], ['5A5', 'Cô Quyên'], ['5A6', 'Cô Hương'],
 ];
@@ -5528,12 +5528,12 @@ Object.assign(ROOMS, {
 const L = k => clsId(k);
 // Tòa: gốc o (điểm trên tường lớp ở giữa tòa), góc quay th (u: dọc hành lang, v: từ tường lớp ra phía sân)
 const TOA = [
-  { id: 'A', n: 'Tòa A', d: 'Khối 1', o: [-26, -17], th: Math.PI / 2, u0: -20, u1: 20, endOpen: 1,
-    floors: [[L('1A1'), L('1A2'), L('1A3'), L('1A4'), L('1A5'), 'med'], [L('1A6'), L('1A7'), L('1A8'), L('1A9'), 'mus'], ['art', 'doi']] },
-  { id: 'B', n: 'Tòa B', d: 'Khối 2 · Khối 3', o: [0, -40], th: 0, u0: -26, u1: 26, endOpen: 0,
-    floors: [[L('2A1'), L('2A2'), L('2A3'), 'pri', L('2A4'), L('2A5')], [L('2A6'), L('2A7'), L('2A8'), L('2A9'), L('3A1'), L('3A2')], [L('3A3'), L('3A4'), L('3A5'), L('3A6'), L('3A7'), 'lib']] },
-  { id: 'C', n: 'Tòa C', d: 'Khối 4 · Khối 5', o: [26, -17], th: -Math.PI / 2, u0: -20, u1: 20, endOpen: -1,
-    floors: [[L('4A1'), L('4A2'), L('4A3'), L('4A4'), L('4A5'), L('4A6')], [L('4A7'), L('5A1'), L('5A2'), L('5A3'), L('5A4'), L('5A5')], [L('5A6'), 'en', 'it', 'stem']] },
+  { id: 'A', n: 'Tòa A', d: 'Khối 2 · Khối 3', o: [-26, -17], th: Math.PI / 2, u0: -20, u1: 20, endOpen: 1,
+    floors: [[L('2A1'), L('2A2'), L('2A3'), L('2A4'), L('2A5'), L('2A6')], [L('2A7'), L('2A8'), L('2A9'), L('3A1'), L('3A2')], [L('3A3'), L('3A4'), L('3A5'), L('3A6'), L('3A7')]] },
+  { id: 'B', n: 'Tòa B', d: 'Khối 1 · Khối 4', o: [0, -40], th: 0, u0: -26, u1: 26, endOpen: 0,
+    floors: [[L('1A1'), L('1A2'), L('1A3'), L('1A4'), L('1A5'), L('1A6')], [L('1A7'), L('1A8'), L('1A9'), L('4A1'), L('4A2')], [L('4A3'), L('4A4'), L('4A5'), L('4A6'), L('4A7')]] },
+  { id: 'C', n: 'Tòa C', d: 'Khối 5 · Phòng chức năng', o: [26, -17], th: -Math.PI / 2, u0: -20, u1: 20, endOpen: -1,
+    floors: [[L('5A1'), L('5A2'), L('5A3'), L('5A4'), L('5A5'), L('5A6')], ['pri', 'med', 'doi', 'lib', 'mus'], ['en', 'it', 'art', 'stem']] },
 ];
 // vị trí cửa dọc hành lang: 3 cửa mỗi bên cầu thang
 const DOOR_U = { A: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5], B: [-17.5, -12, -6.5, 6.5, 12, 17.5], C: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5] };
@@ -5546,7 +5546,7 @@ TOA.forEach(T => T.floors.forEach((list, f) => { const us = list.length >= 5 ? D
 // danh sách tầng (cho bản đồ)
 const FLOORS = []; TOA.forEach(T => T.floors.forEach((rooms, f) => FLOORS.push({ n: `${T.n} · Tầng ${f + 1}`, d: T.d, rooms, toa: T.id })));
 const roomsOfGrade = g => CLASS_LIST.filter(c => +c[0][0] === g).map(c => clsId(c[0]));
-const toaOfGrade = g => g === 1 ? 'A' : g <= 3 ? 'B' : 'C';
+const toaOfGrade = g => g === 1 || g === 4 ? 'B' : g <= 3 ? 'A' : 'C';
 
 SCENES.bld = () => {
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#bfe0ff'); scene.fog = new THREE.Fog('#dceefd', 70, 200);
@@ -6197,9 +6197,9 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     const stairs = (T, u) => { const p = toaW(T, u, 1.6); return () => W.enter('bld', { x: p.x, y: 0, z: p.z, ry: T.th + Math.PI / 2 }); };
     const doorsOf = (T, tOf) => T.floors[0].map(id => [ic(id), lab(id), () => W.enter(id), tOf(DOORS[id])]);
     const TB = TT('B'), TA = TT('A'), TC = TT('C');
-    building(0, -42, 46, 10, 3, 's', [['🚶', 'Hành lang Tòa B', stairs(TB, -21), -21], ...doorsOf(TB, D => D.x), ['🪜', 'Cầu thang Tòa B (lên tầng 2, 3)', stairs(TB, 0), 0]]);
-    building(-28, -22, 50, 10, 3, 'e', [...doorsOf(TA, D => D.z + 22), ['🪜', 'Cầu thang Tòa A (Khối 1)', stairs(TA, 0), 5]], { c0: -12 });
-    building(28, -22, 50, 10, 3, 'w', [...doorsOf(TC, D => D.z + 22), ['🪜', 'Cầu thang Tòa C (Khối 4, 5)', stairs(TC, 0), 5]], { c0: -12 }); }
+    building(0, -42, 46, 10, 3, 's', [['🚶', 'Hành lang Tòa B', stairs(TB, -21), -21], ...doorsOf(TB, D => D.x), ['🪜', 'Cầu thang Tòa B (Khối 1, 4)', stairs(TB, 0), 0]]);
+    building(-28, -22, 50, 10, 3, 'e', [...doorsOf(TA, D => D.z + 22), ['🪜', 'Cầu thang Tòa A (Khối 2, 3)', stairs(TA, 0), 5]], { c0: -12 });
+    building(28, -22, 50, 10, 3, 'w', [...doorsOf(TC, D => D.z + 22), ['🪜', 'Cầu thang Tòa C (Khối 5, phòng chức năng)', stairs(TC, 0), 5]], { c0: -12 }); }
   { // đầu hồi hai dãy cánh: tường trắng ốp mảng vàng – xám như ảnh
     const endT = canvasTex(256, 256, (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); x.fillStyle = '#f5c518'; x.fillRect(96, 30, 44, 150); x.fillRect(150, 110, 60, 60); x.fillStyle = '#fde68a'; x.fillRect(150, 30, 60, 70); x.fillStyle = '#cbd5e1'; x.fillRect(40, 60, 46, 120); x.fillStyle = '#2b3442'; x.fillRect(40, 196, 170, 44); x.fillStyle = '#e2e8f0'; x.fillRect(0, 0, w, 10); });
     for (const sx of [-1, 1]) { B.plane(10, 10.2, new THREE.MeshLambertMaterial({ map: endT }), sx * 28, 5.1, 3.03, 0); B.box(3.2, 10.2, .3, '#f8fafc', sx * 21.5, 0, 3, { col: true }); B.box(3.2, 2.2, .1, '#f5c518', sx * 21.5, 4, 3.2); }
@@ -6810,7 +6810,7 @@ const Spam = {
 };
 function cleanText(t) { return String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120); }
 const Net = {
-  sid: null, sref: null, myRef: null, remotes: {}, last: 0, lastKey: '', msgs: [], start: Date.now(), online: 0, lastSend: 0, ready: false,
+  sid: null, sref: null, myRef: null, subs: {}, useSig: '', remotes: {}, last: 0, lastKey: '', msgs: [], start: Date.now(), online: 0, lastSend: 0, ready: false,
   init() {
     if (this.ready) return; this.ready = true;
     if (!DB.on) { this.msgs = LS.get('dh_chat', []).slice(-50); return; }
@@ -6830,7 +6830,8 @@ const Net = {
   enterScene(id) {
     this.leaveScene();
     if (!DB.on || !ME) return;
-    this.sid = String(id).replace(/[.#$\[\]:]/g, '_'); this.base = { child: c => DB.ref('presence/' + this.sid + '~' + c) };   // dùng lại luật cũ: presence/<cảnh~ô>/<id> this.subs = {}; this.cell = null;
+    this.sid = String(id).replace(/[.#$\[\]:]/g, '_'); this.base = { child: c => DB.ref('presence/' + this.sid + '~' + c) };   // dùng lại luật cũ: presence/<cảnh~ô>/<id>
+    this.subs = {}; this.cell = null;
     this.lastKey = ''; this.moveCell(); this.push(true);
   },
   moveCell() {
@@ -6852,8 +6853,8 @@ const Net = {
     if (!DB.on || !this.base || !W.P || !ME) return; const now = performance.now(); if (!force && now - this.last < 200) return;
     this.moveCell();
     const P = W.P, p = P.root.position;
-    const d = { n: ME.n, g: ME.g, av: ME.av, eq: ME.eq || {}, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), r: +P.root.rotation.y.toFixed(2), s: P.state, sit: W.seat ? 1 : 0, t: firebase.database.ServerValue.TIMESTAMP };
-    const key = [d.x, d.y, d.z, d.r, d.s].join(',');
+    const d = { n: ME.n, g: ME.g, av: ME.av, eq: ME.eq || {}, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), r: +P.root.rotation.y.toFixed(2), s: P.state, sit: W.seat ? 1 : 0, u: this.useSig || '', t: firebase.database.ServerValue.TIMESTAMP };
+    const key = [d.x, d.y, d.z, d.r, d.s, d.u].join(',');
     if (!force && key === this.lastKey && now - this.last < 15000) return;
     this.lastKey = key; this.last = now; this.myRef.set(d).catch(() => { });
   },
@@ -6862,6 +6863,7 @@ const Net = {
     if (!ME || uid === ME.id || !v || !W.S) return;
     if (v.t && DB.now() - v.t > 120000) return;
     let R = this.remotes[uid];
+    const hadR = !!R, oldU = R ? R.u : null;
     if (!R && Object.keys(this.remotes).length >= this.MAXR) { const me = W.P && W.P.root.position; if (!me) return; let far = null, fd = Math.hypot((v.x || 0) - me.x, (v.z || 0) - me.z);
       for (const [u, Q] of Object.entries(this.remotes)) { const d = Math.hypot(Q.C.root.position.x - me.x, Q.C.root.position.z - me.z); if (d > fd) { fd = d; far = u; } } if (!far) return; this.drop(far); } const sig = JSON.stringify([v.av, v.eq]);
     if (!R || R.sig !== sig) {
@@ -6870,6 +6872,7 @@ const Net = {
       const tag = document.createElement('div'); tag.className = 'ntag'; document.getElementById('bub3').appendChild(tag);
       R = this.remotes[uid] = { C, sig, tag, first: true };
     }
+    R.u = v.u || ''; if (hadR && R.u && R.u !== oldU && !W.S.pano) { try { Items.useFx(R.C, W.S, String(R.u).split('|')[0]); } catch (e) { } }
     R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `🟢 ${esc(v.n)}<small> · Lớp ${v.g}</small>`;
     if (W.S.pano) { const s = this.slot(uid), g = groundAt(s.ath, s.atv); R.tg = { x: g.x, y: 0, z: g.z, r: v.r }; }
     else R.tg = { x: v.x, y: v.y || 0, z: v.z, r: v.r };
@@ -7051,155 +7054,171 @@ function readQ(q, n) { return `${n ? 'Câu ' + n + '. ' : ''}${q.q.replace(/_+/g
 const SLOTS = { outfit: '👕 Trang phục', head: '👑 Mũ & đầu', face: '🕶️ Mặt', back: '🪽 Lưng', hand: '🎈 Đồ chơi', pet: '🐶 Thú cưng', ride: '🛵 Xe', trail: '✨ Hiệu ứng' };
 const SHOP = [
   // trang phục
-  { id: 'aodai', slot: 'outfit', n: 'Áo dài truyền thống', p: 260, i: '👘', d: 'Áo dài đỏ (nữ) / xanh có khăn xếp (nam), lấp lánh khi đi.' },
-  { id: 'astro', slot: 'outfit', n: 'Bộ phi hành gia', p: 450, i: '👩‍🚀', d: 'Mũ kính, ba lô dưỡng khí, nhảy cao hơn.' },
-  { id: 'vovinam', slot: 'outfit', n: 'Võ phục', p: 190, i: '🥋', d: 'Võ phục xanh, đai vàng.' },
-  { id: 'jersey', slot: 'outfit', n: 'Áo cầu thủ số 10', p: 150, i: '⚽', d: 'Bộ đồ đá bóng đỏ trắng.' },
-  { id: 'dino', slot: 'outfit', n: 'Bộ khủng long', p: 340, i: '🦖', d: 'Mũ khủng long, gai vàng trên lưng.' },
-  { id: 'royal', slot: 'outfit', n: 'Trang phục hoàng gia', p: 375, i: '🤴', d: 'Váy công chúa / áo hoàng tử, toả sáng lấp lánh.' },
-  { id: 'doctor', slot: 'outfit', n: 'Bác sĩ nhí', p: 210, i: '🩺', d: 'Áo blouse trắng có dấu thập đỏ.' },
-  { id: 'ninja', slot: 'outfit', n: 'Chiến binh ninja', p: 285, i: '🥷', d: 'Bộ đồ đen, đai đỏ.' },
-  { id: 'bee', slot: 'outfit', n: 'Chú ong chăm chỉ', p: 165, i: '🐝', d: 'Áo vàng, quần đen như chú ong.' },
-  { id: 'farmer', slot: 'outfit', n: 'Bác nông dân', p: 180, i: '🧑‍🌾', d: 'Áo đỏ, quần yếm xanh.' },
-  { id: 'police', slot: 'outfit', n: 'Chú cảnh sát', p: 195, i: '👮', d: 'Đồng phục cảnh sát, huy hiệu vàng lấp lánh.' },
-  { id: 'fireman', slot: 'outfit', n: 'Lính cứu hoả', p: 210, i: '🧑‍🚒', d: 'Áo đỏ có vạch phản quang sáng.' },
-  { id: 'hero', slot: 'outfit', n: 'Siêu nhân', p: 285, i: '🦸', d: 'Bộ đồ siêu nhân xanh đỏ, toả sao khi chạy.' },
-  { id: 'sailor', slot: 'outfit', n: 'Thuỷ thủ', p: 180, i: '⚓', d: 'Áo thuỷ thủ trắng cổ xanh, bong bóng biển.' },
+  { id: 'aodai', slot: 'outfit', n: 'Áo dài truyền thống', p: 520, i: '👘', d: 'Áo dài đỏ (nữ) / xanh có khăn xếp (nam), lấp lánh khi đi.' },
+  { id: 'astro', slot: 'outfit', n: 'Bộ phi hành gia', p: 900, i: '👩‍🚀', d: 'Mũ kính, ba lô dưỡng khí, nhảy cao hơn.' },
+  { id: 'vovinam', slot: 'outfit', n: 'Võ phục', p: 380, i: '🥋', d: 'Võ phục xanh, đai vàng.' },
+  { id: 'jersey', slot: 'outfit', n: 'Áo cầu thủ số 10', p: 300, i: '⚽', d: 'Bộ đồ đá bóng đỏ trắng.' },
+  { id: 'dino', slot: 'outfit', n: 'Bộ khủng long', p: 680, i: '🦖', d: 'Mũ khủng long, gai vàng trên lưng.' },
+  { id: 'royal', slot: 'outfit', n: 'Trang phục hoàng gia', p: 750, i: '🤴', d: 'Váy công chúa / áo hoàng tử, toả sáng lấp lánh.' },
+  { id: 'doctor', slot: 'outfit', n: 'Bác sĩ nhí', p: 420, i: '🩺', d: 'Áo blouse trắng có dấu thập đỏ.' },
+  { id: 'ninja', slot: 'outfit', n: 'Chiến binh ninja', p: 570, i: '🥷', d: 'Bộ đồ đen, đai đỏ.' },
+  { id: 'bee', slot: 'outfit', n: 'Chú ong chăm chỉ', p: 330, i: '🐝', d: 'Áo vàng, quần đen như chú ong.' },
+  { id: 'farmer', slot: 'outfit', n: 'Bác nông dân', p: 360, i: '🧑‍🌾', d: 'Áo đỏ, quần yếm xanh.' },
+  { id: 'police', slot: 'outfit', n: 'Chú cảnh sát', p: 390, i: '👮', d: 'Đồng phục cảnh sát, huy hiệu vàng lấp lánh.' },
+  { id: 'fireman', slot: 'outfit', n: 'Lính cứu hoả', p: 420, i: '🧑‍🚒', d: 'Áo đỏ có vạch phản quang sáng.' },
+  { id: 'hero', slot: 'outfit', n: 'Siêu nhân', p: 570, i: '🦸', d: 'Bộ đồ siêu nhân xanh đỏ, toả sao khi chạy.' },
+  { id: 'sailor', slot: 'outfit', n: 'Thuỷ thủ', p: 360, i: '⚓', d: 'Áo thuỷ thủ trắng cổ xanh, bong bóng biển.' },
   // đầu
-  { id: 'crown', slot: 'head', n: 'Vương miện vàng', p: 225, i: '👑', d: 'Vương miện vàng toả tia sáng lấp lánh.' },
-  { id: 'wizard', slot: 'head', n: 'Mũ phù thuỷ', p: 165, i: '🧙', d: 'Mũ tím có ngôi sao bay quanh.' },
-  { id: 'bunny', slot: 'head', n: 'Tai thỏ', p: 90, i: '🐰', d: 'Tai thỏ ngộ nghĩnh, ngoe nguẩy.' },
-  { id: 'unicorn', slot: 'head', n: 'Sừng kì lân', p: 195, i: '🦄', d: 'Sừng kì lân với bụi cầu vồng.' },
-  { id: 'wreath', slot: 'head', n: 'Vòng hoa', p: 70, i: '🌸', d: 'Vòng hoa xinh, lá bay nhè nhẹ.' },
-  { id: 'halo', slot: 'head', n: 'Vòng hào quang', p: 260, i: '😇', d: 'Vòng sáng vàng xoay trên đầu.' },
-  { id: 'grad', slot: 'head', n: 'Mũ tốt nghiệp', p: 150, i: '🎓', d: 'Mũ cử nhân đen có tua vàng.' },
-  { id: 'chef', slot: 'head', n: 'Mũ đầu bếp', p: 105, i: '👨‍🍳', d: 'Mũ trắng cao của đầu bếp.' },
-  { id: 'cowboy', slot: 'head', n: 'Mũ cao bồi', p: 130, i: '🤠', d: 'Mũ nâu rộng vành.' },
-  { id: 'catear', slot: 'head', n: 'Tai mèo', p: 80, i: '🐱', d: 'Tai mèo xinh, ngoe nguẩy.' },
-  { id: 'headphone', slot: 'head', n: 'Tai nghe nhạc', p: 120, i: '🎧', d: 'Tai nghe phát ra nốt nhạc.' },
-  { id: 'santa', slot: 'head', n: 'Mũ ông già Noel', p: 135, i: '🎅', d: 'Mũ đỏ quả bông trắng, tuyết rơi.' },
-  { id: 'pirate', slot: 'head', n: 'Mũ cướp biển', p: 150, i: '🏴‍☠️', d: 'Mũ thuyền trưởng đen viền vàng.' },
-  { id: 'propeller', slot: 'head', n: 'Mũ chong chóng', p: 130, i: '🚁', d: 'Chong chóng trên mũ quay tít.' },
-  { id: 'helmet', slot: 'head', n: 'Mũ bảo hiểm', p: 90, i: '⛑️', d: 'Đội mũ khi đi xe cho an toàn.' },
-  { id: 'starclip', slot: 'head', n: 'Kẹp tóc ngôi sao', p: 70, i: '⭐', d: 'Ngôi sao vàng phát sáng trên tóc.' },
-  { id: 'nonla', slot: 'head', n: 'Nón lá', p: 90, i: '👒', d: 'Nón lá Việt Nam có quai hồng, lá tre bay bay.' },
-  { id: 'calo', slot: 'head', n: 'Mũ ca lô Đội viên', p: 110, i: '🧢', d: 'Mũ ca lô trắng viền xanh của Đội viên, có huy hiệu sáng.' },
-  { id: 'bow', slot: 'head', n: 'Nơ đỏ', p: 70, i: '🎀', d: 'Chiếc nơ đỏ xinh trên tóc, tim bay lên.' },
-  { id: 'dethat', slot: 'head', n: 'Mũ thám tử nhí', p: 150, i: '🕵️', d: 'Mũ nâu hai vành của thám tử nhí, đi đâu cũng tìm ra manh mối.' },
-  { id: 'chick', slot: 'head', n: 'Mũ gà con', p: 100, i: '🐥', d: 'Mũ gà con vàng ươm có mào đỏ và mỏ cam.' },
-  { id: 'beret', slot: 'head', n: 'Mũ nồi hoạ sĩ', p: 85, i: '🎨', d: 'Mũ nồi đỏ nghiêng nghiêng của hoạ sĩ nhí.' },
+  { id: 'crown', slot: 'head', n: 'Vương miện vàng', p: 450, i: '👑', d: 'Vương miện vàng toả tia sáng lấp lánh.' },
+  { id: 'wizard', slot: 'head', n: 'Mũ phù thuỷ', p: 330, i: '🧙', d: 'Mũ tím có ngôi sao bay quanh.' },
+  { id: 'bunny', slot: 'head', n: 'Tai thỏ', p: 180, i: '🐰', d: 'Tai thỏ ngộ nghĩnh, ngoe nguẩy.' },
+  { id: 'unicorn', slot: 'head', n: 'Sừng kì lân', p: 390, i: '🦄', d: 'Sừng kì lân với bụi cầu vồng.' },
+  { id: 'wreath', slot: 'head', n: 'Vòng hoa', p: 140, i: '🌸', d: 'Vòng hoa xinh, lá bay nhè nhẹ.' },
+  { id: 'halo', slot: 'head', n: 'Vòng hào quang', p: 520, i: '😇', d: 'Vòng sáng vàng xoay trên đầu.' },
+  { id: 'grad', slot: 'head', n: 'Mũ tốt nghiệp', p: 300, i: '🎓', d: 'Mũ cử nhân đen có tua vàng.' },
+  { id: 'chef', slot: 'head', n: 'Mũ đầu bếp', p: 210, i: '👨‍🍳', d: 'Mũ trắng cao của đầu bếp.' },
+  { id: 'cowboy', slot: 'head', n: 'Mũ cao bồi', p: 260, i: '🤠', d: 'Mũ nâu rộng vành.' },
+  { id: 'catear', slot: 'head', n: 'Tai mèo', p: 160, i: '🐱', d: 'Tai mèo xinh, ngoe nguẩy.' },
+  { id: 'headphone', slot: 'head', n: 'Tai nghe nhạc', p: 240, i: '🎧', d: 'Tai nghe phát ra nốt nhạc.' },
+  { id: 'santa', slot: 'head', n: 'Mũ ông già Noel', p: 270, i: '🎅', d: 'Mũ đỏ quả bông trắng, tuyết rơi.' },
+  { id: 'pirate', slot: 'head', n: 'Mũ cướp biển', p: 300, i: '🏴‍☠️', d: 'Mũ thuyền trưởng đen viền vàng.' },
+  { id: 'propeller', slot: 'head', n: 'Mũ chong chóng', p: 260, i: '🚁', d: 'Chong chóng trên mũ quay tít.' },
+  { id: 'helmet', slot: 'head', n: 'Mũ bảo hiểm', p: 180, i: '⛑️', d: 'Đội mũ khi đi xe cho an toàn.' },
+  { id: 'starclip', slot: 'head', n: 'Kẹp tóc ngôi sao', p: 140, i: '⭐', d: 'Ngôi sao vàng phát sáng trên tóc.' },
+  { id: 'nonla', slot: 'head', n: 'Nón lá', p: 180, i: '👒', d: 'Nón lá Việt Nam có quai hồng, lá tre bay bay.' },
+  { id: 'calo', slot: 'head', n: 'Mũ ca lô Đội viên', p: 220, i: '🧢', d: 'Mũ ca lô trắng viền xanh của Đội viên, có huy hiệu sáng.' },
+  { id: 'bow', slot: 'head', n: 'Nơ đỏ', p: 140, i: '🎀', d: 'Chiếc nơ đỏ xinh trên tóc, tim bay lên.' },
+  { id: 'dethat', slot: 'head', n: 'Mũ thám tử nhí', p: 300, i: '🕵️', d: 'Mũ nâu hai vành của thám tử nhí, đi đâu cũng tìm ra manh mối.' },
+  { id: 'chick', slot: 'head', n: 'Mũ gà con', p: 200, i: '🐥', d: 'Mũ gà con vàng ươm có mào đỏ và mỏ cam.' },
+  { id: 'beret', slot: 'head', n: 'Mũ nồi hoạ sĩ', p: 170, i: '🎨', d: 'Mũ nồi đỏ nghiêng nghiêng của hoạ sĩ nhí.' },
   // mặt
-  { id: 'shades', slot: 'face', n: 'Kính râm', p: 60, i: '🕶️', d: 'Kính râm thật ngầu.' },
-  { id: 'heartgl', slot: 'face', n: 'Kính trái tim', p: 110, i: '😍', d: 'Kính trái tim, trái tim bay lên.' },
-  { id: 'mask', slot: 'face', n: 'Mặt nạ anh hùng', p: 90, i: '🦸', d: 'Mặt nạ xanh của người hùng nhí.' },
-  { id: 'glasses', slot: 'face', n: 'Kính cận học giỏi', p: 70, i: '👓', d: 'Kính tròn thông minh.' },
-  { id: 'mustache', slot: 'face', n: 'Ria mép', p: 50, i: '🥸', d: 'Bộ ria mép hài hước.' },
-  { id: 'clown', slot: 'face', n: 'Mũi hề', p: 45, i: '🤡', d: 'Mũi đỏ tròn vui nhộn.' },
-  { id: 'stargl', slot: 'face', n: 'Kính ngôi sao', p: 80, i: '🤩', d: 'Kính hình sao lấp lánh.' },
-  { id: 'snorkel', slot: 'face', n: 'Kính bơi', p: 75, i: '🤿', d: 'Kính bơi xanh, thổi bong bóng.' },
+  { id: 'shades', slot: 'face', n: 'Kính râm', p: 120, i: '🕶️', d: 'Kính râm thật ngầu.' },
+  { id: 'heartgl', slot: 'face', n: 'Kính trái tim', p: 220, i: '😍', d: 'Kính trái tim, trái tim bay lên.' },
+  { id: 'mask', slot: 'face', n: 'Mặt nạ anh hùng', p: 180, i: '🦸', d: 'Mặt nạ xanh của người hùng nhí.' },
+  { id: 'glasses', slot: 'face', n: 'Kính cận học giỏi', p: 140, i: '👓', d: 'Kính tròn thông minh.' },
+  { id: 'mustache', slot: 'face', n: 'Ria mép', p: 100, i: '🥸', d: 'Bộ ria mép hài hước.' },
+  { id: 'clown', slot: 'face', n: 'Mũi hề', p: 90, i: '🤡', d: 'Mũi đỏ tròn vui nhộn.' },
+  { id: 'stargl', slot: 'face', n: 'Kính ngôi sao', p: 160, i: '🤩', d: 'Kính hình sao lấp lánh.' },
+  { id: 'snorkel', slot: 'face', n: 'Kính bơi', p: 150, i: '🤿', d: 'Kính bơi xanh, thổi bong bóng.' },
   // lưng
-  { id: 'angel', slot: 'back', n: 'Cánh thiên thần', p: 340, i: '🪽', d: 'Đôi cánh trắng vỗ nhẹ, toả sáng.' },
-  { id: 'butterfly', slot: 'back', n: 'Cánh bướm', p: 285, i: '🦋', d: 'Cánh bướm đổi màu sắc cầu vồng.' },
-  { id: 'cape', slot: 'back', n: 'Áo choàng đỏ', p: 150, i: '🦸‍♂️', d: 'Áo choàng bay phấp phới khi chạy.' },
-  { id: 'jet', slot: 'back', n: 'Ba lô tên lửa', p: 375, i: '🚀', d: 'Phun lửa khi chạy, nhảy cao gấp đôi!' },
-  { id: 'dragon', slot: 'back', n: 'Cánh rồng', p: 390, i: '🐉', d: 'Cánh rồng xanh, phun tia lửa nhỏ.' },
-  { id: 'bag', slot: 'back', n: 'Cặp sách xanh', p: 120, i: '🎒', d: 'Cặp sách đeo sau lưng.' },
-  { id: 'fairy', slot: 'back', n: 'Cánh tiên', p: 315, i: '🧚', d: 'Cánh tiên xanh, rắc bụi lấp lánh.' },
-  { id: 'bat', slot: 'back', n: 'Cánh dơi', p: 270, i: '🦇', d: 'Cánh dơi tím đậm.' },
-  { id: 'guitar', slot: 'back', n: 'Đàn ghi-ta', p: 165, i: '🎸', d: 'Đeo đàn sau lưng, nốt nhạc bay ra.' },
-  { id: 'shell', slot: 'back', n: 'Mai rùa', p: 135, i: '🐢', d: 'Mai rùa xanh, lá bay theo.' },
-  { id: 'kite', slot: 'back', n: 'Cánh diều', p: 180, i: '🪁', d: 'Diều bay lượn phía sau em.' },
-  { id: 'capeb', slot: 'back', n: 'Áo choàng sao xanh', p: 150, i: '🌠', d: 'Áo choàng xanh rắc sao.' },
+  { id: 'angel', slot: 'back', n: 'Cánh thiên thần', p: 680, i: '🪽', d: 'Đôi cánh trắng vỗ nhẹ, toả sáng.' },
+  { id: 'butterfly', slot: 'back', n: 'Cánh bướm', p: 570, i: '🦋', d: 'Cánh bướm đổi màu sắc cầu vồng.' },
+  { id: 'cape', slot: 'back', n: 'Áo choàng đỏ', p: 300, i: '🦸‍♂️', d: 'Áo choàng bay phấp phới khi chạy.' },
+  { id: 'jet', slot: 'back', n: 'Ba lô tên lửa', p: 750, i: '🚀', d: 'Phun lửa khi chạy, nhảy cao gấp đôi!' },
+  { id: 'dragon', slot: 'back', n: 'Cánh rồng', p: 780, i: '🐉', d: 'Cánh rồng xanh, phun tia lửa nhỏ.' },
+  { id: 'bag', slot: 'back', n: 'Cặp sách xanh', p: 240, i: '🎒', d: 'Cặp sách đeo sau lưng.' },
+  { id: 'fairy', slot: 'back', n: 'Cánh tiên', p: 630, i: '🧚', d: 'Cánh tiên xanh, rắc bụi lấp lánh.' },
+  { id: 'bat', slot: 'back', n: 'Cánh dơi', p: 540, i: '🦇', d: 'Cánh dơi tím đậm.' },
+  { id: 'guitar', slot: 'back', n: 'Đàn ghi-ta', p: 330, i: '🎸', d: 'Đeo đàn sau lưng, nốt nhạc bay ra.' },
+  { id: 'shell', slot: 'back', n: 'Mai rùa', p: 270, i: '🐢', d: 'Mai rùa xanh, lá bay theo.' },
+  { id: 'kite', slot: 'back', n: 'Cánh diều', p: 360, i: '🪁', d: 'Diều bay lượn phía sau em.' },
+  { id: 'capeb', slot: 'back', n: 'Áo choàng sao xanh', p: 300, i: '🌠', d: 'Áo choàng xanh rắc sao.' },
   // cầm tay
-  { id: 'balloon', slot: 'hand', n: 'Bóng bay', p: 45, i: '🎈', d: 'Bóng bay đỏ lơ lửng.' },
-  { id: 'pinwheel', slot: 'hand', n: 'Chong chóng', p: 50, i: '🌀', d: 'Chong chóng quay tít khi chạy.' },
-  { id: 'wand', slot: 'hand', n: 'Đũa phép', p: 135, i: '🪄', d: 'Đầu đũa toả sao lấp lánh.' },
-  { id: 'teddy', slot: 'hand', n: 'Gấu bông', p: 105, i: '🧸', d: 'Gấu bông nâu dễ thương.' },
-  { id: 'ice', slot: 'hand', n: 'Kem ốc quế', p: 40, i: '🍦', d: 'Kem dâu mát lạnh.' },
-  { id: 'book', slot: 'hand', n: 'Quyển sách', p: 30, i: '📘', d: 'Quyển sách xanh em yêu thích.' },
-  { id: 'flag', slot: 'hand', n: 'Cờ Tổ quốc', p: 70, i: '🇻🇳', d: 'Lá cờ đỏ sao vàng bay phấp phới.' },
-  { id: 'lolli', slot: 'hand', n: 'Kẹo mút', p: 30, i: '🍭', d: 'Kẹo mút xoáy nhiều màu.' },
-  { id: 'flower', slot: 'hand', n: 'Bó hoa', p: 60, i: '💐', d: 'Bó hoa hồng tặng cô giáo.' },
-  { id: 'ball', slot: 'hand', n: 'Quả bóng đá', p: 75, i: '⚽', d: 'Quả bóng đá đen trắng.' },
-  { id: 'lantern', slot: 'hand', n: 'Đèn lồng ngôi sao', p: 90, i: '🏮', d: 'Đèn lồng Trung thu phát sáng.' },
-  { id: 'saber', slot: 'hand', n: 'Kiếm ánh sáng', p: 165, i: '⚔️', d: 'Lưỡi kiếm phát sáng xanh.' },
-  { id: 'umbrella', slot: 'hand', n: 'Ô cầu vồng', p: 105, i: '🌂', d: 'Ô bảy màu, rơi hạt cầu vồng.' },
-  { id: 'bubblegun', slot: 'hand', n: 'Súng bong bóng', p: 110, i: '🔫', d: 'Bắn ra thật nhiều bong bóng.' },
-  { id: 'sparkler', slot: 'hand', n: 'Pháo bông que', p: 90, i: '🎇', d: 'Que pháo bông toé sáng.' },
-  { id: 'mic', slot: 'hand', n: 'Micro ca sĩ', p: 100, i: '🎤', d: 'Cầm micro, nốt nhạc bay lên.' },
-  { id: 'trophy', slot: 'hand', n: 'Cúp vàng', p: 225, i: '🏆', d: 'Cúp vô địch toả sáng.' },
-  { id: 'cotton', slot: 'hand', n: 'Kẹo bông', p: 50, i: '🍥', d: 'Kẹo bông hồng, tim bay bay.' },
-  { id: 'pencil', slot: 'hand', n: 'Bút chì khổng lồ', p: 80, i: '✏️', d: 'Cây bút chì vàng thật to của học sinh giỏi.' },
-  { id: 'milk', slot: 'hand', n: 'Hộp sữa', p: 45, i: '🧃', d: 'Hộp sữa học đường có ống hút.' },
-  { id: 'magnifier', slot: 'hand', n: 'Kính lúp thám tử', p: 95, i: '🔍', d: 'Kính lúp tay cầm gỗ, soi rõ mọi manh mối.' },
-  { id: 'binoc', slot: 'hand', n: 'Ống nhòm', p: 120, i: '🔭', d: 'Ống nhòm xanh để ngắm chim và mây.' },
+  { id: 'balloon', slot: 'hand', n: 'Bóng bay', p: 90, i: '🎈', d: 'Bóng bay đỏ lơ lửng.' },
+  { id: 'pinwheel', slot: 'hand', n: 'Chong chóng', p: 100, i: '🌀', d: 'Chong chóng quay tít khi chạy.' },
+  { id: 'wand', slot: 'hand', n: 'Đũa phép', p: 270, i: '🪄', d: 'Đầu đũa toả sao lấp lánh.' },
+  { id: 'teddy', slot: 'hand', n: 'Gấu bông', p: 210, i: '🧸', d: 'Gấu bông nâu dễ thương.' },
+  { id: 'ice', slot: 'hand', n: 'Kem ốc quế', p: 80, i: '🍦', d: 'Kem dâu mát lạnh.' },
+  { id: 'book', slot: 'hand', n: 'Quyển sách', p: 60, i: '📘', d: 'Quyển sách xanh em yêu thích.' },
+  { id: 'flag', slot: 'hand', n: 'Cờ Tổ quốc', p: 140, i: '🇻🇳', d: 'Lá cờ đỏ sao vàng bay phấp phới.' },
+  { id: 'lolli', slot: 'hand', n: 'Kẹo mút', p: 60, i: '🍭', d: 'Kẹo mút xoáy nhiều màu.' },
+  { id: 'flower', slot: 'hand', n: 'Bó hoa', p: 120, i: '💐', d: 'Bó hoa hồng tặng cô giáo.' },
+  { id: 'ball', slot: 'hand', n: 'Quả bóng đá', p: 150, i: '⚽', d: 'Quả bóng đá đen trắng.' },
+  { id: 'lantern', slot: 'hand', n: 'Đèn lồng ngôi sao', p: 180, i: '🏮', d: 'Đèn lồng Trung thu phát sáng.' },
+  { id: 'saber', slot: 'hand', n: 'Kiếm ánh sáng', p: 330, i: '⚔️', d: 'Lưỡi kiếm phát sáng xanh.' },
+  { id: 'umbrella', slot: 'hand', n: 'Ô cầu vồng', p: 210, i: '🌂', d: 'Ô bảy màu, rơi hạt cầu vồng.' },
+  { id: 'bubblegun', slot: 'hand', n: 'Súng bong bóng', p: 220, i: '🔫', d: 'Bắn ra thật nhiều bong bóng.' },
+  { id: 'sparkler', slot: 'hand', n: 'Pháo bông que', p: 180, i: '🎇', d: 'Que pháo bông toé sáng.' },
+  { id: 'mic', slot: 'hand', n: 'Micro ca sĩ', p: 200, i: '🎤', d: 'Cầm micro, nốt nhạc bay lên.' },
+  { id: 'trophy', slot: 'hand', n: 'Cúp vàng', p: 450, i: '🏆', d: 'Cúp vô địch toả sáng.' },
+  { id: 'cotton', slot: 'hand', n: 'Kẹo bông', p: 100, i: '🍥', d: 'Kẹo bông hồng, tim bay bay.' },
+  { id: 'pencil', slot: 'hand', n: 'Bút chì khổng lồ', p: 160, i: '✏️', d: 'Cây bút chì vàng thật to của học sinh giỏi.' },
+  { id: 'milk', slot: 'hand', n: 'Hộp sữa', p: 90, i: '🧃', d: 'Hộp sữa học đường có ống hút.' },
+  { id: 'magnifier', slot: 'hand', n: 'Kính lúp thám tử', p: 190, i: '🔍', d: 'Kính lúp tay cầm gỗ, soi rõ mọi manh mối.' },
+  { id: 'binoc', slot: 'hand', n: 'Ống nhòm', p: 240, i: '🔭', d: 'Ống nhòm xanh để ngắm chim và mây.' },
   // thú cưng
-  { id: 'puppy', slot: 'pet', n: 'Cún con', p: 225, i: '🐶', d: 'Đi theo em, vẫy đuôi.' },
-  { id: 'kitten', slot: 'pet', n: 'Mèo con', p: 225, i: '🐱', d: 'Mèo xám đi theo em.' },
-  { id: 'chick', slot: 'pet', n: 'Gà con', p: 135, i: '🐥', d: 'Gà con vàng lon ton.' },
-  { id: 'bird', slot: 'pet', n: 'Chim xanh', p: 190, i: '🐦', d: 'Chim xanh bay lượn quanh em.' },
-  { id: 'dinopet', slot: 'pet', n: 'Khủng long con', p: 300, i: '🦕', d: 'Khủng long nhỏ đi theo em.' },
-  { id: 'rabbit', slot: 'pet', n: 'Thỏ trắng', p: 210, i: '🐰', d: 'Thỏ trắng tai dài chạy theo em.' },
-  { id: 'panda', slot: 'pet', n: 'Gấu trúc', p: 340, i: '🐼', d: 'Gấu trúc đen trắng đáng yêu.' },
-  { id: 'fox', slot: 'pet', n: 'Cáo nhỏ', p: 285, i: '🦊', d: 'Cáo cam đuôi xù.' },
-  { id: 'pig', slot: 'pet', n: 'Heo hồng', p: 195, i: '🐷', d: 'Heo con hồng ụt ịt đi theo.' },
-  { id: 'frog', slot: 'pet', n: 'Ếch xanh', p: 165, i: '🐸', d: 'Ếch xanh mắt to.' },
-  { id: 'penguin', slot: 'pet', n: 'Chim cánh cụt', p: 255, i: '🐧', d: 'Cánh cụt lạch bạch.' },
-  { id: 'bear', slot: 'pet', n: 'Gấu nâu', p: 240, i: '🐻', d: 'Gấu nâu tai tròn.' },
-  { id: 'duck', slot: 'pet', n: 'Vịt vàng', p: 150, i: '🦆', d: 'Vịt vàng mỏ cam.' },
-  { id: 'tiger', slot: 'pet', n: 'Hổ con', p: 315, i: '🐯', d: 'Hổ con vằn đen oai vệ.' },
-  { id: 'cow', slot: 'pet', n: 'Bò sữa', p: 225, i: '🐮', d: 'Bò sữa đốm đen trắng.' },
-  { id: 'mouse', slot: 'pet', n: 'Chuột nhắt', p: 135, i: '🐭', d: 'Chuột xám tai to.' },
-  { id: 'turtle', slot: 'pet', n: 'Rùa con', p: 180, i: '🐢', d: 'Rùa con chậm mà chắc.' },
-  { id: 'beepet', slot: 'pet', n: 'Ong mật', p: 210, i: '🐝', d: 'Ong mật bay vo ve quanh em.' },
-  { id: 'dragonpet', slot: 'pet', n: 'Rồng con', p: 390, i: '🐲', d: 'Rồng tím bay quanh, phun lửa nhỏ.' },
-  { id: 'pony', slot: 'pet', n: 'Ngựa kì lân nhỏ', p: 360, i: '🦄', d: 'Kì lân trắng bờm cầu vồng.' },
-  { id: 'lion', slot: 'pet', n: 'Sư tử con', p: 330, i: '🦁', d: 'Sư tử con bờm nâu oai phong.' },
-  { id: 'koala', slot: 'pet', n: 'Gấu koala', p: 270, i: '🐨', d: 'Koala xám tai to, mũi đen.' },
-  { id: 'monkey', slot: 'pet', n: 'Khỉ con', p: 250, i: '🐵', d: 'Khỉ con đuôi dài tinh nghịch.' },
-  { id: 'sheep', slot: 'pet', n: 'Cừu bông', p: 220, i: '🐑', d: 'Cừu trắng lông xù như bông.' },
-  { id: 'elephant', slot: 'pet', n: 'Voi con', p: 340, i: '🐘', d: 'Voi con tai to, vòi dài.' },
-  { id: 'owl', slot: 'pet', n: 'Cú mèo thông thái', p: 290, i: '🦉', d: 'Cú mèo mắt tròn bay quanh em.' },
-  { id: 'robopet', slot: 'pet', n: 'Rô-bốt mini', p: 320, i: '🤖', d: 'Rô-bốt bạc mắt xanh, ăng-ten nhấp nháy.' },
-  { id: 'parrot', slot: 'pet', n: 'Vẹt sặc sỡ', p: 275, i: '🦜', d: 'Chú vẹt xanh đỏ bay quanh em.' },
+  { id: 'puppy', slot: 'pet', n: 'Cún con', p: 450, i: '🐶', d: 'Đi theo em, vẫy đuôi.' },
+  { id: 'kitten', slot: 'pet', n: 'Mèo con', p: 450, i: '🐱', d: 'Mèo xám đi theo em.' },
+  { id: 'chick', slot: 'pet', n: 'Gà con', p: 270, i: '🐥', d: 'Gà con vàng lon ton.' },
+  { id: 'bird', slot: 'pet', n: 'Chim xanh', p: 380, i: '🐦', d: 'Chim xanh bay lượn quanh em.' },
+  { id: 'dinopet', slot: 'pet', n: 'Khủng long con', p: 600, i: '🦕', d: 'Khủng long nhỏ đi theo em.' },
+  { id: 'rabbit', slot: 'pet', n: 'Thỏ trắng', p: 420, i: '🐰', d: 'Thỏ trắng tai dài chạy theo em.' },
+  { id: 'panda', slot: 'pet', n: 'Gấu trúc', p: 680, i: '🐼', d: 'Gấu trúc đen trắng đáng yêu.' },
+  { id: 'fox', slot: 'pet', n: 'Cáo nhỏ', p: 570, i: '🦊', d: 'Cáo cam đuôi xù.' },
+  { id: 'pig', slot: 'pet', n: 'Heo hồng', p: 390, i: '🐷', d: 'Heo con hồng ụt ịt đi theo.' },
+  { id: 'frog', slot: 'pet', n: 'Ếch xanh', p: 330, i: '🐸', d: 'Ếch xanh mắt to.' },
+  { id: 'penguin', slot: 'pet', n: 'Chim cánh cụt', p: 510, i: '🐧', d: 'Cánh cụt lạch bạch.' },
+  { id: 'bear', slot: 'pet', n: 'Gấu nâu', p: 480, i: '🐻', d: 'Gấu nâu tai tròn.' },
+  { id: 'duck', slot: 'pet', n: 'Vịt vàng', p: 300, i: '🦆', d: 'Vịt vàng mỏ cam.' },
+  { id: 'tiger', slot: 'pet', n: 'Hổ con', p: 630, i: '🐯', d: 'Hổ con vằn đen oai vệ.' },
+  { id: 'cow', slot: 'pet', n: 'Bò sữa', p: 450, i: '🐮', d: 'Bò sữa đốm đen trắng.' },
+  { id: 'mouse', slot: 'pet', n: 'Chuột nhắt', p: 270, i: '🐭', d: 'Chuột xám tai to.' },
+  { id: 'turtle', slot: 'pet', n: 'Rùa con', p: 360, i: '🐢', d: 'Rùa con chậm mà chắc.' },
+  { id: 'beepet', slot: 'pet', n: 'Ong mật', p: 420, i: '🐝', d: 'Ong mật bay vo ve quanh em.' },
+  { id: 'dragonpet', slot: 'pet', n: 'Rồng con', p: 780, i: '🐲', d: 'Rồng tím bay quanh, phun lửa nhỏ.' },
+  { id: 'pony', slot: 'pet', n: 'Ngựa kì lân nhỏ', p: 720, i: '🦄', d: 'Kì lân trắng bờm cầu vồng.' },
+  { id: 'lion', slot: 'pet', n: 'Sư tử con', p: 660, i: '🦁', d: 'Sư tử con bờm nâu oai phong.' },
+  { id: 'koala', slot: 'pet', n: 'Gấu koala', p: 540, i: '🐨', d: 'Koala xám tai to, mũi đen.' },
+  { id: 'monkey', slot: 'pet', n: 'Khỉ con', p: 500, i: '🐵', d: 'Khỉ con đuôi dài tinh nghịch.' },
+  { id: 'sheep', slot: 'pet', n: 'Cừu bông', p: 440, i: '🐑', d: 'Cừu trắng lông xù như bông.' },
+  { id: 'elephant', slot: 'pet', n: 'Voi con', p: 680, i: '🐘', d: 'Voi con tai to, vòi dài.' },
+  { id: 'owl', slot: 'pet', n: 'Cú mèo thông thái', p: 580, i: '🦉', d: 'Cú mèo mắt tròn bay quanh em.' },
+  { id: 'robopet', slot: 'pet', n: 'Rô-bốt mini', p: 640, i: '🤖', d: 'Rô-bốt bạc mắt xanh, ăng-ten nhấp nháy.' },
+  { id: 'parrot', slot: 'pet', n: 'Vẹt sặc sỡ', p: 550, i: '🦜', d: 'Chú vẹt xanh đỏ bay quanh em.' },
   // xe
-  { id: 'skate', slot: 'ride', n: 'Ván trượt', p: 135, i: '🛹', d: 'Lướt ván, toé tia lửa. Đi nhanh hơn.' },
-  { id: 'bike', slot: 'ride', n: 'Xe đạp', p: 225, i: '🚲', d: 'Xe đạp đỏ, bánh quay khi đi. Đi nhanh hơn.' },
-  { id: 'scooter', slot: 'ride', n: 'Xe máy điện mini', p: 330, i: '🛵', d: 'Xe máy điện xinh có đèn sáng. Đi rất nhanh.' },
-  { id: 'car', slot: 'ride', n: 'Ô tô đồ chơi', p: 390, i: '🚗', d: 'Ô tô mui trần đỏ, đèn pha sáng. Đi rất nhanh.' },
-  { id: 'hover', slot: 'ride', n: 'Ván bay', p: 360, i: '🛸', d: 'Ván bay lơ lửng phát sáng xanh.' },
-  { id: 'cloud', slot: 'ride', n: 'Đám mây thần', p: 375, i: '☁️', d: 'Cưỡi mây bay như Tôn Ngộ Không.' },
-  { id: 'carpet', slot: 'ride', n: 'Thảm bay', p: 345, i: '🧞', d: 'Thảm thần bay lượn, rắc sao.' },
-  { id: 'broom', slot: 'ride', n: 'Chổi phù thuỷ', p: 300, i: '🧹', d: 'Cưỡi chổi bay, sao lấp lánh.' },
-  { id: 'uniride', slot: 'ride', n: 'Ngựa kì lân', p: 450, i: '🦄', d: 'Cưỡi kì lân, để lại cầu vồng.' },
-  { id: 'rocket', slot: 'ride', n: 'Tên lửa mini', p: 480, i: '🚀', d: 'Cưỡi tên lửa phụt lửa. Nhanh nhất!' },
+  { id: 'skate', slot: 'ride', n: 'Ván trượt', p: 270, i: '🛹', d: 'Lướt ván, toé tia lửa. Đi nhanh hơn.' },
+  { id: 'bike', slot: 'ride', n: 'Xe đạp', p: 450, i: '🚲', d: 'Xe đạp đỏ, bánh quay khi đi. Đi nhanh hơn.' },
+  { id: 'scooter', slot: 'ride', n: 'Xe máy điện mini', p: 660, i: '🛵', d: 'Xe máy điện xinh có đèn sáng. Đi rất nhanh.' },
+  { id: 'car', slot: 'ride', n: 'Ô tô đồ chơi', p: 780, i: '🚗', d: 'Ô tô mui trần đỏ, đèn pha sáng. Đi rất nhanh.' },
+  { id: 'hover', slot: 'ride', n: 'Ván bay', p: 720, i: '🛸', d: 'Ván bay lơ lửng phát sáng xanh.' },
+  { id: 'cloud', slot: 'ride', n: 'Đám mây thần', p: 750, i: '☁️', d: 'Cưỡi mây bay như Tôn Ngộ Không.' },
+  { id: 'carpet', slot: 'ride', n: 'Thảm bay', p: 690, i: '🧞', d: 'Thảm thần bay lượn, rắc sao.' },
+  { id: 'broom', slot: 'ride', n: 'Chổi phù thuỷ', p: 600, i: '🧹', d: 'Cưỡi chổi bay, sao lấp lánh.' },
+  { id: 'uniride', slot: 'ride', n: 'Ngựa kì lân', p: 900, i: '🦄', d: 'Cưỡi kì lân, để lại cầu vồng.' },
+  { id: 'rocket', slot: 'ride', n: 'Tên lửa mini', p: 960, i: '🚀', d: 'Cưỡi tên lửa phụt lửa. Nhanh nhất!' },
   // hiệu ứng
-  { id: 'rainbow', slot: 'trail', n: 'Vệt cầu vồng', p: 240, i: '🌈', d: 'Để lại vệt cầu vồng khi đi.' },
-  { id: 'hearts', slot: 'trail', n: 'Dấu chân trái tim', p: 120, i: '💗', d: 'Trái tim bay lên theo bước chân.' },
-  { id: 'sparkle', slot: 'trail', n: 'Bụi lấp lánh', p: 150, i: '✨', d: 'Bụi sáng lấp lánh quanh người.' },
-  { id: 'bubbles', slot: 'trail', n: 'Bong bóng xà phòng', p: 110, i: '🫧', d: 'Bong bóng bay lên lung linh.' },
-  { id: 'leaves', slot: 'trail', n: 'Lá bay', p: 75, i: '🍃', d: 'Lá xanh bay theo gió.' },
-  { id: 'snow', slot: 'trail', n: 'Hoa tuyết', p: 165, i: '❄️', d: 'Hoa tuyết rơi quanh em.' },
-  { id: 'notes', slot: 'trail', n: 'Nốt nhạc', p: 100, i: '🎵', d: 'Nốt nhạc bay lên khi em đi.' },
-  { id: 'fire', slot: 'trail', n: 'Dấu chân lửa', p: 195, i: '🔥', d: 'Ngọn lửa nhỏ bốc lên sau bước chân.' },
-  { id: 'stars', slot: 'trail', n: 'Mưa sao', p: 180, i: '🌟', d: 'Những ngôi sao nhỏ bay lên.' },
-  { id: 'flowers', slot: 'trail', n: 'Hoa nở theo chân', p: 135, i: '🌸', d: 'Hoa hồng nở theo bước chân.' },
-  { id: 'bolt', slot: 'trail', n: 'Tia chớp', p: 165, i: '⚡', d: 'Tia chớp vàng loé theo chân.' },
-  { id: 'paw', slot: 'trail', n: 'Dấu chân mèo', p: 90, i: '🐾', d: 'Dấu chân mèo dễ thương.' },
-  { id: 'butter', slot: 'trail', n: 'Bươm bướm', p: 150, i: '🦋', d: 'Bướm bay lên theo em.' },
-  { id: 'gifts', slot: 'trail', n: 'Mưa quà tặng', p: 190, i: '🎁', d: 'Hộp quà nhỏ bay lên theo bước chân.' },
-  { id: 'confetti', slot: 'trail', n: 'Pháo giấy', p: 170, i: '🎊', d: 'Pháo giấy bảy màu tung theo chân em.' },
+  { id: 'rainbow', slot: 'trail', n: 'Vệt cầu vồng', p: 480, i: '🌈', d: 'Để lại vệt cầu vồng khi đi.' },
+  { id: 'hearts', slot: 'trail', n: 'Dấu chân trái tim', p: 240, i: '💗', d: 'Trái tim bay lên theo bước chân.' },
+  { id: 'sparkle', slot: 'trail', n: 'Bụi lấp lánh', p: 300, i: '✨', d: 'Bụi sáng lấp lánh quanh người.' },
+  { id: 'bubbles', slot: 'trail', n: 'Bong bóng xà phòng', p: 220, i: '🫧', d: 'Bong bóng bay lên lung linh.' },
+  { id: 'leaves', slot: 'trail', n: 'Lá bay', p: 150, i: '🍃', d: 'Lá xanh bay theo gió.' },
+  { id: 'snow', slot: 'trail', n: 'Hoa tuyết', p: 330, i: '❄️', d: 'Hoa tuyết rơi quanh em.' },
+  { id: 'notes', slot: 'trail', n: 'Nốt nhạc', p: 200, i: '🎵', d: 'Nốt nhạc bay lên khi em đi.' },
+  { id: 'fire', slot: 'trail', n: 'Dấu chân lửa', p: 390, i: '🔥', d: 'Ngọn lửa nhỏ bốc lên sau bước chân.' },
+  { id: 'stars', slot: 'trail', n: 'Mưa sao', p: 360, i: '🌟', d: 'Những ngôi sao nhỏ bay lên.' },
+  { id: 'flowers', slot: 'trail', n: 'Hoa nở theo chân', p: 270, i: '🌸', d: 'Hoa hồng nở theo bước chân.' },
+  { id: 'bolt', slot: 'trail', n: 'Tia chớp', p: 330, i: '⚡', d: 'Tia chớp vàng loé theo chân.' },
+  { id: 'paw', slot: 'trail', n: 'Dấu chân mèo', p: 180, i: '🐾', d: 'Dấu chân mèo dễ thương.' },
+  { id: 'butter', slot: 'trail', n: 'Bươm bướm', p: 300, i: '🦋', d: 'Bướm bay lên theo em.' },
+  { id: 'gifts', slot: 'trail', n: 'Mưa quà tặng', p: 380, i: '🎁', d: 'Hộp quà nhỏ bay lên theo bước chân.' },
+  { id: 'confetti', slot: 'trail', n: 'Pháo giấy', p: 340, i: '🎊', d: 'Pháo giấy bảy màu tung theo chân em.' },
   // 💎 HÀNG HIỆU – đồ xịn nhất cửa hàng
-  { id: 'diamondcrown', slot: 'head', n: '💎 Vương miện kim cương', p: 1200, i: '💎', d: 'Hàng hiệu: vương miện bạch kim nạm đá xanh, toả ánh sáng lấp lánh liên tục.' },
-  { id: 'phoenix', slot: 'back', n: '💎 Cánh phượng hoàng lửa', p: 1500, i: '🔥', d: 'Hàng hiệu: đôi cánh lửa đổi màu cam – đỏ – vàng, tung tia lửa khi chạy.' },
-  { id: 'icewings', slot: 'back', n: '💎 Cánh băng pha lê', p: 1100, i: '❄️', d: 'Hàng hiệu: cánh băng trong suốt, hoa tuyết bay quanh.' },
-  { id: 'magicorb', slot: 'hand', n: '💎 Quả cầu phép thuật', p: 700, i: '🔮', d: 'Hàng hiệu: quả cầu tím lơ lửng trên tay, xoay tròn và phát sáng.' },
-  { id: 'phoenixpet', slot: 'pet', n: '💎 Phượng hoàng con', p: 1100, i: '🐦', d: 'Hàng hiệu: chim lửa nhỏ bay quanh em, rắc tia sáng.' },
-  { id: 'whitetiger', slot: 'pet', n: '💎 Hổ trắng', p: 950, i: '🐅', d: 'Hàng hiệu: hổ trắng vằn đen oai phong.' },
-  { id: 'dragonride', slot: 'ride', n: '💎 Cưỡi rồng bay', p: 1800, i: '🐉', d: 'Hàng hiệu: rồng xanh vảy vàng vỗ cánh bay, phun lửa. Nhanh nhất trường!' },
-  { id: 'ufo', slot: 'ride', n: '💎 Đĩa bay UFO', p: 1400, i: '🛸', d: 'Hàng hiệu: đĩa bay bạc, vòng đèn xoay nhiều màu.' },
-  { id: 'supercar', slot: 'ride', n: '💎 Siêu xe vàng', p: 1600, i: '🏎️', d: 'Hàng hiệu: siêu xe mui trần mạ vàng, đèn pha sáng rực.' },
-  { id: 'galaxy', slot: 'trail', n: '💎 Bụi ngân hà', p: 800, i: '🌌', d: 'Hàng hiệu: sao và bụi sáng tím xanh theo từng bước chân.' },
+  { id: 'diamondcrown', slot: 'head', n: '💎 Vương miện kim cương', p: 1800, i: '💎', d: 'Hàng hiệu: vương miện bạch kim nạm đá xanh, toả ánh sáng lấp lánh liên tục.' },
+  { id: 'phoenix', slot: 'back', n: '💎 Cánh phượng hoàng lửa', p: 2250, i: '🔥', d: 'Hàng hiệu: đôi cánh lửa đổi màu cam – đỏ – vàng, tung tia lửa khi chạy.' },
+  { id: 'icewings', slot: 'back', n: '💎 Cánh băng pha lê', p: 1650, i: '❄️', d: 'Hàng hiệu: cánh băng trong suốt, hoa tuyết bay quanh.' },
+  { id: 'magicorb', slot: 'hand', n: '💎 Quả cầu phép thuật', p: 1050, i: '🔮', d: 'Hàng hiệu: quả cầu tím lơ lửng trên tay. Bấm Sử dụng để tạo lốc xoáy phép thuật.' },
+  { id: 'phoenixpet', slot: 'pet', n: '💎 Phượng hoàng con', p: 1650, i: '🐦', d: 'Hàng hiệu: chim lửa nhỏ bay quanh em, rắc tia sáng.' },
+  { id: 'whitetiger', slot: 'pet', n: '💎 Hổ trắng', p: 1400, i: '🐅', d: 'Hàng hiệu: hổ trắng vằn đen oai phong.' },
+  { id: 'dragonride', slot: 'ride', n: '💎 Cưỡi rồng bay', p: 2700, i: '🐉', d: 'Hàng hiệu: rồng xanh vảy vàng vỗ cánh bay, phun lửa. Nhanh nhất trường!' },
+  { id: 'ufo', slot: 'ride', n: '💎 Đĩa bay UFO', p: 2100, i: '🛸', d: 'Hàng hiệu: đĩa bay bạc, vòng đèn xoay nhiều màu.' },
+  { id: 'supercar', slot: 'ride', n: '💎 Siêu xe vàng', p: 2400, i: '🏎️', d: 'Hàng hiệu: siêu xe mui trần mạ vàng, đèn pha sáng rực.' },
+  { id: 'galaxy', slot: 'trail', n: '💎 Bụi ngân hà', p: 1200, i: '🌌', d: 'Hàng hiệu: sao và bụi sáng tím xanh theo từng bước chân.' },
+  // 👑 VIP – có nút "Sử dụng" để tung hiệu ứng, bạn bè cùng thấy
+  { id: 'fwgun', slot: 'hand', n: '👑 Ống pháo hoa hoàng gia', p: 3000, i: '🎆', d: 'VIP: bấm Sử dụng để bắn pháo hoa bảy màu rực sáng trên trời.' },
+  { id: 'rbstaff', slot: 'hand', n: '👑 Gậy cầu vồng', p: 2600, i: '🌈', d: 'VIP: bấm Sử dụng để toả ba vòng sóng cầu vồng quanh em.' },
+  { id: 'thunder', slot: 'hand', n: '👑 Búa sấm sét', p: 3400, i: '🔨', d: 'VIP: bấm Sử dụng để gọi sấm chớp giáng xuống quanh em.' },
+  { id: 'snowglobe', slot: 'hand', n: '👑 Quả cầu tuyết', p: 2400, i: '☃️', d: 'VIP: bấm Sử dụng để làm tuyết rơi cả một vùng.' },
+  { id: 'heartgun', slot: 'hand', n: '👑 Súng bắn tim', p: 2200, i: '💘', d: 'VIP: bấm Sử dụng để bắn chùm trái tim về phía trước.' },
+  { id: 'flute', slot: 'hand', n: '👑 Sáo thần', p: 2500, i: '🪈', d: 'VIP: bấm Sử dụng để thổi sáo, nốt nhạc và bướm bay xoáy quanh em.' },
+  { id: 'goldfan', slot: 'hand', n: '👑 Quạt mưa vàng', p: 2800, i: '🪭', d: 'VIP: bấm Sử dụng để gọi mưa sao vàng và hộp quà.' },
+  { id: 'firecrown', slot: 'head', n: '👑 Vương miện lửa', p: 2600, i: '🔥', d: 'VIP: vương miện đỏ rực, ngọn lửa cháy trên đầu.' },
+  { id: 'goldwings', slot: 'back', n: '👑 Cánh hoàng kim', p: 3200, i: '🌟', d: 'VIP: đôi cánh vàng lớn, rắc sao vàng liên tục.' },
+  { id: 'rbwings', slot: 'back', n: '👑 Cánh cầu vồng thần tiên', p: 3500, i: '🌈', d: 'VIP: đôi cánh đổi đủ bảy màu, rắc bụi cầu vồng.' },
+  { id: 'unipet', slot: 'pet', n: '👑 Kì lân bay', p: 2800, i: '🦄', d: 'VIP: kì lân trắng sừng vàng bay bên em.' },
+  { id: 'golddragon', slot: 'pet', n: '👑 Rồng vàng con', p: 3600, i: '🐲', d: 'VIP: rồng vàng nhỏ bay quanh em, phun lửa.' },
+  { id: 'storm', slot: 'trail', n: '👑 Bão sấm chớp', p: 2000, i: '🌩️', d: 'VIP: tia chớp và tia lửa loé theo từng bước chân.' },
+  { id: 'goldrain', slot: 'trail', n: '👑 Mưa sao vàng', p: 2200, i: '💫', d: 'VIP: sao vàng và quà bay lên theo em.' },
+  { id: 'aurora', slot: 'trail', n: '👑 Cực quang', p: 2400, i: '🌠', d: 'VIP: dải sáng bảy màu thật to theo bước chân.' },
 ];
 const SHOPMAP = Object.fromEntries(SHOP.map(x => [x.id, x]));
 const Items = {
@@ -7237,11 +7256,20 @@ const Items = {
     for (const q of C.sums || []) { q.update(dt, C); petFx(q, 'star'); if (q.born < 1) { q.born = Math.min(1, q.born + dt * 2.5); q.g.scale.setScalar(.2 + .8 * q.born); } }
     if (C.ride) { const r = C.ride, st = C.state || 'idle', ok = ['idle', 'walk', 'run', 'wave', 'cheer', 'point', 'talk', 'jump'].includes(st) && !(S && S.room) && !(C.isMe && typeof W !== 'undefined' && W.seat);
       C.rideOn = ok; r.g.visible = ok; if (ok) { const mv = st === 'walk' || st === 'run'; r.upd && r.upd(dt, C, mv, C._t); if (r.fx && (mv || r.always)) r.fx(dt, C, SS, C._t, mv); } }
-    if (C.isMe && typeof document !== 'undefined') { const b = document.getElementById('wandBtn'), on = !!(C.eq && C.eq.hand === 'wand' && typeof W !== 'undefined' && !W.seat && !(W.S && W.S.pano) && !(typeof Lesson !== 'undefined' && Lesson.on)); if (b && b._on !== on) { b._on = on; b.classList.toggle('hidden', !on); } }
+    if (C.isMe && typeof document !== 'undefined') { const b = document.getElementById('wandBtn'), hid = C.eq && C.eq.hand, on = !!(hid && (hid === 'wand' || USES[hid]) && typeof W !== 'undefined' && !W.seat && !(W.S && W.S.pano) && !(typeof Lesson !== 'undefined' && Lesson.on)); if (b && (b._on !== on || b._hid !== hid)) { b._on = on; b._hid = hid; b.classList.toggle('hidden', !on); if (on) b.textContent = hid === 'wand' ? '🪄 Sử dụng đũa phép' : USES[hid].i + ' Sử dụng ' + USES[hid].n; } }
   },
-  footstep(C, S) { const id = C.eq?.trail; if (!id) return; const p = C.root.position.clone(); p.y = .1; const k = { rainbow: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], hearts: 'heart', sparkle: 'spark', bubbles: 'bubble', leaves: 'leaf', snow: 'snow', notes: 'note', fire: 'fire', stars: 'star', flowers: 'flower', bolt: 'bolt', paw: 'paw', butter: 'butter', gifts: 'gift', confetti: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], galaxy: Math.random() < .5 ? 'star' : 'spark' }[id];
-    S.fx.emit(k, p, { size: id === 'rainbow' ? .32 : .2, add: id === 'sparkle' || id === 'rainbow' || id === 'fire' || id === 'stars' || id === 'galaxy' || id === 'bolt', v: new THREE.Vector3((Math.random() - .5) * .3, id === 'snow' ? -.1 : .5 + Math.random() * .4, (Math.random() - .5) * .3), life: id === 'rainbow' ? 1.6 : 1.3, grow: id === 'rainbow' ? 1 : .4 }); },
+  footstep(C, S) { const id = C.eq?.trail; if (!id) return; const p = C.root.position.clone(); p.y = .1; const k = { rainbow: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], hearts: 'heart', sparkle: 'spark', bubbles: 'bubble', leaves: 'leaf', snow: 'snow', notes: 'note', fire: 'fire', stars: 'star', flowers: 'flower', bolt: 'bolt', paw: 'paw', butter: 'butter', gifts: 'gift', confetti: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)], galaxy: Math.random() < .5 ? 'star' : 'spark', storm: Math.random() < .5 ? 'bolt' : 'spark', goldrain: Math.random() < .7 ? 'star' : 'gift', aurora: 'rb' + 'roygbv'[Math.floor(Math.random() * 6)] }[id];
+    S.fx.emit(k, p, { size: id === 'aurora' ? .5 : id === 'rainbow' ? .32 : .2, add: id === 'aurora' || id === 'storm' || id === 'goldrain' || id === 'sparkle' || id === 'rainbow' || id === 'fire' || id === 'stars' || id === 'galaxy' || id === 'bolt', v: new THREE.Vector3((Math.random() - .5) * .3, id === 'snow' ? -.1 : .5 + Math.random() * .4, (Math.random() - .5) * .3), life: id === 'rainbow' ? 1.6 : 1.3, grow: id === 'rainbow' ? 1 : .4 }); },
   /* ĐŨA PHÉP: vẫy đũa biến ra con vật chibi ngẫu nhiên (tối đa 3 con, con thứ 4 thay con cũ nhất) – bạn bè cùng thấy */
+  /* ĐỒ VIP CÓ NÚT SỬ DỤNG: tung hiệu ứng lớn, bạn ở gần cùng thấy */
+  use() { if (typeof W === 'undefined' || !W.P || !W.S || !W.S.fx) return; const C = W.P, id = this.eq().hand; if (id === 'wand') return this.cast(); const U = USES[id]; if (!U || W.S.pano) return;
+    const now = Date.now(); if (now - (this._use || 0) < 4000) { toast('Chờ một chút rồi dùng tiếp em nhé!', 1200); return; } this._use = now;
+    if (W.seat) { toast('Em đứng dậy rồi dùng nhé!', 1800); return; }
+    C.state = 'cheer'; setTimeout(() => { if (C.state === 'cheer') C.state = 'idle'; }, 1200);
+    this.useFx(C, W.S, id); SFX.win && SFX.win(); if (typeof Net !== 'undefined') { Net.useSig = id + '|' + now; Net.lastKey = ''; } },
+  useFx(C, S, id) { const U = USES[id]; if (!U || !S || !S.fx) return; const V = (x, y, z) => new THREE.Vector3(x, y, z), R = n => (Math.random() - .5) * n, p0 = C.root.position.clone(), a = C.root.rotation.y;
+    const later = (ms, f) => setTimeout(() => { if (typeof W !== 'undefined' && W.S === S) { try { f(); } catch (e) { } } }, ms);
+    U.fx({ C, S, V, R, p0, a, later, E: (k, p, o) => S.fx.emit(k, p, o) }); },
   cast() { if (typeof W === 'undefined' || !W.P || !W.S || !W.S.fx) return; const C = W.P, eq = this.eq(); if (eq.hand !== 'wand') return; const now = Date.now(); if (now - (this._cast || 0) < 1500) return; this._cast = now;
     if (W.seat) { toast('Em đứng dậy rồi vẫy đũa phép nhé!', 1800); return; }
     const cur = (eq.sum || []).filter(id => PETS[id]).slice(0, 3), pool = Object.keys(PETS).filter(id => !cur.includes(id) && id !== eq.pet), id = pool[Math.floor(Math.random() * pool.length)];
@@ -7251,6 +7279,21 @@ const Items = {
     const q = mkSum(id, 0); q.born = 0; q.g.scale.setScalar(.2); const a = C.root.rotation.y, p = C.root.position; q.g.position.set(p.x + Math.sin(a) * .9, p.y, p.z + Math.cos(a) * .9); W.S.scene.add(q.g); C.sums.push(q); C.sums.forEach((s2, i) => setSumSlot(s2, i));
     poof(W.S, q.g.position, 'star'); poof(W.S, q.g.position, 'spark'); SFX.win && SFX.win(); const it = SHOPMAP[id]; toast(`🪄 Úm ba la! Biến ra <b>${it ? it.i + ' ' + it.n : 'một con vật'}</b> (${cur.length}/3)`, 2200); saveMe(); },
   burst(C, S, n) { if (!S) return; const p = C.root.position.clone(); for (let i = 0; i < n; i++) S.fx.emit(C.eq?.trail === 'hearts' ? 'heart' : 'star', p.clone().add(new THREE.Vector3((Math.random() - .5) * .6, .8 + Math.random() * .6, (Math.random() - .5) * .6)), { size: .14, add: 1, v: new THREE.Vector3((Math.random() - .5) * 1.2, 1 + Math.random(), (Math.random() - .5) * 1.2), g: 2.5, life: 1 }); },
+};
+const RB6 = 'roygbv';
+const USES = {
+  fwgun: { n: 'pháo hoa', i: '🎆', fx({ S, V, R, p0, later, E }) { for (let k = 0; k < 6; k++) later(k * 380, () => { const c = p0.clone().add(V(R(7), 5 + Math.random() * 3, R(7))), col = 'rb' + RB6[k % 6];
+      for (let i = 0; i < 12; i++) E('spark', p0.clone().add(V((c.x - p0.x) * i / 12, c.y * i / 12, (c.z - p0.z) * i / 12)), { add: 1, size: .12, life: .35 });
+      for (let i = 0; i < 46; i++) { const t = Math.random() * 6.283, f = Math.acos(2 * Math.random() - 1), sp = 2.2 + Math.random() * 1.6; E(i % 3 ? col : 'spark', c.clone(), { add: 1, size: .26, life: 1.5, g: 1.6, v: V(Math.sin(f) * Math.cos(t) * sp, Math.cos(f) * sp, Math.sin(f) * Math.sin(t) * sp) }); } }); } },
+  rbstaff: { n: 'gậy cầu vồng', i: '🌈', fx({ V, p0, later, E }) { for (let w = 0; w < 3; w++) later(w * 320, () => { for (let i = 0; i < 42; i++) { const t = i / 42 * 6.283; E('rb' + RB6[(i + w) % 6], p0.clone().add(V(Math.cos(t) * .5, .25 + w * .3, Math.sin(t) * .5)), { add: 1, size: .34, life: 1.5, grow: .6, v: V(Math.cos(t) * 3.2, .25, Math.sin(t) * 3.2) }); } }); } },
+  thunder: { n: 'búa sấm sét', i: '⚡', fx({ V, R, p0, later, E }) { for (let k = 0; k < 7; k++) later(k * 260, () => { const c = p0.clone().add(V(R(7), 0, R(7)));
+      for (let i = 0; i < 14; i++) E('bolt', c.clone().add(V(R(.5), i * .5, R(.5))), { add: 1, size: .55, life: .35 + i * .01 });
+      for (let i = 0; i < 16; i++) E('spark', c.clone().add(V(0, .15, 0)), { add: 1, size: .2, life: .7, g: 3, v: V(R(4), 1 + Math.random() * 2, R(4)) }); }); } },
+  snowglobe: { n: 'quả cầu tuyết', i: '❄️', fx({ V, R, p0, later, E }) { for (let k = 0; k < 14; k++) later(k * 220, () => { for (let i = 0; i < 12; i++) E('snow', p0.clone().add(V(R(9), 4 + Math.random() * 2, R(9))), { size: .2, life: 3, v: V(R(.4), -1.6, R(.4)) }); }); } },
+  heartgun: { n: 'súng bắn tim', i: '💘', fx({ V, R, p0, a, later, E }) { for (let k = 0; k < 5; k++) later(k * 180, () => { for (let i = 0; i < 9; i++) { const d = a + R(.7), sp = 3 + Math.random() * 2.5; E('heart', p0.clone().add(V(Math.sin(a) * .5, 1.1, Math.cos(a) * .5)), { add: 1, size: .28, life: 1.6, grow: .5, v: V(Math.sin(d) * sp, .6 + Math.random(), Math.cos(d) * sp) }); } }); } },
+  flute: { n: 'sáo thần', i: '🪈', fx({ V, p0, later, E }) { for (let k = 0; k < 30; k++) later(k * 90, () => { const t = k * .7, r = 1 + k * .06; E('note', p0.clone().add(V(Math.cos(t) * r, .4 + k * .09, Math.sin(t) * r)), { size: .3, life: 1.6, v: V(-Math.sin(t) * .8, .7, Math.cos(t) * .8) }); E('butter', p0.clone().add(V(Math.cos(t + 3.14) * r, .6 + k * .08, Math.sin(t + 3.14) * r)), { size: .26, life: 2, v: V(Math.sin(t) * .8, .5, -Math.cos(t) * .8) }); }); } },
+  goldfan: { n: 'quạt mưa vàng', i: '🪭', fx({ V, R, p0, later, E }) { for (let k = 0; k < 12; k++) later(k * 200, () => { for (let i = 0; i < 12; i++) E(i % 5 ? 'star' : 'gift', p0.clone().add(V(R(8), 4.5 + Math.random() * 1.5, R(8))), { add: i % 5 ? 1 : 0, size: i % 5 ? .22 : .3, life: 2.2, v: V(R(.3), -2.2, R(.3)) }); }); } },
+  magicorb: { n: 'quả cầu phép', i: '🔮', fx({ V, p0, later, E }) { for (let k = 0; k < 36; k++) later(k * 50, () => { for (let j = 0; j < 3; j++) { const t = k * .5 + j * 2.094, r = 1.6 - k * .035; E(j ? 'spark' : 'star', p0.clone().add(V(Math.cos(t) * r, .2 + k * .09, Math.sin(t) * r)), { add: 1, size: .22, life: 1.1, v: V(0, .8, 0) }); } }); } },
 };
 /* ---- mô hình 3D của vật phẩm ---- */
 const IM = (c, o) => CH.M(c, o);
@@ -7352,6 +7395,25 @@ const ITEM3D = {
   icewings(C) { const w = wings(C, '#a5f3fc', null, 1.1, 0); return { update: w.update, fx: (dt, C2, S) => { if (Math.random() < dt * 4) { const p = C.root.position.clone(); p.y += 1 + Math.random() * .6; p.x += (Math.random() - .5) * .8; p.z += (Math.random() - .5) * .8; S.fx.emit('snow', p, { size: .13, life: 1.2 }); } } }; },
   magicorb(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); const orb = imesh(G.s, IM('#a855f7', { em: '#6b21a8' }), [0, -.08, .12], [.08, .08, .08]); const ring = imesh(G.tor, IM('#f0abfc', { em: '#a21caf' }), [0, -.08, .12], [.12, .12, .12], [Math.PI / 2, 0, 0]); g.add(orb, ring);
     return { update: dt => { const tt = performance.now() / 1000; orb.position.y = -.08 + Math.sin(tt * 3) * .02; ring.rotation.z += dt * 3; ring.rotation.x = Math.PI / 2 + Math.sin(tt * 2) * .4; }, fx: (dt, C2, S) => { if (Math.random() < dt * 5) { const p = new THREE.Vector3(); orb.getWorldPosition(p); S.fx.emit('spark', p, { add: 1, size: .1, life: .6 }); } } }; },
+  fwgun(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#dc2626', { em: '#450a0a' }), [0, -.02, .16], [.035, .36, .035], [Math.PI / 2, 0, 0])); for (const z of [.02, .16, .3]) g.add(imesh(G.tor, IM('#facc15', { em: '#5a4300' }), [0, -.02, z], [.042, .042, .05])); const tip = imesh(G.s, IM('#fde047', { em: '#ca8a04' }), [0, -.02, .36], [.03, .03, .03]); g.add(tip);
+    return { fx: (dt, C2, S) => { if (Math.random() < dt * 5) { const p = new THREE.Vector3(); tip.getWorldPosition(p); S.fx.emit('spark', p, { add: 1, size: .1, life: .5, v: new THREE.Vector3(0, .6, 0) }); } } }; },
+  rbstaff(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#f8fafc'), [0, .12, 0], [.014, .7, .014])); const cols = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'], top = new THREE.Group(); top.position.y = .5; g.add(top); cols.forEach((c, i) => top.add(imesh(G.tor, IM(c, { em: c }), [0, 0, 0], [.1 - i * .012, .1 - i * .012, .06])));
+    return { update: dt => { top.rotation.y += dt * 3; }, fx: (dt, C2, S) => { if (Math.random() < dt * 5) { const p = new THREE.Vector3(); top.getWorldPosition(p); S.fx.emit('rb' + RB6[Math.floor(Math.random() * 6)], p, { add: 1, size: .14, life: .7 }); } } }; },
+  thunder(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#78350f'), [0, .1, 0], [.018, .5, .018])); const hd = imesh(G.box, IM('#94a3b8', { em: '#1e3a8a' }), [0, .38, 0], [.26, .14, .14]); g.add(hd); g.add(imesh(G.box, IM('#fde047', { em: '#ca8a04' }), [0, .38, 0], [.05, .15, .15]));
+    return { fx: (dt, C2, S) => { if (Math.random() < dt * 4) { const p = new THREE.Vector3(); hd.getWorldPosition(p); S.fx.emit('bolt', p.add(new THREE.Vector3((Math.random() - .5) * .3, .1, (Math.random() - .5) * .3)), { add: 1, size: .16, life: .4 }); } } }; },
+  snowglobe(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.06, .1); C.J.handR.add(g); g.add(imesh(G.c, IM('#1e3a8a'), [0, -.05, 0], [.085, .04, .085])); g.add(imesh(G.s, IM('#e0f2fe', { op: .5, em: '#0c4a6e' }), [0, .05, 0], [.1, .1, .1])); g.add(imesh(G.cone, IM('#16a34a'), [0, .03, 0], [.03, .08, .03]));
+    return { fx: (dt, C2, S) => { if (Math.random() < dt * 4) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('snow', p.add(new THREE.Vector3((Math.random() - .5) * .3, .25, (Math.random() - .5) * .3)), { size: .08, life: .9, v: new THREE.Vector3(0, -.2, 0) }); } } }; },
+  heartgun(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.03, .04); C.J.handR.add(g); g.add(imesh(G.box, IM('#f43f5e', { em: '#4c0519' }), [0, 0, .1], [.07, .08, .26])); g.add(imesh(G.box, IM('#be123c'), [0, -.08, 0], [.05, .12, .06])); for (const sx of [-1, 1]) g.add(imesh(G.s, IM('#fb7185', { em: '#9f1239' }), [sx * .03, .07, .08], [.04, .04, .04])); g.add(imesh(G.c, IM('#fde047'), [0, 0, .25], [.03, .04, .03], [Math.PI / 2, 0, 0])); return {}; },
+  flute(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#a3e635', { em: '#1a2e05' }), [0, -.02, .14], [.016, .42, .016], [Math.PI / 2, 0, 0])); for (let i = 0; i < 5; i++) g.add(imesh(G.s, IM('#365314'), [0, -.004, .04 + i * .05], [.008, .006, .008])); g.add(imesh(G.tor, IM('#facc15', { em: '#5a4300' }), [0, -.02, -.04], [.02, .02, .03]));
+    return { fx: (dt, C2, S) => { if (Math.random() < dt * 2) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('note', p, { size: .12, life: 1, v: new THREE.Vector3(0, .5, 0) }); } } }; },
+  goldfan(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); for (let i = 0; i < 7; i++) { const a = (i - 3) * .28; g.add(imesh(G.box, IM(i % 2 ? '#facc15' : '#fde68a', { em: '#5a4300' }), [Math.sin(a) * .16, .14 + Math.cos(a) * .12, 0], [.055, .3, .008], [0, 0, -a])); } g.add(imesh(G.s, IM('#dc2626'), [0, 0, 0], [.025, .025, .025]));
+    return { update: (dt, C2) => { g.rotation.z = Math.sin(C2.t * 3) * .25; }, fx: (dt, C2, S) => { if (Math.random() < dt * 3) { const p = new THREE.Vector3(); g.getWorldPosition(p); p.y += .3; S.fx.emit('star', p, { add: 1, size: .1, life: .7 }); } } }; },
+  firecrown(C) { const G = CH.G(), hd = C.P.hd, g = new THREE.Group(); g.position.y = hd * .95; C.J.head.add(g); g.add(imesh(G.c, IM('#b91c1c', { em: '#7f1d1d' }), [0, 0, 0], [hd * .62, hd * .2, hd * .62])); const fl = [];
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, f = imesh(G.cone, IM(i % 2 ? '#f97316' : '#fde047', { em: i % 2 ? '#c2410c' : '#ca8a04' }), [Math.cos(a) * hd * .56, hd * .3, Math.sin(a) * hd * .56], [hd * .1, hd * .4, hd * .1]); g.add(f); fl.push(f); }
+    return { update: (dt, C2) => { fl.forEach((f, i) => f.scale.y = hd * (.36 + Math.sin(C2.t * 9 + i * 1.7) * .12)); }, fx: (dt, C2, S) => { if (Math.random() < dt * 9) { const p = new THREE.Vector3(); g.getWorldPosition(p); S.fx.emit('fire', p.add(new THREE.Vector3((Math.random() - .5) * .3, .2, (Math.random() - .5) * .3)), { size: .16, life: .7, v: new THREE.Vector3(0, .7, 0) }); } } }; },
+  goldwings(C) { const w = wings(C, '#facc15', null, 1.35, 2); w.mats.forEach(m => { if (m.emissive) m.emissive.set('#7a5c00'); }); return { update: w.update, fx: (dt, C2, S) => { if (Math.random() < dt * 9) { const p = C.root.position.clone(); p.y += .7 + Math.random() * .7; p.x += (Math.random() - .5) * 1.1; p.z += (Math.random() - .5) * .5; S.fx.emit('star', p, { add: 1, size: .15, life: .9, v: new THREE.Vector3(0, -.3, 0) }); } } }; },
+  rbwings(C) { const w = wings(C, '#f472b6', null, 1.3, 1); return { update: w.update, fx: (dt, C2, S, t) => { w.mats.forEach((m, i) => m.color.setHSL((t * .25 + i * .5) % 1, 1, .6)); if (Math.random() < dt * 9) { const p = C.root.position.clone(); p.y += .7 + Math.random() * .7; p.x += (Math.random() - .5) * 1.1; S.fx.emit('rb' + RB6[Math.floor(Math.random() * 6)], p, { add: 1, size: .18, life: .9 }); } } }; },
+  storm() { return {}; }, goldrain() { return {}; }, aurora() { return {}; },
   pencil(C) { const G = CH.G(), g = new THREE.Group(); C.J.handR.add(g); g.add(imesh(G.c, IM('#facc15'), [0, -.02, .18], [.022, .4, .022], [Math.PI / 2, 0, 0])); g.add(imesh(G.cone, IM('#fde68a'), [0, -.02, .41], [.022, .07, .022], [Math.PI / 2, 0, 0])); g.add(imesh(G.cone, IM('#111827'), [0, -.02, .435], [.009, .025, .009], [Math.PI / 2, 0, 0])); g.add(imesh(G.c, IM('#f472b6'), [0, -.02, -.035], [.023, .04, .023], [Math.PI / 2, 0, 0])); g.add(imesh(G.c, IM('#9ca3af'), [0, -.02, -.01], [.024, .018, .024], [Math.PI / 2, 0, 0])); return {}; },
   milk(C) { const G = CH.G(), g = new THREE.Group(); g.position.set(0, -.03, .05); C.J.handR.add(g); g.add(imesh(G.box, IM('#f8fafc'), [0, .04, 0], [.06, .1, .045])); g.add(imesh(G.box, IM('#38bdf8'), [0, .03, .001], [.062, .04, .046])); g.add(imesh(G.c, IM('#ef4444'), [.012, .12, 0], [.005, .07, .005], [0, 0, -.2])); return { update: () => g.rotation.x = -C.J.armR.rotation.x - C.J.elbowR.rotation.x }; },
   starclip(C) { const G = CH.G(), hd = C.P.hd, st = new THREE.Group(); st.position.set(hd * .68, hd * .62, hd * .5); C.J.head.add(st); for (let i = 0; i < 5; i++) { const a = i * 1.257; st.add(imesh(G.cone, IM('#fde047', { em: '#a16207' }), [Math.sin(a) * hd * .1, Math.cos(a) * hd * .1, 0], [hd * .07, hd * .16, hd * .03], [0, 0, -a])); } st.add(imesh(G.s, IM('#fde047', { em: '#a16207' }), [0, 0, 0], [hd * .1, hd * .1, hd * .04]));
@@ -7446,6 +7508,8 @@ const PETS = {
     P.head.add(imesh(G.c, IM('#475569'), [0, .11, 0], [.008, .08, .008])); P.head.add(imesh(G.s, CH.M('#ef4444', { em: '#b91c1c' }), [0, .16, 0], [.022, .022, .022])); return P; },
   parrot() { const P = petBase('#16a34a', { fly: 1 }); const G = CH.G(); P.body.scale.set(.6, .65, .6); P.legs.forEach(l => l.visible = false); P.head.add(imesh(G.s, IM('#ef4444'), [0, .03, 0], [.1, .08, .09])); P.head.add(imesh(G.cone, IM('#facc15'), [0, -.02, .1], [.025, .05, .025], [Math.PI / 2, 0, 0]));
     P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .1, .2, 0); P.body.add(w); w.add(imesh(G.s, IM(sx > 0 ? '#2563eb' : '#facc15'), [sx * .09, 0, 0], [.11, .025, .08])); P.wings.push(w); } return P; },
+  unipet() { const P = PETS.pony(); P.fly = 1; const G = CH.G(); P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .1, .26, 0); P.body.add(w); w.add(imesh(G.s, IM('#fbcfe8', { em: '#831843' }), [sx * .13, 0, 0], [.15, .015, .1])); P.wings.push(w); } return P; },
+  golddragon() { const P = PETS.dragonpet(); const gold = new THREE.Color('#facc15'), em = new THREE.Color('#6b4e00'); P.g.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color.copy(gold); if (o.material.emissive) o.material.emissive.copy(em); } }); P.g.scale.multiplyScalar(1.25); return P; },
   phoenixpet() { const P = petBase('#f97316', { fly: 1 }); const G = CH.G(); P.body.scale.set(.6, .65, .6); P.legs.forEach(l => l.visible = false); P.head.add(imesh(G.s, IM('#ef4444', { em: '#7f1d1d' }), [0, .03, 0], [.1, .09, .09])); P.head.add(imesh(G.cone, IM('#facc15'), [0, -.02, .1], [.025, .05, .025], [Math.PI / 2, 0, 0]));
     for (let i = 0; i < 3; i++) P.head.add(imesh(G.cone, IM('#facc15', { em: '#a16207' }), [0, .12, -.02 - i * .03], [.015, .07, .015], [-.4 - i * .2, 0, 0]));
     P.wings = []; for (const sx of [-1, 1]) { const w = new THREE.Group(); w.position.set(sx * .1, .2, 0); P.body.add(w); w.add(imesh(G.s, IM('#fb923c', { em: '#9a3412' }), [sx * .12, 0, 0], [.14, .025, .09])); P.wings.push(w); }
@@ -7510,7 +7574,7 @@ const RIDES = {
   rocket(C) { const G = CH.G(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); b.add(imesh(G.cap, IM('#f8fafc'), [0, 0, 0], [.12, .22, .12], [Math.PI / 2, 0, 0])); b.add(imesh(G.cone, IM('#ef4444'), [0, 0, .5], [.12, .26, .12], [Math.PI / 2, 0, 0])); b.add(imesh(G.c, IM('#64748b'), [0, 0, -.38], [.09, .1, .09], [Math.PI / 2, 0, 0])); for (let i = 0; i < 3; i++) { const a = i * 2.094 + Math.PI; b.add(imesh(G.box, IM('#3b82f6'), [Math.sin(a) * .13, Math.cos(a) * .13, -.28], [.02, .16, .2], [0, 0, -a])); } b.add(imesh(G.tor, IM('#ef4444'), [0, 0, .15], [.125, .125, .08])); const fl = imesh(G.cone, new THREE.MeshBasicMaterial({ color: '#fb923c' }), [0, 0, -.58], [.07, .3, .07], [-Math.PI / 2, 0, 0]); b.add(fl);
     return { g, pose: 'sit', seat: .66, bob: 1, leg: -.5, knee: 1.0, arm: -1.0, lean: .3, k: 1.5, always: 1, upd: (dt, C, mv, t) => { b.position.y = .5 + Math.sin(t * 3) * .03; fl.scale.y = (mv ? .4 : .2) * (1 + Math.sin(t * 40) * .25); fl.visible = true; }, fx: rideFx(['fire', 'smoke'], { rate: 12, back: .75, y: .5, size: .2, life: .6, vy: .05 }) }; },
 };
-if (typeof document !== 'undefined') document.addEventListener('keydown', e => { if (e.code === 'KeyF' && typeof HUD !== 'undefined' && !HUD.typing() && typeof W !== 'undefined' && W.ok && !W.lock) Items.cast(); });
+if (typeof document !== 'undefined') document.addEventListener('keydown', e => { if (e.code === 'KeyF' && typeof HUD !== 'undefined' && !HUD.typing() && typeof W !== 'undefined' && W.ok && !W.lock) Items.use(); });
 
 /* ======================================================================
    TẶNG QUÀ CHO BẠN ĐANG ONLINE (vật phẩm hoặc ⭐) – quà tới ngay, có hiệu ứng
@@ -7644,7 +7708,7 @@ const HUD = {
         <button data-e="stand" id="standBtn" class="hidden" title="Đứng dậy">🧍<i>Đứng dậy</i></button><button data-e="wave" title="Vẫy tay">👋</button><button data-e="jump" title="Nhảy (Space)">⤴️</button><button data-e="cheer" title="Reo hò">🎉</button>
       </div>
       <div class="zoomb" id="zoomb"><button data-z="in" title="Phóng to (lại gần)">＋</button><button data-z="out" title="Thu nhỏ (ra xa)">－</button></div>
-      <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.cast()">🪄 Sử dụng đũa phép</button>
+      <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.use()">🪄 Sử dụng đũa phép</button>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
       <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="chatX">✕</button></div>
         <div class="ch-l" id="chatList"></div>
@@ -7685,7 +7749,7 @@ const HUD = {
     $('#rail').onclick = railClick; $('#more').onclick = railClick; $('.h-trb').onclick = railClick;
     addEventListener('keydown', e => { if (!W.on || this.typing() || !$('#rail')) return; const n = +e.key; if (n >= 1 && n <= 8) { const b = $$('#rail button')[n - 1]; if (b) b.click(); } });
     $('#emotes').onclick = e => { const b = e.target.closest('button'); if (!b) return; const k = b.dataset.e;
-      if (k === 'wand') Items.cast(); else if (k === 'jump') W.jump(); else if (k === 'run') { W.run = !W.run; b.classList.toggle('on', W.run); } else if (k === 'stand') { Lesson.end(); W.standUp(); } else W.emote(k); };
+      if (k === 'wand') Items.use(); else if (k === 'jump') W.jump(); else if (k === 'run') { W.run = !W.run; b.classList.toggle('on', W.run); } else if (k === 'stand') { Lesson.end(); W.standUp(); } else W.emote(k); };
     $('#actBtn').onclick = () => W.doAct();
     $('#camTog').onclick = () => $('#camctl').classList.toggle('hidden'); if (innerHeight < 700 || innerWidth < 760) $('#camctl').classList.add('hidden');
     $('#camctl').onclick = e => { const b = e.target.closest('button'); if (b) W.camCmd(b.dataset.c); };
