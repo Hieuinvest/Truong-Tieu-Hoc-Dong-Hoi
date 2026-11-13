@@ -5271,7 +5271,7 @@ function kidMenu(n) {
     { label: '👋 Bạn tên gì?', fn: () => again(kidSay(n, `Mình tên là ${n.name}, mình học lớp ${1 + h % 5}${'AB'[h % 2]}. Còn bạn là ${ME.n} đúng không? Rất vui được làm quen với bạn!`, 'wave')) },
     { label: '📚 Bạn thích môn gì?', fn: () => again(kidSay(n, `Mình thích nhất môn ${KID_SUBJ[h % KID_SUBJ.length]}. Còn bạn thì sao?`)) },
     { label: '🧩 Đố vui', fn: () => { const q = mathQ(ME.g || 1, null, mulberry32(Date.now() & 0xffff)); kidSay(n, 'Mình đố bạn nhé! ' + q.q);
-        HUD.choice('🧩 ' + n.name + ' đố em', q.q, q.opts.map((o, i) => ({ label: LETTERS[i] + '. ' + esc(String(o)), fn: () => { const ok = i === q.ans; if (ok) { SFX.ok(); Items.capped('kidquiz', 2, 10, 'Trả lời đúng câu đố của bạn'); } else SFX.no();
+        HUD.choice('🧩 ' + n.name + ' đố em', q.q, q.opts.map((o, i) => ({ label: LETTERS[i] + '. ' + esc(String(o)), fn: () => { const ok = i === q.ans; if (ok) { SFX.ok(); Items.reward(2, 'Trả lời đúng câu đố của bạn'); } else SFX.no();
           again(kidSay(n, ok ? 'Đúng rồi! Bạn giỏi quá!' : `Chưa đúng rồi. Đáp án là ${q.opts[q.ans]}. Lần sau bạn cố lên nhé!`, ok ? 'clap' : null)); } }))); } },
     { label: '💡 Ở trường có gì vui?', fn: () => again(kidSay(n, KID_TIPS[(h + (n._tip = (n._tip || 0) + 1)) % KID_TIPS.length])) },
     { label: '🎉 Chơi cùng nhé!', fn: () => { W.emote && W.emote('cheer'); kidSay(n, 'Hoan hô! Mình chơi cùng nhau nhé!', /^sit/.test(n.C.state) ? 'sitClap' : 'cheer').then(() => { n.pause = 1; }); } },
@@ -6363,7 +6363,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   const selfAct = (icon, label, when, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when, fn });
   let sitCur = null, eatOn = null, drawOn = null, restOn = null;   // người chơi đang ngồi ghế nhà ăn / bàn vẽ / ghế đá
   // ---- NGƯỜI CHƠI THAM GIA TRÒ CHƠI NGOÀI SÂN: vào chơi bằng nút hành động, bấm di chuyển (hoặc đi ra xa) là thôi chơi
-  const yardStar = (n, why) => { const d = new Date().toDateString(), g = LS.get('dh_play', null), used = g && g.d === d ? g.n : 0, give = Math.min(n, 30 - used); if (give > 0) { LS.set('dh_play', { d, n: used + give }); Items.reward(give, why); } };
+  const yardStar = (n, why) => { Items.capped('play', n, 30, why); };
   const Join = { cur: null, start(o) { this.stop(); this.cur = o; o.begin && o.begin(); toast(o.msg, 3200); }, stop() { const c = this.cur; if (!c) return; this.cur = null; c.end && c.end(); ghud(); W.P.autoTo = null; if (!['walk', 'run'].includes(W.P.state)) W.P.state = 'idle'; } };
   const follow = (x, z, dt) => { const p = W.P.root.position, dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz); W.P.autoTo = null; if (d > 2.5) { W.P.autoTo = { x, z }; return; } p.x += dx * Math.min(1, dt * 5); p.z += dz * Math.min(1, dt * 5); if (d > .02) W.P.root.rotation.y = W.turn(W.P.root.rotation.y, Math.atan2(dx, dz), dt * 8); W.P.state = 'walk'; W.P.speed = 1.3; };
   B.tick(dt => { const j = Join.cur; if (!j) return; if (W.S !== def || W.seat) { Join.stop(); return; } const [ix, iy] = W.input(); if ((ix || iy) && !j.free) { Join.stop(); return; }
@@ -6515,7 +6515,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   }
   // ==================== TRÒ CHƠI 3D NGAY TRONG NHÀ THỂ CHẤT: ném rổ, sút phạt, cầu lông, chạy đua ====================
   { const gx = -56.75, gz = -31, cl = (v, a, b) => Math.max(a, Math.min(b, v));
-    const playStar = (n, why) => { const d = new Date().toDateString(), g = LS.get('dh_play', null), used = g && g.d === d ? g.n : 0, give = Math.min(n, 30 - used); if (give > 0) { LS.set('dh_play', { d, n: used + give }); Items.reward(give, why); } };
+    const playStar = (n, why) => { Items.capped('play', n, 30, why); };
     const modeAct = (icon, label, on, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when: on, fn });
     const ask = (title, start) => start();   // chơi 3D ngay tại nhà thể chất
     const mkBall = (r, col) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mat(col)); m.userData.dyn = 1; m.visible = false; scene.add(m); return m; };
@@ -6992,7 +6992,7 @@ const Lesson = {
           this.exQ = ex.q;
         }
       }
-      Items.capped('lecture', 3, 15, 'Nghe cô giảng bài');
+      Items.reward(3, 'Nghe cô giảng bài');
     }
     // ===== 3. LUYỆN TẬP
     this.skip = false;
@@ -7242,9 +7242,13 @@ const Items = {
   },
   equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; else if (on && id === 'wand') toast('🪄 Đóng cửa hàng rồi bấm nút <b>🪄 Sử dụng đũa phép</b> phía trên thanh chức năng (hoặc phím F) để biến ra con vật nhé!', 4500); saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
   reward(st, why) { if (!ME) return; ME.st = (ME.st | 0) + st; saveMe(); toast(`⭐ +${st} điểm thưởng${why ? ' · ' + why : ''}`); },
+  // đếm số lần nhận thưởng trong ngày (lưu cả trong máy lẫn mã lưu, nên xoá dữ liệu trình duyệt cũng không "cày" lại được)
+  dayUse(key, max) { if (!ME) return false; const d = new Date().toDateString(), k = 'dh_use_' + key, g = LS.get(k, null), m = ME.capd && ME.capd['u_' + key], used = Math.max(g && g.d === d ? g.n : 0, m && m.d === d ? m.n : 0); if (used >= max) return false; LS.set(k, { d, n: used + 1 }); ME.capd = { ...(ME.capd || {}), ['u_' + key]: { d, n: used + 1 } }; return true; },
   // phần thưởng có giới hạn mỗi ngày (chống treo máy “cày” sao): key riêng cho từng loại
   capped(key, st, max, why) { if (!ME) return 0; const d = new Date().toDateString(), k = 'dh_cap_' + key, g = LS.get(k, null), m = ME.capd && ME.capd[key], used = Math.max(g && g.d === d ? g.n : 0, m && m.d === d ? m.n : 0), give = Math.max(0, Math.min(st, max - used));
-    if (give > 0) { LS.set(k, { d, n: used + give }); ME.capd = { ...(ME.capd || {}), [key]: { d, n: used + give } }; this.reward(give, why); } return give; },
+    if (give > 0) { LS.set(k, { d, n: used + give }); ME.capd = { ...(ME.capd || {}), [key]: { d, n: used + give } }; this.reward(give, why); } else if (key === 'play') this.noMore(); return give; },
+  // hết sao thưởng trò chơi hôm nay: chỉ em vào Học bài để lấy thêm sao (học thì không giới hạn)
+  noMore() { toast('🎮 Hôm nay em đã nhận hết sao thưởng của trò chơi rồi. Em vào <b>📚 Học bài</b> để làm bài và nhận thêm ⭐ nhé — học thì không giới hạn!', 5000); },
   /* gắn đồ lên nhân vật */
   attach(C, eq = this.eq()) {
     C.items = []; C.eq = { ...eq };
@@ -8293,10 +8297,10 @@ function gameShell(title, inner) {
   $('#main').innerHTML = `<div class="wrap"><button class="back" onclick="location.hash='#/play'">← Sân chơi</button><div class="panel game-area"><div class="row" style="justify-content:space-between"><h2>${title}</h2><div class="row" id="ghud"></div></div><div id="gbody" style="margin-top:14px">${inner}</div></div></div>`;
 }
 function gameEnd(title, score, xp, recordKey, better) {
-  const rec = setBest(recordKey, score, better); addXP(xp, score > 0 ? 1 : 0); SFX.win(); if (rec) confetti();
+  const rec = setBest(recordKey, score, better), okR = Items.dayUse('ge_' + recordKey, 3); if (okR) addXP(xp, score > 0 ? 1 : 0); else xp = 0; SFX.win(); if (rec) confetti();
   $('#gbody').innerHTML = `<div style="text-align:center"><div style="width:120px;margin:0 auto">${avatarSVG(ME.av, { raise: true })}</div><h2>${title}</h2>
-    <p style="font-weight:800">${rec ? '🎉 Kỷ lục mới! ' : ''}+${xp} điểm học tập · +${score > 0 ? 1 : 0} ⭐</p>
-    <div class="row" style="justify-content:center;margin-top:10px"><button class="btn sun" onclick="route()">🔁 Chơi lại</button><button class="btn ghost" onclick="location.hash='#/play'">🎮 Trò khác</button></div></div>`;
+    <p style="font-weight:800">${rec ? '🎉 Kỷ lục mới! ' : ''}${okR ? `+${xp} điểm học tập · +${score > 0 ? 1 : 0} ⭐` : 'Hôm nay em đã nhận hết sao thưởng của trò này rồi. Vào Học bài làm bài để nhận thêm ⭐ nhé — học thì không giới hạn!'}</p>
+    <div class="row" style="justify-content:center;margin-top:10px">${okR ? '' : '<button class="btn green" onclick="location.hash=\'#/campus/open/study\'">📚 Vào học bài</button>'}<button class="btn sun" onclick="route()">🔁 Chơi lại</button><button class="btn ghost" onclick="location.hash='#/play'">🎮 Trò khác</button></div></div>`;
 }
 screens.game = k => {
   show360(false);
@@ -8356,7 +8360,7 @@ Object.assign(GAMES, {
 });
 const G2 = {};
 function g2Shell(title, inner) { gameShell(title, inner); const b = $('#main .back'); if (b) b.insertAdjacentHTML('afterend', ` <button class="back" onclick="location.hash='#/campus'">🏫 Về trường</button>`); }
-function g2Reward(key, xp, msg) { const k = 'dh_g2_' + key + '_' + new Date().toDateString(); const n = +(LS.get(k) || 0); if (n < 3) { LS.set(k, n + 1); addXP(xp, 1); toast(`${msg} +${xp} điểm học tập · +1 ⭐`, 3000); } else toast(msg, 2500); SFX.win(); confetti(); }
+function g2Reward(key, xp, msg) { if (Items.dayUse('g2_' + key, 3)) { addXP(xp, 1); toast(`${msg} +${xp} điểm học tập · +1 ⭐`, 3000); } else { toast(msg + '<br>Hôm nay em đã nhận hết sao của trò này. Vào <b>📚 Học bài</b> để nhận thêm ⭐ nhé!', 4500); } SFX.win(); confetti(); }
 const G2_PAL = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#14b8a6', '#3b82f6', '#8b5cf6', '#ec4899', '#92400e', '#9ca3af', '#111827', '#ffffff', '#fde68a', '#bbf7d0', '#bfdbfe', '#fecdd3'];
 const g2PalHTML = () => `<div class="g2pal">${G2_PAL.map((c, i) => `<button data-c="${c}" style="background:${c}" class="${i === 0 ? 'on' : ''}"></button>`).join('')}</div>`;
 const G2_CSS = `<style>
