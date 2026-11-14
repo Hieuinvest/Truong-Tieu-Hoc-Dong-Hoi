@@ -3985,7 +3985,9 @@ const Save = {
 /* ---------------- Tài khoản chủ (mã lưu riêng): điểm thưởng không giới hạn ---------------- */
 const isOwner = () => !!(ME && ME.code && hashStr('dh-owner:' + ME.code) === 902225018);
 const pubG = () => isOwner() ? 0 : ME.g;   // tài khoản chủ trường không hiện lớp với mọi người
-const ownerTop = () => { if (isOwner() && (ME.st | 0) < 900000) ME.st = 999999; };
+const ownerTop = () => { if (!ME) return; if (isOwner()) { if ((ME.st | 0) < 900000) ME.st = 999999; return; }
+  // rà soát một lần: tài khoản có số sao bất thường (> 3000, do lỗi cày sao giai đoạn trước) được đưa về 500 sao
+  if (!ME.rs1) { ME.rs1 = 1; if ((ME.st | 0) > 3000) { ME.st = 500; setTimeout(() => toast('⭐ Số sao của em đã được nhà trường điều chỉnh về <b>500 sao</b> do lỗi cộng sao trước đây. Học bài để nhận thêm sao nhé!', 7000), 2500); } } };
 /* ---------------- Hồ sơ người chơi ---------------- */
 function saveMe(oldG) { ownerTop(); if (ME && !ME.code) ME.code = Save.gen(); LS.set('dh_me', ME); DB.pushMe(oldG); Save.sync(); renderTop(); if (typeof HUD !== 'undefined') HUD.renderMe(); }
 function addXP(xp, st = 0) {
@@ -6856,8 +6858,8 @@ const Net = {
   moveCell() {
     const c = this.cellOf(); if (c === this.cell) return; this.cell = c;
     if (this.myRef) { try { this.myRef.onDisconnect().cancel(); } catch { } this.myRef.remove().catch(() => { }); }
-    this.myRef = this.base.child(c).child(ME.id); try { this.myRef.onDisconnect().remove(); } catch { }
-    const want = {}; if (c === '0') want['0'] = 1; else { const [cx, cz] = c.split('_').map(Number); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) want[(cx + i) + '_' + (cz + j)] = 1; }
+    this.myRef = this.base.child(isOwner() ? 'vip' : c).child(ME.id);   // chủ trường: ô riêng 'vip' mà ai trong cảnh cũng theo dõi → mọi người đều thấy try { this.myRef.onDisconnect().remove(); } catch { }
+    const want = {}; if (c === '0') want['0'] = 1; else { const [cx, cz] = c.split('_').map(Number); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) want[(cx + i) + '_' + (cz + j)] = 1; } want.vip = 1;
     for (const k of Object.keys(this.subs)) if (!want[k]) { this.subs[k].off(); delete this.subs[k]; for (const [u, R] of Object.entries(this.remotes)) if (R.cell === k) this.drop(u); }
     for (const k of Object.keys(want)) if (!this.subs[k]) { const r = this.subs[k] = this.base.child(k); const up = s => this.upsert(s.key, s.val(), k);
       r.on('child_added', up); r.on('child_changed', up); r.on('child_removed', s => { const R = this.remotes[s.key]; if (R && R.cell === k) this.drop(s.key); }); }
@@ -6883,16 +6885,17 @@ const Net = {
     if (v.t && DB.now() - v.t > 120000) return;
     let R = this.remotes[uid];
     const hadR = !!R, oldU = R ? R.u : null;
-    if (!R && Object.keys(this.remotes).length >= this.MAXR) { const me = W.P && W.P.root.position; if (!me) return; let far = null, fd = Math.hypot((v.x || 0) - me.x, (v.z || 0) - me.z);
-      for (const [u, Q] of Object.entries(this.remotes)) { const d = Math.hypot(Q.C.root.position.x - me.x, Q.C.root.position.z - me.z); if (d > fd) { fd = d; far = u; } } if (!far) return; this.drop(far); } const sig = JSON.stringify([v.av, v.eq]);
+    if (!R && cell !== 'vip' && Object.values(this.remotes).filter(Q => !Q.vip).length >= this.MAXR) { const me = W.P && W.P.root.position; if (!me) return; let far = null, fd = Math.hypot((v.x || 0) - me.x, (v.z || 0) - me.z);
+      for (const [u, Q] of Object.entries(this.remotes)) { if (Q.vip) continue; const d = Math.hypot(Q.C.root.position.x - me.x, Q.C.root.position.z - me.z); if (d > fd) { fd = d; far = u; } } if (!far) return; this.drop(far); } const sig = JSON.stringify([v.av, v.eq]);
     if (!R || R.sig !== sig) {
       if (R) this.dropMesh(R);
       const C = CH.build(v.av || {}, { outfit: v.eq && v.eq.outfit }); Items.attach(C, v.eq || {}); W.S.scene.add(C.root); Items.enterScene(C, W.S);
       const tag = document.createElement('div'); tag.className = 'ntag'; document.getElementById('bub3').appendChild(tag);
       R = this.remotes[uid] = { C, sig, tag, first: true };
     }
+    R.vip = cell === 'vip';
     R.u = v.u || ''; if (hadR && R.u && R.u !== oldU && !W.S.pano) { try { Items.useFx(R.C, W.S, String(R.u).split('|')[0]); } catch (e) { } }
-    R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `🟢 ${esc(v.n)}${v.g ? `<small> · Lớp ${v.g}</small>` : ''}`;
+    R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `${cell === 'vip' ? '👑' : '🟢'} ${esc(v.n)}${v.g ? `<small> · Lớp ${v.g}</small>` : ''}`;
     if (W.S.pano) { const s = this.slot(uid), g = groundAt(s.ath, s.atv); R.tg = { x: g.x, y: 0, z: g.z, r: v.r }; }
     else R.tg = { x: v.x, y: v.y || 0, z: v.z, r: v.r };
     if (R.first) { R.C.root.position.set(R.tg.x, R.tg.y, R.tg.z); R.C.root.rotation.y = R.tg.r; R.first = false; }
@@ -6907,12 +6910,12 @@ const Net = {
       const p = R.C.root.position, t = R.tg; if (t) { const k = Math.min(1, dt * 8); const dx = t.x - p.x, dz = t.z - p.z; p.x += dx * k; p.y += (t.y - p.y) * k; p.z += dz * k; R.C.root.rotation.y = W.turn(R.C.root.rotation.y, t.r, dt * 8); R.C.speed = Math.hypot(dx, dz) / Math.max(dt, .016) * k; }
       // giảm giật lag: bạn ở xa hoặc ngoài màn hình thì cập nhật thưa hơn (vị trí vẫn mượt, chỉ bớt vẽ cử động & hiệu ứng)
       const d = me ? Math.abs(p.x - me.x) + Math.abs(p.z - me.z) : 0, slot = (fr + R.C.root.id) % 4 === 0;
-      const lod = R.off ? 4 : d > 40 ? 3 : d > 22 ? 2 : 1;
+      const lod = R.vip ? 1 : R.off ? 4 : d > 40 ? 3 : d > 22 ? 2 : 1;
       if (lod === 1 || (fr + R.C.root.id) % lod === 0) { CH.animate(R.C, dt * lod); if (lod < 3) Items.update(R.C, dt * lod, W.S); }
-      R.C.root.visible = !(d > 70);
+      R.C.root.visible = R.vip || !(d > 70);
       if (R.off && !slot) continue;   // ngoài màn hình: 3 khung hình mới tính lại vị trí nhãn tên một lần
       R.C.J.head.getWorldPosition(v); v.y += .42; v.project(W.cam);
-      const hide = v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1 || d > 60; R.off = hide;
+      const hide = v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1 || (d > 60 && !R.vip); R.off = hide;
       if (hide) { if (R.tag.style.display !== 'none') R.tag.style.display = 'none'; continue; }
       if (R.tag.style.display) R.tag.style.display = '';
       const tx = Math.round((v.x * .5 + .5) * innerWidth), ty = Math.round((-v.y * .5 + .5) * innerHeight);
@@ -8273,8 +8276,9 @@ function dropGift(S, p0, a) { if (!S || !S.scene || !S.B) return; const G = IG()
   g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .22, 0], [.44, .44, .44])); g.add(imesh(G.box, gd, [0, .22, 0], [.1, .45, .45])); g.add(imesh(G.box, gd, [0, .22, 0], [.45, .45, .1])); g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .46, 0], [.48, .08, .48]));
   for (const sx of [-1, 1]) g.add(imesh(G.cone, gd, [sx * .1, .54, 0], [.07, .14, .05], [0, 0, sx * Math.PI / 2])); g.add(imesh(G.s, gd, [0, .53, 0], [.05, .05, .05])); glow(g, '#fde68a', 1.4, [0, .3, 0], .55);
   g.position.set(x, y0 + 6, z); S.scene.add(g); let tt = 0, done = false; const S0 = S;
-  const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel', fn: () => { if (done) return; done = true; openGift(S0, g); } }; S.B.acts.push(act);
-  const tk = setInterval(() => { tt += .05; if (W.S !== S0 || done || tt > 90) { clearInterval(tk); S0.scene.remove(g); const k = S0.B.acts.indexOf(act); if (k >= 0) S0.B.acts.splice(k, 1); return; }
+  const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel (lại gần là tự nhặt)', fn: () => { if (done) return; done = true; openGift(S0, g); } }; act.g = g; act.y0 = y0; act.S0 = S0; S.B.acts.push(act);
+  const t0 = performance.now(); const tk = setInterval(() => { tt = (performance.now() - t0) / 1000; if (!done && W.P && W.S === S0 && g.position.y <= y0 + .3 && Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 1.3) act.fn();   // lại gần là tự nhặt
+    if (W.S !== S0 || done || tt > 90) { clearInterval(tk); S0.scene.remove(g); const k = S0.B.acts.indexOf(act); if (k >= 0) S0.B.acts.splice(k, 1); return; }
     g.position.y = Math.max(y0, y0 + 6 - tt * 7) + (g.position.y <= y0 + .01 ? Math.abs(Math.sin(tt * 3)) * .08 : 0); g.rotation.y += .04; if (S0.fx && Math.random() < .3) S0.fx.emit('spark', g.position.clone().add(new THREE.Vector3((Math.random() - .5) * .6, .5, (Math.random() - .5) * .6)), { add: 1, size: .12, life: .7 }); }, 50); }
 function openGift(S, g) { if (S.fx) { poof(S, g.position, 'gift'); poof(S, g.position, 'star'); poof(S, g.position, 'snow'); } confetti(80); SFX.win();
   if (!isOwner() && !Items.dayUse('santabox', 5)) { toast('🎁 Hôm nay em đã mở đủ 5 hộp quà của ông già Noel rồi!', 3000); return; }
