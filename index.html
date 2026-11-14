@@ -6160,12 +6160,13 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   for (let i = 0; i < 12; i++) if (Math.abs(-58 + i * 10.2) > 9) { const x = -58 + i * 10.2; B.cyl(.22, .28, 3.4, '#7c4a24', x, 0, 48.4, 8); for (const [oy, r] of [[4.3, 1.9], [5.4, 1.4]]) { const t = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), mat('#3f9a3a')); t.position.set(x, oy, 48.4); scene.add(t); } B.box(1.3, .12, 1.3, '#78716c', x, 0, 48.4); }
   // cổng trường
   // cổng (đúng ảnh): hai trụ ốp gạch xanh dương viền trắng, mái đua phẳng màu trắng, biển tên trường nằm giữa hai trụ sát dưới mái, cờ nhiều màu trên mái
-  for (const sx of [-1, 1]) { B.box(1.3, 7.3, 1.3, '#1e63d6', sx * 5.6, 0, 46, { col: true }); B.box(1.42, .5, 1.42, '#f8fafc', sx * 5.6, 0, 46); B.box(1.42, .16, 1.42, '#f8fafc', sx * 5.6, 3.5, 46); }
-  B.box(14.6, .32, 3.0, '#ffffff', 0, 7.3, 46); B.box(14.9, .1, 3.3, '#e5e7eb', 0, 7.62, 46);
-  B.box(9.9, 1.9, .4, '#1d4ed8', 0, 5.4, 46);
-  B.plane(9.86, 1.81, new THREE.MeshBasicMaterial({ map: realTex('gatesign') }), 0, 6.35, 46.21, 0);
-  B.plane(9.86, 1.81, new THREE.MeshBasicMaterial({ map: realTex('gatesign') }), 0, 6.35, 45.79, Math.PI);
-  ['#ef4444', '#22c55e', '#facc15', '#3b82f6', '#f472b6', '#f97316'].forEach((c, i) => { const x = -6.2 + i * 2.48; B.cyl(.02, .02, 1.5, '#e5e7eb', x, 7.7, 46, 6); const f = B.plane(.5, .8, mat(c, { side: THREE.DoubleSide }), x + .27, 8.75, 46, 0); f.rotation.z = -.1; });
+  // cổng cao 8 m: đủ chỗ treo băng rôn ngày lễ sát ngay dưới biển tên trường
+  for (const sx of [-1, 1]) { B.box(1.3, 8.0, 1.3, '#1e63d6', sx * 5.6, 0, 46, { col: true }); B.box(1.42, .5, 1.42, '#f8fafc', sx * 5.6, 0, 46); B.box(1.42, .16, 1.42, '#f8fafc', sx * 5.6, 3.5, 46); }
+  B.box(14.6, .32, 3.0, '#ffffff', 0, 8.0, 46); B.box(14.9, .1, 3.3, '#e5e7eb', 0, 8.32, 46);
+  B.box(9.9, 1.9, .4, '#1d4ed8', 0, 6.1, 46);
+  B.plane(9.86, 1.81, new THREE.MeshBasicMaterial({ map: realTex('gatesign') }), 0, 7.05, 46.21, 0);
+  B.plane(9.86, 1.81, new THREE.MeshBasicMaterial({ map: realTex('gatesign') }), 0, 7.05, 45.79, Math.PI);
+  ['#ef4444', '#22c55e', '#facc15', '#3b82f6', '#f472b6', '#f97316'].forEach((c, i) => { const x = -6.2 + i * 2.48; B.cyl(.02, .02, 1.5, '#e5e7eb', x, 8.4, 46, 6); const f = B.plane(.5, .8, mat(c, { side: THREE.DoubleSide }), x + .27, 9.45, 46, 0); f.rotation.z = -.1; });
   for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) B.cyl(.35, .45, .6, '#fb923c', sx * (8 + i * 1.6), 0, 44.6, 10);
   // ---- dãy nhà: (tâm x,z), dài, sâu, số tầng, hướng mặt tiền ('s' về +z, 'e' về +x, 'w' về −x)
   const CH0 = .45, yardSurf = [];
@@ -6245,8 +6246,8 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   stageBoard.userData.click = () => location.hash = '#/arena';
   B.act({ x: 0, z: -20.6, r: 3.2, icon: '🔔', label: 'Vào Đấu trường Trí tuệ', fn: () => location.hash = '#/arena' });
   // cột cờ (cờ bay)
-  B.cyl(.9, 1.1, .4, '#e2e8f0', 0, 0, -10, 16, { col: true }); B.cyl(.06, .08, 9, '#e5e7eb', 0, .4, -10, 8); B.cyl(.12, .12, .2, '#facc15', 0, 9.4, -10, 8);
-  const fg = new THREE.PlaneGeometry(2.4, 1.6, 14, 6); const flag = new THREE.Mesh(fg, new THREE.MeshLambertMaterial({ map: TX.flag, side: THREE.DoubleSide })); flag.position.set(1.25, 8.5, -10); scene.add(flag);
+  B.cyl(.9, 1.1, .4, '#e2e8f0', 0, 0, -14.5, 16, { col: true }); B.cyl(.06, .08, 9, '#e5e7eb', 0, .4, -14.5, 8); B.cyl(.12, .12, .2, '#facc15', 0, 9.4, -14.5, 8);
+  const fg = new THREE.PlaneGeometry(2.4, 1.6, 14, 6); const flag = new THREE.Mesh(fg, new THREE.MeshLambertMaterial({ map: TX.flag, side: THREE.DoubleSide })); flag.position.set(1.25, 8.5, -14.5); scene.add(flag);
   const fp = fg.attributes.position, f0 = Float32Array.from(fp.array);
   B.tick((dt, t) => { for (let i = 0; i < fp.count; i++) { const x = f0[i * 3] + 1.2; fp.array[i * 3 + 2] = Math.sin(x * 2.4 - t * 4) * .15 * x; fp.array[i * 3 + 1] = f0[i * 3 + 1] + Math.sin(x * 1.5 - t * 3) * .03 * x; } fp.needsUpdate = true; });
   // cây xanh có ghế tròn xanh (như ảnh)
@@ -8316,13 +8317,11 @@ const Fest = {
     const vbanner = (text, w, h, px, py, pz, ry) => { const t = canvasTex(160, 1024, (x, W2, H2) => { x.fillStyle = '#dc2626'; x.fillRect(0, 0, W2, H2); x.strokeStyle = '#facc15'; x.lineWidth = 10; x.strokeRect(8, 8, W2 - 16, H2 - 16); x.fillStyle = '#fde047'; x.textAlign = 'center'; x.textBaseline = 'middle';
         const words = text.split(' '); let fs = 64; x.font = `900 ${fs}px ${FONT}`; const lh = Math.min(fs * 1.12, (H2 - 60) / words.length); fs = Math.min(fs, lh / 1.12); x.font = `900 ${fs}px ${FONT}`; words.forEach((wd, i) => { let f2 = fs; while (x.measureText(wd).width > W2 - 26 && f2 > 14) { f2 -= 2; x.font = `900 ${f2}px ${FONT}`; } x.fillText(wd, W2 / 2, 30 + lh * (i + .5) + (H2 - 60 - lh * words.length) / 2); x.font = `900 ${fs}px ${FONT}`; }); });
       B.plane(w, h, new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }), px, py, pz, ry); };
-    // ---- 1. Cổng chào bóng bay + băng rôn
-    { const n = 46, R = 6.4, cz = 43.2, inst = new THREE.InstancedMesh(G.s, PM('#ffffff', { k: 'silk' }), n * 3), m = new THREE.Matrix4(), c = new THREE.Color(); let k = 0;
-      for (let i = 0; i < n; i++) for (let j = 0; j < 3; j++) { const t = i / (n - 1) * Math.PI, r = R + (j - 1) * .32; m.compose(V3(Math.cos(t) * r, .3 + Math.sin(t) * r * 1.08, cz + (j - 1) * .25), new THREE.Quaternion(), V3(.34, .38, .34)); inst.setMatrixAt(k, m); inst.setColorAt(k, c.set(pal[(i + j) % pal.length])); k++; }
-      scene.add(inst); const bt = bannerTex(this.txt(F.gate, y), { w: 1536, h: 160 }); B.plane(9.0, 1.1, new THREE.MeshBasicMaterial({ map: bt }), 0, 3.7, cz + .7, 0); B.plane(9.0, 1.1, new THREE.MeshBasicMaterial({ map: bt }), 0, 3.7, cz - .7, Math.PI);   // đặt trước vòm bóng để không bị che chữ
-      for (const sx of [-1, 1]) for (const dz of [-.7, .7]) B.cyl(.04, .04, 4.25, '#e5e7eb', sx * 4.55, 0, cz + dz, 6); }
+    // ---- 1. Băng rôn đỏ treo sát ngay dưới biển tên trường (hai mặt)
+    { const GZ = 46, bt = bannerTex(this.txt(F.gate, y), { w: 1792, h: 190 }); B.box(9.9, 1.0, .4, '#b91c1c', 0, 5.1, GZ);
+      for (const dz of [.205, -.205]) B.plane(9.86, .98, new THREE.MeshBasicMaterial({ map: bt }), 0, 5.6, GZ + dz, dz > 0 ? 0 : Math.PI); }
     // ---- 2. Dây cờ đuôi nheo + đèn từ cột cờ toả ra
-    { const top = V3(0, 8.6, -10), ends = [[-22.6, 7.6, -30], [22.6, 7.6, -30], [-22.6, 7.6, -6], [22.6, 7.6, -6], [-22.6, 7.2, 2], [22.6, 7.2, 2], [-6, 6.4, 43.4], [6, 6.4, 43.4], [0, 8.8, -36.5], [-10, 8.6, -36.5], [10, 8.6, -36.5]];
+    { const top = V3(0, 8.6, -14.5), ends = [[-22.6, 7.6, -30], [22.6, 7.6, -30], [-22.6, 7.6, -6], [22.6, 7.6, -6], [-22.6, 7.2, 2], [22.6, 7.2, 2], [-6.5, 7.9, 44.4], [6.5, 7.9, 44.4], [0, 8.8, -36.5], [-10, 8.6, -36.5], [10, 8.6, -36.5]];
       const flagG = new THREE.BufferGeometry(); flagG.setAttribute('position', new THREE.Float32BufferAttribute([-.2, 0, 0, .2, 0, 0, 0, -.42, 0], 3)); flagG.computeVertexNormals();
       const per = 22, inst = new THREE.InstancedMesh(flagG, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), ends.length * per), lit = new THREE.InstancedMesh(G.sl, new THREE.MeshBasicMaterial({ color: '#fef08a' }), ends.length * per), m = new THREE.Matrix4(), c = new THREE.Color(); let k = 0;
       const lan = P.lanterns ? new THREE.InstancedMesh(P.lanterns === 'star' ? G.star : G.s, PM(P.lanterns === 'star' ? '#ef4444' : '#dc2626', { k: 'glow' }), ends.length * 4) : null; let kl = 0;
@@ -8376,6 +8375,7 @@ const Fest = {
       if (Math.random() < dt * 2) S.fx.emit('note', V3((Math.random() - .5) * 9, 2.6 + Math.random(), -25 + (Math.random() - .5) * 2), { size: .3, life: 2, v: V3(0, .6, 0) });
       if (F.fw && (fwT -= dt) < 0) { fwT = 2.4 + Math.random() * 2.5; const c = V3((Math.random() - .5) * 40, 15 + Math.random() * 6, -45 + Math.random() * 30), col = 'rb' + 'roygbv'[Math.floor(Math.random() * 6)];
         for (let i = 0; i < 70; i++) { const a = Math.random() * 6.283, f = Math.acos(2 * Math.random() - 1), sp = 4 + Math.random() * 2; S.fx.emit(i % 4 ? col : 'spark', c.clone(), { add: 1, size: .55, life: 1.8, g: 1.5, v: V3(Math.sin(f) * Math.cos(a) * sp, Math.cos(f) * sp, Math.sin(f) * Math.sin(a) * sp) }); } } });
+    try { this.activities(scene, B, F); } catch (e) { console.error(e); }
     scene.traverse(o => { if (o.isInstancedMesh) o.userData.dyn = 1; });
     // ---- 8. Thông báo khi bước vào sân
     this.greet = () => { if (this._g) return; this._g = 1; setTimeout(() => toast(`🎉 Trường đang trang trí mừng <b>${F.n}</b>! Đi quanh sân để xem và tham gia các hoạt động kỉ niệm nhé.`, 6000), 1800); };
@@ -8444,6 +8444,62 @@ const Fest = {
     const cs = (Fest.cur && Fest.cur.pal) || ['#e11d48', '#f472b6', '#facc15', '#ffffff']; for (let j = 0; j < 9; j++) { const t = j * 2.4, r = j ? .07 : 0; g.add(imesh(G.s, PM(cs[j % cs.length], { k: 'silk' }), [Math.cos(t) * r, .24 + (j ? 0 : .03), Math.sin(t) * r], [.05, .045, .05])); } for (let j = 0; j < 5; j++) g.add(imesh(G.s, PM('#22c55e', { ds: 1 }), [Math.cos(j * 1.3) * .09, .2, Math.sin(j * 1.3) * .09], [.04, .01, .02], [0, -j * 1.3, .5]));
     return { update: (dt, C2) => upright(g, C2), fx: ptFx(g, ['petal', 'heart'], 2, { dy: .3, sp: .2, size: .09 }) }; };
 })();
+
+/* câu đố theo từng ngày lễ: [câu hỏi, đáp án đúng, sai, sai, sai] */
+const FEST_QUIZ = {
+  '2011': [['Ngày Nhà giáo Việt Nam là ngày nào?', '20 tháng 11', '1 tháng 6', '2 tháng 9', '8 tháng 3'], ['Ngày 20/11 chính thức trở thành Ngày Nhà giáo Việt Nam từ năm nào?', 'Năm 1982', 'Năm 1945', 'Năm 1975', 'Năm 2000'],
+    ['"Tôn sư trọng đạo" nghĩa là gì?', 'Kính trọng thầy cô, quý trọng đạo lí', 'Chăm chỉ tập thể dục', 'Giữ gìn sách vở sạch đẹp', 'Đi học đúng giờ'], ['Câu "Không thầy đố mày làm nên" nói lên điều gì?', 'Người thầy rất quan trọng với mỗi người', 'Không cần đi học', 'Phải biết đố vui', 'Thầy cô rất nghiêm khắc'],
+    ['"Muốn sang thì bắc cầu kiều, muốn con hay chữ thì yêu lấy thầy" khuyên em điều gì?', 'Yêu quý và kính trọng thầy cô', 'Đi qua cầu cẩn thận', 'Học thật nhiều chữ', 'Xây nhiều cây cầu'], ['Ngày 20/11 học sinh thường làm gì để tri ân thầy cô?', 'Tặng hoa và gửi lời chúc tới thầy cô', 'Nghỉ học đi chơi', 'Thi chạy việt dã', 'Rước đèn ông sao']],
+  noel: [['Lễ Giáng sinh là ngày nào?', '25 tháng 12', '1 tháng 1', '20 tháng 11', '1 tháng 6'], ['Xe của ông già Noel do con vật nào kéo?', 'Tuần lộc', 'Ngựa', 'Voi', 'Trâu'], ['Trên đỉnh cây thông Noel thường gắn gì?', 'Một ngôi sao', 'Một quả bóng đá', 'Một chiếc mũ', 'Một cái đèn pin']],
+  duonglich: [['Tết Dương lịch là ngày nào?', '1 tháng 1', '25 tháng 12', '30 tháng 4', '2 tháng 9'], ['Một năm có bao nhiêu tháng?', '12 tháng', '10 tháng', '11 tháng', '13 tháng'], ['Một năm thường có bao nhiêu ngày?', '365 ngày', '300 ngày', '360 ngày', '400 ngày']],
+  tet: [['Tết Nguyên Đán bắt đầu vào ngày nào âm lịch?', 'Mùng 1 tháng Giêng', 'Rằm tháng Tám', 'Mùng 5 tháng Năm', 'Rằm tháng Giêng'], ['Hoa đặc trưng ngày Tết ở miền Bắc là hoa gì?', 'Hoa đào', 'Hoa sen', 'Hoa phượng', 'Hoa cúc'], ['Hoa đặc trưng ngày Tết ở miền Nam là hoa gì?', 'Hoa mai vàng', 'Hoa hồng', 'Hoa súng', 'Hoa ban'], ['Theo truyện cổ tích, ai là người làm ra bánh chưng?', 'Lang Liêu', 'Thánh Gióng', 'Sơn Tinh', 'Chú Cuội']],
+  '0803': [['Ngày Quốc tế Phụ nữ là ngày nào?', '8 tháng 3', '20 tháng 10', '1 tháng 6', '20 tháng 11'], ['Ngày Phụ nữ Việt Nam là ngày nào?', '20 tháng 10', '8 tháng 3', '2 tháng 9', '26 tháng 3'], ['Ngày 8/3 em có thể làm gì tặng mẹ và cô?', 'Làm thiệp và nói lời yêu thương', 'Trốn học', 'Không làm gì cả', 'Đi ngủ sớm']],
+  '2603': [['Đoàn TNCS Hồ Chí Minh được thành lập ngày nào?', '26 tháng 3 năm 1931', '15 tháng 5 năm 1941', '2 tháng 9 năm 1945', '30 tháng 4 năm 1975'], ['Học sinh tiểu học là đội viên của tổ chức nào?', 'Đội TNTP Hồ Chí Minh', 'Hội Cựu chiến binh', 'Công đoàn', 'Hội Nông dân']],
+  '3004': [['Miền Nam được hoàn toàn giải phóng vào ngày nào?', '30 tháng 4 năm 1975', '2 tháng 9 năm 1945', '7 tháng 5 năm 1954', '1 tháng 1 năm 1975'], ['Ngày 1/5 là ngày gì?', 'Ngày Quốc tế Lao động', 'Ngày Quốc tế Thiếu nhi', 'Ngày Nhà giáo', 'Tết Trung thu']],
+  '1505': [['Đội TNTP Hồ Chí Minh được thành lập ngày nào?', '15 tháng 5 năm 1941', '26 tháng 3 năm 1931', '1 tháng 6 năm 1950', '20 tháng 11 năm 1982'], ['Đội viên đeo gì trên cổ?', 'Khăn quàng đỏ', 'Huy chương vàng', 'Vòng hoa', 'Dây đồng hồ'], ['Khẩu hiệu Đội: "Vì Tổ quốc xã hội chủ nghĩa, vì lý tưởng của Bác Hồ vĩ đại…"', 'Sẵn sàng!', 'Xin chào!', 'Cố lên!', 'Tạm biệt!']],
+  '0106': [['Ngày Quốc tế Thiếu nhi là ngày nào?', '1 tháng 6', '1 tháng 1', '2 tháng 9', '20 tháng 11'], ['"Năm điều Bác Hồ dạy" dành cho ai?', 'Thiếu niên, nhi đồng', 'Bộ đội', 'Công nhân', 'Nông dân'], ['Điều đầu tiên trong Năm điều Bác Hồ dạy là gì?', 'Yêu Tổ quốc, yêu đồng bào', 'Học tập tốt, lao động tốt', 'Giữ gìn vệ sinh thật tốt', 'Khiêm tốn, thật thà, dũng cảm']],
+  '0209': [['Bác Hồ đọc bản Tuyên ngôn Độc lập vào ngày nào?', '2 tháng 9 năm 1945', '30 tháng 4 năm 1975', '19 tháng 8 năm 1945', '1 tháng 1 năm 1946'], ['Bác Hồ đọc Tuyên ngôn Độc lập ở đâu?', 'Quảng trường Ba Đình, Hà Nội', 'Bến Nhà Rồng', 'Pác Bó', 'Huế'], ['Quốc kì Việt Nam có hình gì?', 'Nền đỏ, ngôi sao vàng năm cánh', 'Nền xanh, mặt trời đỏ', 'Nền trắng, ngôi sao xanh', 'Sọc đỏ trắng']],
+  khaigiang: [['Lễ khai giảng năm học mới thường diễn ra vào ngày nào?', 'Ngày 5 tháng 9', 'Ngày 1 tháng 6', 'Ngày 20 tháng 11', 'Ngày 1 tháng 1'], ['Bác Hồ viết thư gửi học sinh nhân ngày khai trường đầu tiên vào năm nào?', 'Năm 1945', 'Năm 1975', 'Năm 1954', 'Năm 2000'], ['Ngày khai giảng, trống trường báo hiệu điều gì?', 'Năm học mới bắt đầu', 'Giờ ra chơi', 'Hết năm học', 'Giờ ăn trưa']],
+  trungthu: [['Tết Trung thu vào ngày nào âm lịch?', 'Rằm tháng Tám', 'Mùng 1 tháng Giêng', 'Rằm tháng Giêng', 'Mùng 5 tháng Năm'], ['Ai ngồi dưới gốc cây đa trên cung trăng?', 'Chú Cuội', 'Lang Liêu', 'Thạch Sanh', 'Thánh Gióng'], ['Bánh đặc trưng của Tết Trung thu là gì?', 'Bánh nướng, bánh dẻo', 'Bánh chưng', 'Bánh mì', 'Bánh xèo'], ['Đèn truyền thống trẻ em rước đêm Trung thu là đèn gì?', 'Đèn ông sao', 'Đèn pin', 'Đèn giao thông', 'Đèn bàn']],
+};
+Object.assign(Fest, {
+  activities(scene, B, F) { const G = IG(), V3 = (x, y, z) => new THREE.Vector3(x, y, z), qs = FEST_QUIZ[F.id] || FEST_QUIZ['2011'];
+    // ---- A. Đố vui ngày lễ (cô giáo hỏi 5 câu)
+    { const x = -8, z = 1; B.box(2.4, .85, .9, '#fef3c7', x, 0, z, { col: true }); B.box(2.5, .08, 1, '#dc2626', x, .85, z); B.plane(2.6, .55, new THREE.MeshBasicMaterial({ map: signTex('🔔 ĐỐ VUI NGÀY LỄ', { bg: '#1d4ed8', fg: '#fde047', border: '#facc15' }) }), x, 2.0, z - .2, 0);
+      for (const sx of [-1, 1]) B.box(.08, 2.1, .08, '#78350f', x + sx * 1.2, 0, z - .3); const bell = new THREE.Mesh(G.bell, PM('#facc15', { k: 'gold' })); bell.position.set(x + .8, .9, z); bell.scale.setScalar(.22); scene.add(bell);
+      const T = CH.build({}, { role: 'teacher', aodai: '#2563eb', hair: 'teacherBob', skin: '#f3c9a6' }); T.root.position.set(x, 0, z - .9); const n = B.npc(T); n.name = 'Cô giáo (Đố vui)'; n.talkLabel = 'Chơi đố vui với cô'; n.talk = () => this.quiz(T, F, qs);
+      B.act({ x, z: z + 1.4, r: 2.2, icon: '🔔', label: 'Chơi đố vui ' + F.n, fn: () => this.quiz(T, F, qs) }); }
+    // ---- B. Thả bóng bay ước mơ
+    { const x = 7, z = 1; const cs = F.pal; for (let i = 0; i < 9; i++) { const b = new THREE.Mesh(G.s, PM(cs[i % cs.length], { k: 'silk' })); b.position.set(x + Math.cos(i * 2.4) * .35, 2.0 + (i % 3) * .3, z + Math.sin(i * 2.4) * .35); b.scale.set(.24, .28, .24); scene.add(b); }
+      B.cyl(.05, .05, 1.9, '#e5e7eb', x, 0, z, 6); B.plane(2.3, .5, new THREE.MeshBasicMaterial({ map: signTex('🎈 THẢ BÓNG BAY ƯỚC MƠ', { bg: '#7c3aed', fg: '#fff', border: '#facc15' }), side: THREE.DoubleSide }), x, 1.1, z + .35, 0);
+      B.act({ x, z: z + 1.3, r: 2, icon: '🎈', label: 'Thả bóng bay ước mơ', fn: () => this.balloon(F) }); }
+    // ---- C. Lên sân khấu biểu diễn văn nghệ chào mừng
+    B.act({ x: -3.2, z: -21, r: 1.8, icon: '🎤', label: 'Lên sân khấu biểu diễn văn nghệ', when: () => !this._show, fn: () => this.perform(F) });
+    // ---- D. Riêng từng ngày lễ
+    if (F.id === 'noel') { const C = CH.build({ g: 'm' }, { outfit: 'santasuit' }); Items.attach(C, { head: 'santahat2', hand: 'santabag' }); C.root.position.set(12.6, 0, 14); C.root.rotation.y = -1.2; const n = B.npc(C, (dt, n) => { if (W.S && W.S.fx) Items.update(C, dt, W.S); }); n.name = 'Ông già Noel'; n.talkLabel = 'Chào ông già Noel';
+      n.talk = () => this.santaGift(C); B.act({ x: 12.6, z: 15.6, r: 2.2, icon: '🎁', label: 'Nhận quà của ông già Noel', fn: () => this.santaGift(C) }); }
+    if (F.id === 'trungthu') { const x = -9.5, z = 12; B.box(2.6, .7, 1.4, '#b91c1c', x, 0, z, { col: true }); B.box(2.7, .06, 1.5, '#facc15', x, .7, z);
+      for (let i = 0; i < 6; i++) { const t = i / 6 * Math.PI * 2; B.cyl(.16, .16, .1, PM('#b45309', { k: 'silk' }), x + Math.cos(t) * .7, .76, z + Math.sin(t) * .35, 16); } const fr = new THREE.Mesh(G.s, PM('#facc15')); fr.position.set(x, .95, z); fr.scale.set(.25, .2, .25); scene.add(fr);
+      B.plane(2.4, .5, new THREE.MeshBasicMaterial({ map: signTex('🥮 MÂM CỖ TRÔNG TRĂNG', { bg: '#b91c1c', fg: '#fde047', border: '#facc15' }), side: THREE.DoubleSide }), x, 1.6, z - .5, 0);
+      B.act({ x, z: z + 1.5, r: 2.2, icon: '🥮', label: 'Phá cỗ trông trăng', fn: () => { if (W.S && W.S.fx) { poof(W.S, W.P.root.position, 'moon'); poof(W.S, W.P.root.position, 'star'); } SFX.win(); confetti(40); if (!Items.capped('fest_co', 5, 5, 'Phá cỗ Trung thu')) toast('🥮 Em đã phá cỗ hôm nay rồi. Ngon quá!', 2500); } }); }
+  },
+  quiz(T, F, qs) { W.face(T); const pick = [...qs].sort(() => Math.random() - .5).slice(0, 5); let i = 0, ok = 0;
+    const ask = () => { if (i >= pick.length) { const t = `Em trả lời đúng ${ok}/${pick.length} câu. ${ok >= pick.length - 1 ? 'Giỏi quá!' : 'Cố gắng thêm nhé!'}`; W.bubble(T, 'Cô giáo: ' + t, 4000); Voice.speak(t, { who: T }); if (ok) { confetti(40); if (!Items.capped('fest_quiz', ok * 2, 10, 'Đố vui ' + F.n)) toast('🔔 Hôm nay em đã nhận đủ sao đố vui rồi!', 2500); } return; }
+      const q = pick[i], opts = q.slice(1).map((o, k) => ({ o, k })).sort(() => Math.random() - .5);
+      Voice.speak(q[0], { who: T }); HUD.choice('🔔 Câu ' + (i + 1) + '/' + pick.length, q[0], opts.map((x, j) => ({ label: 'ABCD'[j] + '. ' + esc(x.o), fn: () => { i++; if (x.k === 0) { ok++; SFX.ok(); toast('✅ Đúng rồi!', 1200); T.state = 'clap'; } else { SFX.no(); toast('❌ Chưa đúng. Đáp án: <b>' + esc(q[1]) + '</b>', 2600); } setTimeout(ask, 900); } }))); };
+    ask(); },
+  balloon(F) { const P = W.P, S = W.S; if (!P || !S) return; const G = IG(), g = new THREE.Group(), col = F.pal[Math.floor(Math.random() * F.pal.length)];
+    g.add(imesh(G.s, PM(col, { k: 'silk' }), [0, 0, 0], [.32, .38, .32])); g.add(imesh(G.cone, PM(col), [0, -.4, 0], [.06, .08, .06], [Math.PI, 0, 0])); g.add(imesh(G.c, PM('#e5e7eb'), [0, -.9, 0], [.006, 1, .006])); g.position.copy(P.root.position).add(new THREE.Vector3(0, 2.2, 0)); S.scene.add(g);
+    P.state = 'cheer'; SFX.win(); let t = 0; const tk = setInterval(() => { t += .05; g.position.y += .09; g.position.x += Math.sin(t * 2) * .02; if (S.fx && Math.random() < .5) S.fx.emit('spark', g.position.clone().add(new THREE.Vector3(0, -.4, 0)), { add: 1, size: .15, life: .8 }); if (t > 6 || W.S !== S) { clearInterval(tk); S.scene.remove(g); } }, 50);
+    setTimeout(() => { if (P.state === 'cheer') P.state = 'idle'; }, 1500);
+    HUD.choice('🎈 Ước mơ của em', 'Em gửi ước mơ gì theo quả bóng bay?', ['Em mơ thành cô giáo', 'Em mơ thành bác sĩ', 'Em mơ thành nhà khoa học', 'Em mơ thành phi hành gia', 'Em mơ thành hoạ sĩ', 'Em mơ thành cầu thủ'].map(w => ({ label: w, fn: () => { toast('🎈 ' + w + '! Ước mơ đã bay lên trời cao!', 3000); if (!Items.capped('fest_balloon', 1, 3, 'Thả bóng bay ước mơ')) { } } }))); },
+  perform(F) { const P = W.P; if (!P) return; this._show = 1; P.root.position.set(-1.5 + Math.random() * 3, .8, -24.6); P.root.rotation.y = 0; W.yaw = 0; W.pitch = .15; W.dist = 6;
+    toast('🎤 Em đang biểu diễn văn nghệ chào mừng ' + F.n + '! Các bạn đang cổ vũ em đó!', 3500); const moves = ['cheer', 'wave', 'jump', 'clap', 'handsOut', 'cheer']; let k = 0;
+    const tk = setInterval(() => { if (!W.S || !W.S.fx) return; P.state = moves[k++ % moves.length]; P.t = 0; for (let i = 0; i < 6; i++) W.S.fx.emit(i % 2 ? 'note' : pickK('rb'), P.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * 2, 1.5 + Math.random(), (Math.random() - .5))), { add: i % 2 === 0, size: .25, life: 1.5, v: new THREE.Vector3(0, .8, 0) }); try { SFX.click(); } catch (e) { } }, 1000);
+    setTimeout(() => { clearInterval(tk); this._show = 0; P.state = 'idle'; confetti(80); SFX.win(); if (!Items.capped('fest_show', 3, 6, 'Biểu diễn văn nghệ')) toast('👏 Tiết mục hay quá! Cả trường vỗ tay cho em!', 3000); }, 10000); },
+  santaGift(C) { W.face(C); C.state = 'wave'; const t = 'Ho ho ho! Giáng sinh vui vẻ nhé cháu!'; W.bubble(C, 'Ông già Noel: ' + t, 3500); Voice.speak(t, { who: C }); if (W.S && W.S.fx) { poof(W.S, W.P.root.position, 'gift'); poof(W.S, W.P.root.position, 'snow'); } confetti(60); SFX.win();
+    const n = [5, 8, 10][Math.floor(Math.random() * 3)]; if (!Items.capped('fest_santa', n, 15, 'Quà của ông già Noel')) toast('🎅 Ông đã tặng quà cho cháu hôm nay rồi!', 2600); setTimeout(() => C.state = 'idle', 1500); },
+});
 
 /* ======================================================================
    GIAO DIỆN TRONG THẾ GIỚI 3D – nút nhỏ gọn ở thanh phải và phía dưới,
