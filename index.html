@@ -6894,7 +6894,7 @@ const Net = {
       R = this.remotes[uid] = { C, sig, tag, first: true };
     }
     R.vip = cell === 'vip';
-    R.u = v.u || ''; if (hadR && R.u && R.u !== oldU && !W.S.pano) { try { Items.useFx(R.C, W.S, String(R.u).split('|')[0]); } catch (e) { } }
+    R.u = v.u || ''; if (hadR && R.u && R.u !== oldU && !W.S.pano) { try { const up = String(R.u).split('|'); Items.useFx(R.C, W.S, up[0], up[2]); } catch (e) { } }
     R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `${cell === 'vip' ? '👑' : '🟢'} ${esc(v.n)}${v.g ? `<small> · Lớp ${v.g}</small>` : ''}`;
     if (W.S.pano) { const s = this.slot(uid), g = groundAt(s.ath, s.atv); R.tg = { x: g.x, y: 0, z: g.z, r: v.r }; }
     else R.tg = { x: v.x, y: v.y || 0, z: v.z, r: v.r };
@@ -7263,6 +7263,7 @@ const Items = {
   equip(id, on = true) { const it = SHOPMAP[id]; const eq = this.eq(); if (on) eq[it.slot] = id; else if (eq[it.slot] === id) delete eq[it.slot]; if (eq.hand !== 'wand') delete eq.sum; else if (on && id === 'wand') toast('🪄 Đóng cửa hàng rồi bấm nút <b>🪄 Sử dụng đũa phép</b> phía trên thanh chức năng (hoặc phím F) để biến ra con vật nhé!', 4500); saveMe(); if (W.ok && W.P) { W.makePlayer(); } Preview.refresh(); },
   reward(st, why) { if (!ME) return; ME.st = (ME.st | 0) + st; saveMe(); toast(`⭐ +${st} điểm thưởng${why ? ' · ' + why : ''}`); },
   // đếm số lần nhận thưởng trong ngày (lưu cả trong máy lẫn mã lưu, nên xoá dữ liệu trình duyệt cũng không "cày" lại được)
+  canUse(key, max) { if (!ME) return false; const d = new Date().toDateString(), g = LS.get('dh_use_' + key, null), m = ME.capd && ME.capd['u_' + key]; return Math.max(g && g.d === d ? g.n : 0, m && m.d === d ? m.n : 0) < max; },
   dayUse(key, max) { if (!ME) return false; const d = new Date().toDateString(), k = 'dh_use_' + key, g = LS.get(k, null), m = ME.capd && ME.capd['u_' + key], used = Math.max(g && g.d === d ? g.n : 0, m && m.d === d ? m.n : 0); if (used >= max) return false; LS.set(k, { d, n: used + 1 }); ME.capd = { ...(ME.capd || {}), ['u_' + key]: { d, n: used + 1 } }; return true; },
   // phần thưởng có giới hạn mỗi ngày (chống treo máy “cày” sao): key riêng cho từng loại
   capped(key, st, max, why) { if (!ME) return 0; const d = new Date().toDateString(), k = 'dh_cap_' + key, g = LS.get(k, null), m = ME.capd && ME.capd[key], used = Math.max(g && g.d === d ? g.n : 0, m && m.d === d ? m.n : 0), give = Math.max(0, Math.min(st, max - used));
@@ -7300,10 +7301,11 @@ const Items = {
     const now = Date.now(); if (now - (this._use || 0) < 4000) { toast('Chờ một chút rồi dùng tiếp em nhé!', 1200); return; } this._use = now;
     if (W.seat) { toast('Em đứng dậy rồi dùng nhé!', 1800); return; }
     C.state = 'cheer'; setTimeout(() => { if (C.state === 'cheer') C.state = 'idle'; }, 1200);
-    this.useFx(C, W.S, id); SFX.win && SFX.win(); if (typeof Net !== 'undefined') { Net.useSig = id + '|' + now; Net.lastKey = ''; } },
-  useFx(C, S, id) { const U = USES[id]; if (!U || !S || !S.fx) return; const V = (x, y, z) => new THREE.Vector3(x, y, z), R = n => (Math.random() - .5) * n, p0 = C.root.position.clone(), a = C.root.rotation.y;
+    let key = ''; try { if (id === 'santabag' && DB.on) key = DB.ref('chat').push().key; } catch (e) { }   // mã riêng của hộp quà: chỉ 1 người nhặt được
+    this.useFx(C, W.S, id, key); SFX.win && SFX.win(); if (typeof Net !== 'undefined') { Net.useSig = id + '|' + now + (key ? '|' + key : ''); Net.lastKey = ''; } },
+  useFx(C, S, id, arg) { const U = USES[id]; if (!U || !S || !S.fx) return; const V = (x, y, z) => new THREE.Vector3(x, y, z), R = n => (Math.random() - .5) * n, p0 = C.root.position.clone(), a = C.root.rotation.y;
     const later = (ms, f) => setTimeout(() => { if (typeof W !== 'undefined' && W.S === S) { try { f(); } catch (e) { } } }, ms);
-    U.fx({ C, S, V, R, p0, a, later, E: (k, p, o) => S.fx.emit(k, p, o) }); },
+    U.fx({ C, S, V, R, p0, a, later, arg, E: (k, p, o) => S.fx.emit(k, p, o) }); },
   cast() { if (typeof W === 'undefined' || !W.P || !W.S || !W.S.fx) return; const C = W.P, eq = this.eq(); if (eq.hand !== 'wand') return; const now = Date.now(); if (now - (this._cast || 0) < 1500) return; this._cast = now;
     if (W.seat) { toast('Em đứng dậy rồi vẫy đũa phép nhé!', 1800); return; }
     const cur = (eq.sum || []).filter(id => PETS[id]).slice(0, 3), pool = Object.keys(PETS).filter(id => !cur.includes(id) && id !== eq.pet), id = pool[Math.floor(Math.random() * pool.length)];
@@ -8259,7 +8261,7 @@ const OWNER_SET = [
     if (a.u) USES[id] = mkUse(n.toLowerCase(), i, a.u[0], a.u[1]);
   }
   for (const it of OWNER_SET) { SHOP.push(it); SHOPMAP[it.id] = it; }
-  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => dropGift(ctx.S, ctx.p0, ctx.a)); } };
+  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => dropGift(ctx.S, ctx.p0, ctx.a, ctx.arg, ctx.C)); } };
   ITEM3D.santabag = C => TB.sack(C, {});
   RIDES.sleigh = C => TR.sleigh(C);
   ITEM3D.o_santasuit = () => ({ fx: (dt, C, S) => { if (Math.random() < dt * 2.5) { const p = C.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * .8, 1.6 + Math.random() * .5, (Math.random() - .5) * .8)); S.fx.emit('snow', p, { size: .1, life: 1.6, v: new THREE.Vector3(0, -.4, 0) }); } } });
@@ -8270,21 +8272,29 @@ const OWNER_SET = [
     return { update: (dt, C2) => { tip.rotation.x = Math.sin(C2.t * 3) * .12; }, fx: ptFx(pom, ['snow', 'spark'], 5, { sp: .1, size: .1, vy: -.2, life: 1.4 }) }; };
 })();
 
-/* ---- hộp quà của ông già Noel rơi xuống sân: ai ở gần cũng mở được, mỗi hộp tặng 1 món đồ dưới 500 sao ---- */
-function dropGift(S, p0, a) { if (!S || !S.scene || !S.B) return; const G = IG(), g = new THREE.Group(), r = 2 + Math.random() * 1.5, t = a + (Math.random() - .5) * 1.4, x = p0.x + Math.sin(t) * r, z = p0.z + Math.cos(t) * r, y0 = S.heightAt ? S.heightAt(x, z) : 0;
+/* ---- hộp quà của ông già Noel rơi xuống sân: CHỈ 1 NGƯỜI NHẶT ĐƯỢC mỗi hộp (người đầu tiên lại gần), tên người nhặt hiện trong khung chat ---- */
+function dropGift(S, p0, a, key, C) { if (!S || !S.scene || !S.B) return; const G = IG(), g = new THREE.Group(), r = 2 + ((key ? key.charCodeAt(key.length - 1) : Math.random() * 100) % 10) / 6.6, t = a + .3, x = p0.x + Math.sin(t) * r, z = p0.z + Math.cos(t) * r, y0 = S.heightAt ? S.heightAt(x, z) : 0;
   const col = ['#dc2626', '#16a34a', '#2563eb', '#9333ea', '#ec4899'][Math.floor(Math.random() * 5)], gd = PM('#facc15', { k: 'gold' });
   g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .22, 0], [.44, .44, .44])); g.add(imesh(G.box, gd, [0, .22, 0], [.1, .45, .45])); g.add(imesh(G.box, gd, [0, .22, 0], [.45, .45, .1])); g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .46, 0], [.48, .08, .48]));
   for (const sx of [-1, 1]) g.add(imesh(G.cone, gd, [sx * .1, .54, 0], [.07, .14, .05], [0, 0, sx * Math.PI / 2])); g.add(imesh(G.s, gd, [0, .53, 0], [.05, .05, .05])); glow(g, '#fde68a', 1.4, [0, .3, 0], .55);
-  g.position.set(x, y0 + 6, z); S.scene.add(g); let tt = 0, done = false; const S0 = S;
-  const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel (lại gần là tự nhặt)', fn: () => { if (done) return; done = true; openGift(S0, g); } }; act.g = g; act.y0 = y0; act.S0 = S0; S.B.acts.push(act);
-  const t0 = performance.now(); const tk = setInterval(() => { tt = (performance.now() - t0) / 1000; if (!done && W.P && W.S === S0 && g.position.y <= y0 + .3 && Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 1.3) act.fn();   // lại gần là tự nhặt
-    if (W.S !== S0 || done || tt > 90) { clearInterval(tk); S0.scene.remove(g); const k = S0.B.acts.indexOf(act); if (k >= 0) S0.B.acts.splice(k, 1); return; }
+  g.position.set(x, y0 + 6, z); S.scene.add(g); let tt = 0, done = false, busy = false, warned = false; const S0 = S, mineBox = C === W.P, online = !!(key && DB.on);
+  const finish = () => { done = true; };
+  // ai nhặt được thì cả trường thấy ngay (hộp biến mất trên máy mọi người)
+  let ref = null; if (online) { ref = DB.ref('chat/' + key); ref.on('value', s => { const v = s.val(); if (!v) return; ref.off(); finish(); if (S0.fx) poof(S0, g.position, 'star');
+    if (v.u !== ME.id) { const what = String(v.m || '').replace(/^.*Noel:?\s*/, ''); if (isOwner()) toast(`🎁 <b>${esc(v.n)}</b> đã nhặt hộp quà Noel của anh${what ? ': <b>' + esc(what) + '</b>' : ''}`, 6000); else if (Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 12) toast(`🎁 <b>${esc(v.n)}</b> đã nhặt được hộp quà Noel rồi!`, 3000); } }); }
+  const claim = () => { if (done || busy) return; if (isOwner()) { if (!warned) { warned = true; toast('🎁 Hộp quà này dành cho các bạn học sinh nhặt nhé!', 2500); } return; }
+    if (!Items.canUse('santabox', 5)) { if (!warned) { warned = true; toast('🎁 Hôm nay em đã nhặt đủ 5 hộp quà Noel rồi, nhường các bạn nhé!', 3000); } return; }
+    const pool = SHOP.filter(it => it.p > 0 && it.p < 500 && !it.own && !it.hide && !Items.has(it.id)), it = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+    const give = () => { Items.dayUse('santabox', 5); finish(); if (S0.fx) { poof(S0, g.position, 'gift'); poof(S0, g.position, 'star'); poof(S0, g.position, 'snow'); } confetti(80); SFX.win();
+      if (it) { ME.inv = [...(ME.inv || []), it.id]; saveMe(); toast(`🎄 <b>Chúc mừng bạn đã nhận được quà Noel!</b><br>Ông già Noel tặng bạn <b>${it.i} ${it.n}</b> – vào Túi đồ để mặc thử nhé.`, 6000); } else Items.reward(30, 'Chúc mừng bạn đã nhận được quà Noel!'); };
+    if (!online) return give(); busy = true;
+    ref.set({ u: ME.id, n: String(ME.n).slice(0, 20), g: pubG(), m: ('🎁 đã nhặt được hộp quà Noel: ' + (it ? it.i + ' ' + it.n : '30 ⭐')).slice(0, 120), t: firebase.database.ServerValue.TIMESTAMP })
+      .then(give).catch(() => { busy = false; finish(); toast('😢 Tiếc quá, bạn khác đã nhặt hộp quà này trước rồi!', 2500); }); };
+  const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel', fn: claim }; S.B.acts.push(act);
+  const t0 = performance.now(); const tk = setInterval(() => { tt = (performance.now() - t0) / 1000;
+    if (!done && W.P && W.S === S0 && g.position.y <= y0 + .3 && Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 1.3) claim();   // lại gần là tự nhặt
+    if (W.S !== S0 || done || tt > 90) { clearInterval(tk); if (ref) ref.off(); S0.scene.remove(g); const k = S0.B.acts.indexOf(act); if (k >= 0) S0.B.acts.splice(k, 1); return; }
     g.position.y = Math.max(y0, y0 + 6 - tt * 7) + (g.position.y <= y0 + .01 ? Math.abs(Math.sin(tt * 3)) * .08 : 0); g.rotation.y += .04; if (S0.fx && Math.random() < .3) S0.fx.emit('spark', g.position.clone().add(new THREE.Vector3((Math.random() - .5) * .6, .5, (Math.random() - .5) * .6)), { add: 1, size: .12, life: .7 }); }, 50); }
-function openGift(S, g) { if (S.fx) { poof(S, g.position, 'gift'); poof(S, g.position, 'star'); poof(S, g.position, 'snow'); } confetti(80); SFX.win();
-  if (!isOwner() && !Items.dayUse('santabox', 5)) { toast('🎁 Hôm nay em đã mở đủ 5 hộp quà của ông già Noel rồi!', 3000); return; }
-  const pool = SHOP.filter(x => x.p > 0 && x.p < 500 && !x.own && !x.hide && !Items.has(x.id));
-  if (!pool.length) { Items.reward(30, 'Chúc mừng bạn đã nhận được quà Noel!'); return; } const it = pool[Math.floor(Math.random() * pool.length)];
-  ME.inv = [...(ME.inv || []), it.id]; saveMe(); toast(`🎄 <b>Chúc mừng bạn đã nhận được quà Noel!</b><br>Ông già Noel tặng bạn <b>${it.i} ${it.n}</b> – vào Túi đồ để mặc thử nhé.`, 6000); }
 
 /* ======================================================================
    NGÀY LỄ: trường tự trang trí theo lịch + hoạt động kỉ niệm
@@ -8374,8 +8384,7 @@ const Fest = {
       if (P.lanterns === 'red') { // tua vàng dưới đèn lồng
         const tas = new THREE.InstancedMesh(G.c, PM('#facc15'), kl); for (let i = 0; i < kl; i++) { lan.getMatrixAt(i, m); const p = V3().setFromMatrixPosition(m); m.compose(p.add(V3(0, -.45, 0)), new THREE.Quaternion(), V3(.03, .3, .03)); tas.setMatrixAt(i, m); } scene.add(tas); } }
     // ---- 3. Băng rôn dọc trên các dãy nhà + băng rôn ngang dãy giữa
-    { const W4 = F.walls; vbanner(W4[0], 1.5, 7.2, -22.85, 5.6, -6, Math.PI / 2); vbanner(W4[1], 1.5, 7.2, 22.85, 5.6, -6, -Math.PI / 2); vbanner(W4[2], 1.5, 7.2, -22.85, 5.6, -29, Math.PI / 2); vbanner(W4[3], 1.5, 7.2, 22.85, 5.6, -29, -Math.PI / 2);
-      B.plane(20, 1.2, new THREE.MeshBasicMaterial({ map: bannerTex(F.stage(y)[0], { w: 2048, h: 128 }) }), 0, 9.3, -36.85, 0); }
+    { B.plane(20, 1.2, new THREE.MeshBasicMaterial({ map: bannerTex(F.stage(y)[0], { w: 2048, h: 128 }) }), 0, 9.3, -33.62, 0); }
     // ---- 4. Phông sân khấu ngày lễ
     { const [t1, t2] = F.stage(y); const tx = canvasTex(1440, 400, (x, w, h) => { const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, F.bg[0]); g.addColorStop(1, F.bg[1]); x.fillStyle = g; x.fillRect(0, 0, w, h);
         for (let i = 0; i < 60; i++) { x.fillStyle = `rgba(255,255,255,${Math.random() * .25})`; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, 2 + Math.random() * 10, 0, 7); x.fill(); }
