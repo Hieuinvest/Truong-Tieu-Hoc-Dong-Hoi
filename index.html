@@ -5552,13 +5552,13 @@ const L = k => clsId(k);
 const TOA = [
   { id: 'A', n: 'Tòa A', d: 'Khối 2 · Khối 3', o: [-26, -17], th: Math.PI / 2, u0: -20, u1: 20, endOpen: 1,
     floors: [[L('2A1'), L('2A2'), L('2A3'), L('2A4'), L('2A5'), L('2A6')], [L('2A7'), L('2A8'), L('2A9'), L('3A1'), L('3A2')], [L('3A3'), L('3A4'), L('3A5'), L('3A6'), L('3A7')]] },
-  { id: 'B', n: 'Tòa B', d: 'Khối 1 · Khối 4', o: [0, -40], th: 0, u0: -26, u1: 26, endOpen: 0,
+  { id: 'B', n: 'Tòa B', d: 'Khối 1 · Khối 4', o: [26, -17], th: -Math.PI / 2, u0: -20, u1: 20, endOpen: -1,
     floors: [[L('1A1'), L('1A2'), L('1A3'), L('1A4'), L('1A5'), L('1A6')], [L('1A7'), L('1A8'), L('1A9'), L('4A1'), L('4A2')], [L('4A3'), L('4A4'), L('4A5'), L('4A6'), L('4A7')]] },
-  { id: 'C', n: 'Tòa C', d: 'Khối 5 · Phòng chức năng', o: [26, -17], th: -Math.PI / 2, u0: -20, u1: 20, endOpen: -1,
+  { id: 'C', n: 'Tòa C', d: 'Khối 5 · Phòng chức năng', o: [0, -40], th: 0, u0: -26, u1: 26, endOpen: 0,
     floors: [[L('5A1'), L('5A2'), L('5A3'), L('5A4'), L('5A5'), L('5A6')], ['pri', 'med', 'doi', 'lib', 'mus'], ['en', 'it', 'art', 'stem']] },
 ];
 // vị trí cửa dọc hành lang: 3 cửa mỗi bên cầu thang
-const DOOR_U = { A: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5], B: [-17.5, -12, -6.5, 6.5, 12, 17.5], C: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5] };
+const DOOR_U = { A: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5], B: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5], C: [-17.5, -12, -6.5, 6.5, 12, 17.5] };
 const toaW = (T, u, v) => { const c = Math.cos(T.th), s = Math.sin(T.th); return { x: T.o[0] + u * c + v * s, z: T.o[1] - u * s + v * c }; };
 const toaL = (T, x, z) => { const c = Math.cos(T.th), s = Math.sin(T.th), dx = x - T.o[0], dz = z - T.o[1]; return { u: dx * c - dz * s, v: dx * s + dz * c }; };
 const DOORS = {};   // id → chỗ đứng trước cửa (ở hành lang), quay mặt ra hành lang
@@ -6088,7 +6088,7 @@ const YARD_DOORS = {};
 // Các khu đúng như sơ đồ VR 360 của trường: Cổng Trường · Sân Trường · Hành lang · Khu Sân Chơi & Thể Thao · Không Gian Mỹ Thuật · Khu Cây Xanh
 const YARD_SPOTS = { gate: { n: 'Cổng Trường', x: 0, z: 54, ry: Math.PI }, yard: { n: 'Sân Trường', x: 0, z: 8, ry: Math.PI }, hall: { n: 'Hành lang – dãy lớp học', x: -16, z: -32, ry: Math.PI },
   court: { n: 'Khu Sân Chơi & Thể Thao (Nhà thể chất)', x: -36, z: -31, ry: -Math.PI / 2 }, canteen: { n: 'Nhà ăn học sinh', x: -27, z: 31, ry: -Math.PI / 2 }, art: { n: 'Không Gian Mỹ Thuật', x: -27, z: 15.3, ry: -Math.PI / 2 }, trees: { n: 'Khu Cây Xanh', x: 40.5, z: 2.5, ry: Math.PI },
-  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -18.5, ry: Math.PI } };
+  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -22.5, ry: Math.PI } };
 let YARD_FAC = null;
 function yardFacade() {   // một ô mặt tiền 3 tầng: sàn trắng, lam che nắng, cửa kính tối, cột xanh – giống dãy nhà thật
   if (YARD_FAC) return YARD_FAC;
@@ -6220,9 +6220,9 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     const stairs = (T, u) => { const p = toaW(T, u, 1.6); return () => W.enter('bld', { x: p.x, y: 0, z: p.z, ry: T.th + Math.PI / 2 }); };
     const doorsOf = (T, tOf) => T.floors[0].map(id => [ic(id), lab(id), () => W.enter(id), tOf(DOORS[id])]);
     const TB = TT('B'), TA = TT('A'), TC = TT('C');
-    building(0, -42, 46, 10, 3, 's', [['🚶', 'Hành lang Tòa B', stairs(TB, -21), -21], ...doorsOf(TB, D => D.x), ['🪜', 'Cầu thang Tòa B (Khối 1, 4)', stairs(TB, 0), 0]]);
+    building(0, -42, 46, 10, 3, 's', [['🚶', 'Hành lang Tòa C', stairs(TC, -21), -21], ...doorsOf(TC, D => D.x), ['🪜', 'Cầu thang Tòa C (Khối 5, phòng chức năng)', stairs(TC, 0), 0]]);
     building(-28, -22, 50, 10, 3, 'e', [...doorsOf(TA, D => D.z + 22), ['🪜', 'Cầu thang Tòa A (Khối 2, 3)', stairs(TA, 0), 5]], { c0: -12 });
-    building(28, -22, 50, 10, 3, 'w', [...doorsOf(TC, D => D.z + 22), ['🪜', 'Cầu thang Tòa C (Khối 5, phòng chức năng)', stairs(TC, 0), 5]], { c0: -12 }); }
+    building(28, -22, 50, 10, 3, 'w', [...doorsOf(TB, D => D.z + 22), ['🪜', 'Cầu thang Tòa B (Khối 1, 4)', stairs(TB, 0), 5]], { c0: -12 }); }
   { // đầu hồi hai dãy cánh: tường trắng ốp mảng vàng – xám như ảnh
     const endT = canvasTex(256, 256, (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); x.fillStyle = '#f5c518'; x.fillRect(96, 30, 44, 150); x.fillRect(150, 110, 60, 60); x.fillStyle = '#fde68a'; x.fillRect(150, 30, 60, 70); x.fillStyle = '#cbd5e1'; x.fillRect(40, 60, 46, 120); x.fillStyle = '#2b3442'; x.fillRect(40, 196, 170, 44); x.fillStyle = '#e2e8f0'; x.fillRect(0, 0, w, 10); });
     for (const sx of [-1, 1]) { B.plane(10, 10.2, new THREE.MeshLambertMaterial({ map: endT }), sx * 28, 5.1, 3.03, 0); B.box(3.2, 10.2, .3, '#f8fafc', sx * 21.5, 0, 3, { col: true }); B.box(3.2, 2.2, .1, '#f5c518', sx * 21.5, 4, 3.2); }
@@ -6238,19 +6238,19 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   for (const bx of [-11.5, 11.5]) B.plane(2.0, 6.2, new THREE.MeshBasicMaterial({ map: realTex('banner2') }), bx, 5.4, -32.6, 0);
   }
   // ---- sân khấu (giống ảnh: mái hồi xanh, cột cam)
-  B.box(16, .8, 7, '#f1f5f9', 0, 0, -26, { cam: true });   // sân khấu: đi lên được bằng bậc thềm phía trước
-  B.col(-8.1, -26, .3, 7.2); B.col(8.1, -26, .3, 7.2); B.col(-5, -22.45, 6, .3); B.col(5, -22.45, 6, .3); B.col(0, -29.1, 16, .5);
-  B.box(16.2, .12, 7.2, '#2563eb', 0, .8, -26);
-  for (let k = 0; k < 4; k++) B.box(4, .2 * (k + 1), .35, k % 2 ? '#e2e8f0' : '#cbd5e1', 0, 0, -22.5 + .175 + (3 - k) * .35);
-  for (const sx of [-1, 1]) B.box(.08, .9, .08, '#f97316', sx * 2.04, .8, -22.46);
-  for (const sx of [-1, 1]) for (const zz of [-28.8, -23]) B.box(.5, 5, .5, '#f97316', sx * 7.4, .8, zz);
+  B.box(16, .8, 7, '#f1f5f9', 0, 0, -30, { cam: true });   // sân khấu: đi lên được bằng bậc thềm phía trước
+  B.col(-8.1, -30, .3, 7.2); B.col(8.1, -30, .3, 7.2); B.col(-5, -26.45, 6, .3); B.col(5, -26.45, 6, .3); B.col(0, -33.1, 16, .5);
+  B.box(16.2, .12, 7.2, '#2563eb', 0, .8, -30);
+  for (let k = 0; k < 4; k++) B.box(4, .2 * (k + 1), .35, k % 2 ? '#e2e8f0' : '#cbd5e1', 0, 0, -26.5 + .175 + (3 - k) * .35);
+  for (const sx of [-1, 1]) B.box(.08, .9, .08, '#f97316', sx * 2.04, .8, -26.46);
+  for (const sx of [-1, 1]) for (const zz of [-32.8, -27]) B.box(.5, 5, .5, '#f97316', sx * 7.4, .8, zz);
   { const sh = new THREE.Shape(); sh.moveTo(-5, 0); sh.lineTo(5, 0); sh.lineTo(0, 2.6); sh.closePath(); const g = new THREE.ExtrudeGeometry(sh, { depth: 17.4, bevelEnabled: false }); g.translate(0, 0, -8.7);
-    const r = new THREE.Mesh(g, mat('#3b82f6')); r.rotation.y = Math.PI / 2; r.position.set(0, 5.8, -26); scene.add(r);
-    const gable = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('#fde68a')); gable.position.set(0, 5.8, -21.25); scene.add(gable); }
-  B.box(15, 4.2, .3, '#b91c1c', 0, .8, -28.9);
-  const stageBoard = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: realTex('stage') }), 0, 2.95, -28.7, 0);
+    const r = new THREE.Mesh(g, mat('#3b82f6')); r.rotation.y = Math.PI / 2; r.position.set(0, 5.8, -30); scene.add(r);
+    const gable = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('#fde68a')); gable.position.set(0, 5.8, -25.25); scene.add(gable); }
+  B.box(15, 4.2, .3, '#b91c1c', 0, .8, -32.9);
+  const stageBoard = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: realTex('stage') }), 0, 2.95, -32.7, 0);
   stageBoard.userData.click = () => location.hash = '#/arena';
-  B.act({ x: 0, z: -20.6, r: 3.2, icon: '🔔', label: 'Vào Đấu trường Trí tuệ', fn: () => location.hash = '#/arena' });
+  B.act({ x: 0, z: -24.6, r: 3.2, icon: '🔔', label: 'Vào Đấu trường Trí tuệ', fn: () => location.hash = '#/arena' });
   // cột cờ (cờ bay)
   B.cyl(.9, 1.1, .4, '#e2e8f0', 0, 0, -14.5, 16, { col: true }); B.cyl(.06, .08, 9, '#e5e7eb', 0, .4, -14.5, 8); B.cyl(.12, .12, .2, '#facc15', 0, 9.4, -14.5, 8);
   const fg = new THREE.PlaneGeometry(2.4, 1.6, 14, 6); const flag = new THREE.Mesh(fg, new THREE.MeshLambertMaterial({ map: TX.flag, side: THREE.DoubleSide })); flag.position.set(1.25, 8.5, -14.5); scene.add(flag);
@@ -6675,7 +6675,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
     n.name = 'Bác bảo vệ'; n.talkLabel = 'Chào bác bảo vệ'; n.talk = () => { W.face(C); C.state = 'wave'; const t = 'Bác chào cháu! Cháu cần tìm phòng nào thì bấm nút Bản đồ, hoặc hỏi cô Hạnh hướng dẫn viên nhé.'; W.bubble(C, 'Bác bảo vệ: ' + t, 5000); Voice.speak(t, { who: C }); }; }
   try { Fest.decorate(scene, B, { kid }); } catch (e) { console.error(e); }
   mergeStatic(scene);
-  const heightAt = (x, z) => { if (x > -8 && x < 8 && z > -29.5 && z <= -22.5) return .8; if (Math.abs(x) <= 2.05 && z > -22.5 && z < -21.1) return .8 * (-21.1 - z) / 1.4; let h = 0; for (const s of yardSurf) { const ix = Math.max(s.x0 - x, 0, x - s.x1), iz = Math.max(s.z0 - z, 0, z - s.z1); if (!ix && !iz) return CH0; const d = s.dir[0] ? (iz ? 9 : ix) : (ix ? 9 : iz); const out = s.dir[0] ? (s.dir[0] > 0 ? x > s.x1 : x < s.x0) : z > s.z1; if (out && d < .72) h = Math.max(h, CH0 * (1 - d / .72)); } return h; };
+  const heightAt = (x, z) => { if (x > -8 && x < 8 && z > -33.5 && z <= -26.5) return .8; if (Math.abs(x) <= 2.05 && z > -26.5 && z < -25.1) return .8 * (-25.1 - z) / 1.4; let h = 0; for (const s of yardSurf) { const ix = Math.max(s.x0 - x, 0, x - s.x1), iz = Math.max(s.z0 - z, 0, z - s.z1); if (!ix && !iz) return CH0; const d = s.dir[0] ? (iz ? 9 : ix) : (ix ? 9 : iz); const out = s.dir[0] ? (s.dir[0] > 0 ? x > s.x1 : x < s.x0) : z > s.z1; if (out && d < .72) h = Math.max(h, CH0 * (1 - d / .72)); } return h; };
   const def = { scene, B, id: 'yard', yard: true, heightAt, T: scene.userData.peTeacher, name: 'Sân trường', indoor: false, spawn: { x: 0, z: 59, ry: Math.PI }, cam0: { pitch: .06, dist: 11 }, bounds: { x0: -74.5, x1: 46.5, z0: -47.5, z1: 66 },
     onEnter(prev) { Tour.onEnter(prev, def); if (Fest.cur) Fest.greet(); },
     onSit(seat) { seat.look = .35; const f = seat.eat ? eatOn : seat.draw ? drawOn : seat.rest ? restOn : null; if (f) { sitCur = { seat, ...f(seat) }; seat.look = .35; W.pitch = .5; W.dist = 3; } },
