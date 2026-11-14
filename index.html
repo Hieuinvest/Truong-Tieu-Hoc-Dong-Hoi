@@ -388,14 +388,14 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .chatbtn .dot{position:absolute;right:-4px;top:-4px;width:16px;height:16px;border-radius:50%;background:#ef4444;border:2px solid #fff;animation:dotp 1s infinite alternate}
 @keyframes dotp{to{transform:scale(1.25)}}
 .chatbox{position:fixed;right:10px;bottom:66px;width:min(340px,calc(100vw - 20px));height:min(430px,60vh);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;z-index:3}
-.ch-h{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#eff6ff;border-bottom:1px solid var(--line)}.ch-h b{font-size:14px}.ch-h span{font-size:11.5px;font-weight:800;color:#15803d;margin-left:auto}.ch-h button{width:26px;height:26px;border-radius:8px;background:#fff}
+.ch-h{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#eff6ff;border-bottom:1px solid var(--line)}.ch-h b{font-size:14px}.ch-h span{font-size:11.5px;font-weight:800;color:#15803d;margin-left:auto;white-space:nowrap}.ch-h button{width:26px;height:26px;border-radius:8px;background:#fff}
 .ch-l{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:5px}
 .cm{max-width:85%;background:#f1f5f9;border-radius:12px 12px 12px 4px;padding:5px 9px}.cm b{display:block;font-size:12px;color:#1d4ed8}.cm b small{color:var(--muted);font-weight:700}.cm span{font-size:13.5px;font-weight:600;word-wrap:break-word}
 .cm.me{align-self:flex-end;background:#dbeafe;border-radius:12px 12px 4px 12px}
 .ch-q{display:flex;gap:4px;overflow-x:auto;padding:5px 8px;border-top:1px solid var(--line)}.ch-q button{white-space:nowrap;background:#f1f5f9;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700}
 .ch-f{display:flex;gap:6px;padding:6px 8px}.ch-f input{flex:1;border:2px solid var(--line);border-radius:10px;padding:6px 9px;font:inherit;font-size:14px}
 .ch-n{padding:0 10px 6px;margin:0;font-size:11px}
-#feedBtn{position:fixed;width:36px;height:36px;border-radius:50%;background:rgba(15,23,42,.72);color:#fff;font-size:17px;border:2px solid rgba(255,255,255,.5);z-index:25;display:flex;align-items:center;justify-content:center;padding:0}
+#chatBox #feedBtn{width:auto;padding:0 8px;font-size:11.5px;font-weight:800;white-space:nowrap;color:#334155;border:1px solid var(--line)}
 body.feedhide .chatfeed{display:none!important}
 .chatfeed{position:fixed;left:12px;bottom:max(150px,env(safe-area-inset-bottom));width:min(330px,calc(100vw - 120px));display:flex;flex-direction:column;gap:4px;pointer-events:none!important}
 .chatfeed .cf{background:rgba(15,23,42,.72);color:#fff;border-radius:10px;padding:5px 9px;font-size:13px;font-weight:600;animation:cfin .3s;transition:opacity .6s}.chatfeed .cf b{color:#fde68a}.chatfeed .cf.out{opacity:0}
@@ -6938,7 +6938,7 @@ const Net = {
     if (!m || !m.m) return; if (this.msgs.some(x => x.id === m.id)) return;
     m.m = String(m.m).slice(0, 120); if (Spam.drop(m)) return;
     if (Civil.bad(m.m)) m = { ...m, m: Civil.hidden };
-    this.msgs.push(m); if (this.msgs.length > 50) this.msgs.shift();
+    this.msgs.push(m); const tt = x => typeof x.t === 'number' ? x.t : Date.now(); this.msgs.sort((a, b) => tt(a) - tt(b)); if (this.msgs.length > 50) this.msgs.shift();   // luôn xếp theo giờ gửi: tin mới ở dưới
     if (!DB.on) LS.set('dh_chat', this.msgs);
     const fresh = (m.t || 0) > this.start - 3000 || !DB.on && m.id && m.id.startsWith('l');
     HUD.chatMsg(m, fresh);
@@ -8590,7 +8590,7 @@ const HUD = {
       <div class="zoomb" id="zoomb"><button data-z="in" title="Phóng to (lại gần)">＋</button><button data-z="out" title="Thu nhỏ (ra xa)">－</button></div>
       <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.use()">🪄 Sử dụng đũa phép</button>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
-      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="chatX">✕</button></div>
+      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="feedBtn" title="Ẩn/hiện tin nhắn nổi trên màn hình"></button><button id="chatX">✕</button></div>
         <div class="ch-l" id="chatList"></div>
         <div class="ch-q">${['👋 Chào các bạn!', '😄', '👍', 'Cùng vào Đấu trường nhé!', 'Học bài cùng mình không?', '❤️'].map(q => `<button data-q="${q}">${q}</button>`).join('')}</div>
         <form class="ch-f" id="chatForm"><input id="chatIn" maxlength="120" placeholder="Nhập tin nhắn…" autocomplete="off"><button class="btn sun sm">Gửi</button></form>
@@ -8643,11 +8643,10 @@ const HUD = {
     this.joystick();
     $('#chatBtn').onclick = () => this.chatToggle();
     // nút ẩn / hiện tin nhắn nổi trên màn hình (ngay cạnh nút Chat)
-    { const fb = document.createElement('button'); fb.id = 'feedBtn'; document.body.appendChild(fb); let hid = !!LS.get('dh_feedhide', false);
-      const apply = () => { document.body.classList.toggle('feedhide', hid); fb.textContent = hid ? '👁️' : '🙈'; fb.title = hid ? 'Hiện tin nhắn trên màn hình' : 'Ẩn tin nhắn trên màn hình'; };
-      const place = () => { const c = $('#chatBtn'); if (!c) return; const r = c.getBoundingClientRect(); if (!r.width) { fb.style.display = 'none'; return; } fb.style.display = ''; fb.style.left = Math.max(4, r.left - 42) + 'px'; fb.style.top = (r.top + r.height / 2 - 18) + 'px'; };
-      fb.onclick = () => { hid = !hid; LS.set('dh_feedhide', hid); apply(); toast(hid ? 'Đã ẩn tin nhắn nổi. Bấm 👁️ để hiện lại.' : 'Đã hiện tin nhắn nổi.', 1600); };
-      apply(); place(); setInterval(place, 1500); addEventListener('resize', place); }
+    // nút ẩn / hiện tin nhắn nổi trên màn hình – nằm trong ô chat, cạnh nút đóng
+    { const fb = $('#feedBtn'); let hid = !!LS.get('dh_feedhide', false);
+      const apply = () => { document.body.classList.toggle('feedhide', hid); fb.textContent = hid ? '👁️ Hiện tin' : '🙈 Ẩn tin'; };
+      fb.onclick = () => { hid = !hid; LS.set('dh_feedhide', hid); apply(); toast(hid ? 'Đã ẩn tin nhắn nổi trên màn hình.' : 'Đã hiện tin nhắn nổi trên màn hình.', 1600); }; apply(); }
     $('#chatX').onclick = () => this.chatToggle(false);
     $('#chatForm').onsubmit = e => { e.preventDefault(); const i = $('#chatIn'); if (Net.send(i.value)) i.value = ''; };
     $$('#chatBox [data-q]').forEach(b => b.onclick = () => Net.send(b.dataset.q));
