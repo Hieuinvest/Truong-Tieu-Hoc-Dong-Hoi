@@ -3984,6 +3984,7 @@ const Save = {
 };
 /* ---------------- Tài khoản chủ (mã lưu riêng): điểm thưởng không giới hạn ---------------- */
 const isOwner = () => !!(ME && ME.code && hashStr('dh-owner:' + ME.code) === 902225018);
+const pubG = () => isOwner() ? 0 : ME.g;   // tài khoản chủ trường không hiện lớp với mọi người
 const ownerTop = () => { if (isOwner() && (ME.st | 0) < 900000) ME.st = 999999; };
 /* ---------------- Hồ sơ người chơi ---------------- */
 function saveMe(oldG) { ownerTop(); if (ME && !ME.code) ME.code = Save.gen(); LS.set('dh_me', ME); DB.pushMe(oldG); Save.sync(); renderTop(); if (typeof HUD !== 'undefined') HUD.renderMe(); }
@@ -6833,8 +6834,8 @@ const Net = {
     if (this.ready) return; this.ready = true;
     if (!DB.on) { this.msgs = LS.get('dh_chat', []).slice(-50); return; }
     try {
-      const oref = DB.ref('online/' + ME.id); oref.onDisconnect().remove(); oref.update({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP }); if (typeof Gift !== 'undefined') Gift.listen();
-      setInterval(() => { if (ME) oref.update({ n: ME.n, g: ME.g, t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
+      const oref = DB.ref('online/' + ME.id); oref.onDisconnect().remove(); oref.update({ n: ME.n, g: pubG(), t: firebase.database.ServerValue.TIMESTAMP }); if (typeof Gift !== 'undefined') Gift.listen();
+      setInterval(() => { if (ME) oref.update({ n: ME.n, g: pubG(), t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
       DB.ref('online').on('value', s => { let n = 0; const now = DB.now(); s.forEach(c => { if (now - (c.val().t || 0) < 180000) n++; }); this.online = n; HUD.chatOnline(n); });
       DB.ref('chat').limitToLast(50).on('child_added', s => this.onMsg({ id: s.key, ...s.val() }));
       // dọn tin nhắn cũ hơn 1 ngày
@@ -6871,7 +6872,7 @@ const Net = {
     if (!DB.on || !this.base || !W.P || !ME) return; const now = performance.now(); if (!force && now - this.last < 200) return;
     this.moveCell();
     const P = W.P, p = P.root.position;
-    const d = { n: ME.n, g: ME.g, av: ME.av, eq: ME.eq || {}, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), r: +P.root.rotation.y.toFixed(2), s: P.state, sit: W.seat ? 1 : 0, u: this.useSig || '', t: firebase.database.ServerValue.TIMESTAMP };
+    const d = { n: ME.n, g: pubG(), av: ME.av, eq: ME.eq || {}, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), r: +P.root.rotation.y.toFixed(2), s: P.state, sit: W.seat ? 1 : 0, u: this.useSig || '', t: firebase.database.ServerValue.TIMESTAMP };
     const key = [d.x, d.y, d.z, d.r, d.s, d.u].join(',');
     if (!force && key === this.lastKey && now - this.last < 15000) return;
     this.lastKey = key; this.last = now; this.myRef.set(d).catch(() => { });
@@ -6891,7 +6892,7 @@ const Net = {
       R = this.remotes[uid] = { C, sig, tag, first: true };
     }
     R.u = v.u || ''; if (hadR && R.u && R.u !== oldU && !W.S.pano) { try { Items.useFx(R.C, W.S, String(R.u).split('|')[0]); } catch (e) { } }
-    R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `🟢 ${esc(v.n)}<small> · Lớp ${v.g}</small>`;
+    R.cell = cell || R.cell; R.n = v.n; R.g = v.g; R.tag.innerHTML = `🟢 ${esc(v.n)}${v.g ? `<small> · Lớp ${v.g}</small>` : ''}`;
     if (W.S.pano) { const s = this.slot(uid), g = groundAt(s.ath, s.atv); R.tg = { x: g.x, y: 0, z: g.z, r: v.r }; }
     else R.tg = { x: v.x, y: v.y || 0, z: v.z, r: v.r };
     if (R.first) { R.C.root.position.set(R.tg.x, R.tg.y, R.tg.z); R.C.root.rotation.y = R.tg.r; R.first = false; }
@@ -6925,7 +6926,7 @@ const Net = {
     const ms = Civil.muted(); if (ms) { toast(`Cô Hiệu trưởng cho em nghỉ trò chuyện, còn ${ms} giây nữa nhé.`, 2600); return false; }
     if (Civil.bad(text)) { Civil.warn(); return false; }
     { const sp = Spam.check(text); if (sp) { toast('✋ ' + sp, 3000); return false; } } this.lastSend = Date.now();
-    const m = { u: ME.id, n: ME.n, g: ME.g, m: text, w: W.S ? W.S.name : '' };
+    const m = { u: ME.id, n: ME.n, g: pubG(), m: text, w: W.S ? W.S.name : '' };
     if (DB.on) DB.ref('chat').push({ ...m, t: firebase.database.ServerValue.TIMESTAMP }).catch(() => toast('Không gửi được tin nhắn.'));
     else this.onMsg({ ...m, t: Date.now(), id: 'l' + Date.now() });
     return true;
@@ -7624,7 +7625,7 @@ const Gift = {
     catch (e) { toast('Bạn ' + esc(to.n) + ' vừa rời trường nên chưa nhận được quà. Em thử lại sau nhé.', 3200); return false; }
     ME.st -= cost; this.used(); saveMe(); SFX.win(); confetti(40); toast(`🎁 Em đã tặng <b>${this.label(p)}</b> cho bạn <b>${esc(to.n)}</b>!`, 3200);
     if (typeof W !== 'undefined' && W.P && W.S && W.S.fx) { poof(W.S, W.P.root.position, 'heart'); poof(W.S, W.P.root.position, 'gift'); }
-    try { DB.ref('chat').push({ u: ME.id, n: ME.n, g: ME.g, m: `🎁 tặng ${p.st ? p.st + ' sao' : (SHOPMAP[p.id] || {}).n} cho bạn ${to.n}`.slice(0, 120), w: 'Quà tặng', t: firebase.database.ServerValue.TIMESTAMP }).catch(() => { }); } catch (e) { }
+    try { DB.ref('chat').push({ u: ME.id, n: ME.n, g: pubG(), m: `🎁 tặng ${p.st ? p.st + ' sao' : (SHOPMAP[p.id] || {}).n} cho bạn ${to.n}`.slice(0, 120), w: 'Quà tặng', t: firebase.database.ServerValue.TIMESTAMP }).catch(() => { }); } catch (e) { }
     return true; },
   listen() { if (this._on || !DB.on || !ME) return; this._on = true; DB.ref('online/' + ME.id + '/gf').on('child_added', s => { const v = s.val(); s.ref.remove().catch(() => { }); try { this.receive(v); } catch (e) { } }); },
   receive(v) { if (!v || !ME) return; const d = new Date().toDateString(), r = LS.get('dh_giftrx', null), n = r && r.d === d ? r.n : 0; if (n >= 20) return; LS.set('dh_giftrx', { d, n: n + 1 });
@@ -8072,27 +8073,47 @@ const TR = {
     const fl = new THREE.Group(); fl.position.set(.3, .02, .3); b.add(fl); for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) { const t = i / 8 * Math.PI * 2 + r * .4; fl.add(imesh(G.s, PM(r ? '#fbcfe8' : '#f472b6', { k: 'silk' }), [Math.cos(t) * .07 * (1 - r * .4), .06 + r * .03, Math.sin(t) * .07 * (1 - r * .4)], [.04, .08, .025], [Math.sin(t) * .6, -t, Math.cos(t) * .6 * 0])); }
     fl.add(imesh(G.s, PM('#fde047', { k: 'glow' }), [0, .08, 0], [.03, .02, .03])); glow(fl, '#fbcfe8', .4, [0, .1, 0]);
     return { g, pose: 'stand', lift: .27, bob: 1, k: 1.3, always: 1, upd: (dt, C2, mv, t) => { b.position.y = .24 + Math.sin(t * 2.4) * .04; b.rotation.y += dt * .3; }, fx: rideFx(['petal', 'lotus'], { rate: 6, y: .2, size: .13, life: 1.2, add: 0 }) }; },
-  /* xe trượt tuyết chở quà của ông già Noel – kéo bởi đàn tuần lộc sừng vàng phát sáng */
-  sleigh(C) { const G = IG(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); const red = PM('#dc2626', { k: 'silk' }), gd = PM('#facc15', { k: 'gold' }), wt = PM('#ffffff', { k: 'silk' });
-    b.add(imesh(G.box, red, [0, .32, -.05], [.6, .26, .9])); b.add(imesh(G.box, red, [0, .5, -.42], [.6, .38, .16])); b.add(imesh(G.box, PM('#7f1d1d', { k: 'silk' }), [0, .45, -.15], [.5, .06, .4]));
-    b.add(imesh(G.box, gd, [0, .46, -.05], [.62, .03, .92])); b.add(imesh(G.box, gd, [0, .7, -.42], [.62, .03, .18])); for (const sx of [-1, 1]) { b.add(imesh(G.box, gd, [sx * .2, .1, -.05], [.03, .04, 1.1])); const curl = imesh(G.tor, gd, [sx * .2, .23, .5], [.12, .12, .1], [0, Math.PI / 2, 0]); b.add(curl); for (const z of [-.3, .2]) b.add(imesh(G.c, gd, [sx * .2, .18, z], [.012, .16, .012])); }
-    for (let i = 0; i < 9; i++) { const x = (i % 3 - 1) * .16, z = -.35 + Math.floor(i / 3) * .12; b.add(imesh(G.s, PM('#fde047', { k: 'glow' }), [x * 1.7, .49, z + .5], [.012, .012, .012])); }
-    const sack = new THREE.Group(); sack.position.set(0, .55, -.35); b.add(sack); sack.add(imesh(G.s, PM('#7c2d12', { k: 'matte' }), [0, .08, 0], [.2, .2, .15])); [['#22c55e', -.1], ['#3b82f6', .08], ['#f472b6', 0], ['#a855f7', .14]].forEach(([c, x], i) => { sack.add(imesh(G.box, PM(c, { k: 'silk' }), [x, .26 + i % 2 * .04, (i - 1.5) * .05], [.1, .1, .1], [0, i, 0])); sack.add(imesh(G.box, gd, [x, .26 + i % 2 * .04, (i - 1.5) * .05], [.104, .022, .104], [0, i, 0])); });
-    for (const sx of [-1, 1]) { const ln = new THREE.Group(); ln.position.set(sx * .32, .78, -.42); b.add(ln); ln.add(imesh(G.c, PM('#facc15', { k: 'glow', op: .9 }), [0, 0, 0], [.04, .08, .04])); glow(ln, '#fde68a', .4); }
-    const deer = [], bells = []; const brown = PM('#5b3417', { k: 'matte' }), tan = PM('#e7c9a0', { k: 'matte' });
-    const mkDeer = (x, z) => { const d = new THREE.Group(); d.position.set(x, 0, z); b.add(d); d.add(imesh(G.cap, brown, [0, .42, 0], [.09, .14, .09], [Math.PI / 2, 0, 0])); d.add(imesh(G.s, tan, [0, .37, .02], [.07, .05, .14]));
-      const hd = new THREE.Group(); hd.position.set(0, .56, .2); d.add(hd); hd.add(imesh(G.cap, brown, [0, 0, .03], [.045, .05, .045], [1.1, 0, 0])); hd.add(imesh(G.s, PM('#1f2937'), [0, -.02, .12], [.022, .02, .02]));
-      for (const sx of [-1, 1]) { hd.add(imesh(G.s, PM('#111827'), [sx * .035, .02, .06], [.012, .014, .01])); const an = new THREE.Group(); an.position.set(sx * .03, .05, 0); an.rotation.z = -sx * .4; hd.add(an); const am = PM('#fde047', { k: 'glow' }); an.add(imesh(G.c, am, [0, .08, 0], [.008, .16, .008])); an.add(imesh(G.c, am, [sx * .03, .1, 0], [.006, .07, .006], [0, 0, -sx * .9])); an.add(imesh(G.c, am, [-sx * .02, .14, 0], [.006, .06, .006], [0, 0, sx * .7])); }
-      glow(hd, '#fde68a', .35, [0, .14, 0], .5); const col = new THREE.Group(); col.position.set(0, .5, .13); d.add(col); col.add(imesh(G.tor, PM('#dc2626', { k: 'silk' }), [0, 0, 0], [.07, .07, .12], [.6, 0, 0])); const bl = imesh(G.bell, gd, [0, -.06, .05], [.025, .03, .025]); col.add(bl); bells.push(bl);
-      const legs = []; for (const [lx, lz] of [[-.05, .1], [.05, .1], [-.05, -.1], [.05, -.1]]) { const l = new THREE.Group(); l.position.set(lx, .35, lz); d.add(l); l.add(imesh(G.c, brown, [0, -.12, 0], [.018, .24, .018])); l.add(imesh(G.c, PM('#1f2937'), [0, -.25, 0], [.022, .03, .022])); legs.push(l); }
-      d.add(imesh(G.s, PM('#ffffff'), [0, .45, -.14], [.03, .04, .03])); deer.push({ d, legs, hd }); };
-    for (const z of [.95, 1.45]) for (const x of [-.18, .18]) mkDeer(x, z);
-    for (const sx of [-1, 1]) { const r = imesh(G.c, gd, [sx * .18, .45, .82], [.006, 1.0, .006], [Math.PI / 2, 0, 0]); b.add(r); }
-    const fxPts = [new THREE.Object3D(), new THREE.Object3D()]; fxPts[0].position.set(-.2, .08, -.5); fxPts[1].position.set(.2, .08, -.5); fxPts.forEach(o => b.add(o));
+  /* xe trượt tuyết chở quà của ông già Noel – thân cong đỏ viền vàng, đống quà phía sau, 4 tuần lộc sừng vàng */
+  sleigh(C) { const G = IG(), g = new THREE.Group(), b = new THREE.Group(); g.add(b); const red = PM('#c81e1e', { k: 'silk' }), dred = PM('#7f1d1d', { k: 'silk' }), gd = PM('#facc15', { k: 'gold' }), V = (x, y, z) => new THREE.Vector3(x, y, z);
+    // thân xe: mặt cắt dọc cong (thấp phía trước, cao phía sau) đùn theo chiều ngang
+    const pr = new THREE.Shape(); pr.moveTo(-.62, .12); pr.lineTo(.36, .12); pr.quadraticCurveTo(.62, .14, .66, .42); pr.quadraticCurveTo(.68, .62, .52, .62); pr.quadraticCurveTo(.42, .5, .3, .42); pr.lineTo(-.18, .42); pr.quadraticCurveTo(-.36, .44, -.42, .78); pr.quadraticCurveTo(-.5, .98, -.66, .9); pr.lineTo(-.66, .12);
+    const eg = new THREE.ExtrudeGeometry(pr, { depth: .66, bevelEnabled: true, bevelThickness: .03, bevelSize: .03, bevelSegments: 3, curveSegments: 18 }); eg.translate(0, 0, -.33); const body = new THREE.Mesh(eg, red); body.rotation.y = -Math.PI / 2; b.add(body);
+    // viền vàng chạy theo mép trên hai bên + hoa văn xoắn
+    const edge = pr.getPoints(40).filter(p => p.y > .3).map(p => V(0, p.y + .015, p.x)); for (const sx of [-.355, .355]) { const tb = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge.map(v => V(sx, v.y, -v.z))), 60, .018, 8), gd); b.add(tb);
+      for (const [z, y, r] of [[-.05, .27, .09], [.3, .27, .07], [-.42, .55, .08]]) { b.add(imesh(G.thin, gd, [sx * 1.01, y, z], [r, r, r * 2], [0, Math.PI / 2, 0])); b.add(imesh(G.s, PM('#fde047', { k: 'glow' }), [sx * 1.02, y, z], [.022, .022, .022])); } }
+    b.add(imesh(G.box, PM('#991b1b', { k: 'silk' }), [0, .45, -.05], [.6, .07, .36])); b.add(imesh(G.box, PM('#991b1b', { k: 'silk' }), [0, .62, -.3], [.6, .3, .06], [-.25, 0, 0]));   // đệm ngồi nhung
+    // càng trượt vàng cong lên phía trước
+    const rail = []; for (let i = 0; i <= 30; i++) { const u = i / 30; if (u < .75) rail.push(V(0, 0, -.75 + u / .75 * 1.25)); else { const a = (u - .75) / .25 * Math.PI * 1.25; rail.push(V(0, .16 - Math.cos(a) * .16, .5 + Math.sin(a) * .16)); } }
+    for (const sx of [-.28, .28]) { const r = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail.map(v => V(sx, v.y, v.z))), 60, .022, 8), gd); b.add(r); for (const z of [-.5, -.1, .3]) b.add(imesh(G.c, gd, [sx, .07, z], [.014, .12, .014])); }
+    // đèn lồng phía trước
+    const lamps = []; for (const sx of [-1, 1]) { const ln = new THREE.Group(); ln.position.set(sx * .36, .72, .5); b.add(ln); ln.add(imesh(G.c, gd, [0, -.12, 0], [.008, .2, .008])); ln.add(imesh(G.c, PM('#fef08a', { k: 'glow', op: .9 }), [0, 0, 0], [.04, .08, .04])); ln.add(imesh(G.cone, gd, [0, .065, 0], [.05, .04, .05])); glow(ln, '#fde68a', .45); lamps.push(ln); }
+    // ĐỐNG QUÀ phía sau xe: sàn chở hàng + nhiều hộp quà nơ vàng chồng lên nhau + bao quà
+    b.add(imesh(G.box, dred, [0, .2, -.95], [.62, .1, .6])); for (const sx of [-.28, .28]) b.add(imesh(G.box, gd, [sx, .25, -.95], [.03, .08, .62]));
+    const gifts = new THREE.Group(); gifts.position.set(0, .25, -.95); b.add(gifts); const bowM = PM('#fde047', { k: 'gold', ds: 1 });
+    const gift = (x, y, z, w, h, d, col, rib, ry) => { const q = new THREE.Group(); q.position.set(x, y + h / 2, z); q.rotation.y = ry; gifts.add(q); q.add(imesh(G.box, PM(col, { k: 'silk' }), [0, 0, 0], [w, h, d])); const rm = PM(rib, { k: rib === '#facc15' ? 'gold' : 'silk' });
+      q.add(imesh(G.box, rm, [0, 0, 0], [w * .2, h * 1.02, d * 1.02])); q.add(imesh(G.box, rm, [0, 0, 0], [w * 1.02, h * 1.02, d * .2])); for (const sx of [-1, 1]) q.add(imesh(G.cone, bowM, [sx * w * .14, h / 2 + .03, 0], [.045, .08, .03], [0, 0, sx * Math.PI / 2])); q.add(imesh(G.s, bowM, [0, h / 2 + .02, 0], [.025, .025, .025])); return q; };
+    const GL = [[-.17, 0, .12, .24, .2, .24, '#16a34a', '#facc15', .2], [.15, 0, .14, .22, .24, .22, '#2563eb', '#ffffff', -.3], [-.12, 0, -.15, .26, .18, .22, '#9333ea', '#facc15', .5], [.16, 0, -.14, .2, .2, .2, '#f8fafc', '#dc2626', .1],
+      [0, .2, .03, .22, .2, .22, '#ec4899', '#facc15', -.4], [-.15, .2, -.12, .16, .16, .16, '#f59e0b', '#dc2626', .7], [.14, .24, -.1, .17, .15, .17, '#0ea5e9', '#facc15', .2], [.02, .4, -.04, .14, .14, .14, '#ef4444', '#facc15', .9]];
+    GL.forEach(a => gift(...a)); gifts.add(imesh(G.s, PM('#7c2d12', { k: 'matte' }), [0, .35, .22], [.16, .2, .13])); gifts.add(imesh(G.c, gd, [0, .52, .22], [.05, .025, .05])); glow(gifts, '#fde68a', .9, [0, .3, 0], .35);
+    // tuần lộc: thân nâu, ngực và đuôi trắng, chăn đỏ viền vàng, chuông, sừng vàng phát sáng
+    const deer = [], bells = []; const brown = PM('#6b3f1d', { k: 'matte' }), tan = PM('#e9d3b0', { k: 'matte' }), wt = PM('#ffffff', { k: 'matte' }), am = PM('#fde047', { k: 'glow' });
+    const mkDeer = (x, z) => { const d = new THREE.Group(); d.position.set(x, 0, z); b.add(d); d.add(imesh(G.cap, brown, [0, .44, 0], [.085, .13, .085], [Math.PI / 2, 0, 0])); d.add(imesh(G.s, tan, [0, .4, .1], [.07, .07, .07]));
+      d.add(imesh(G.box, PM('#dc2626', { k: 'silk' }), [0, .52, -.02], [.18, .02, .16])); d.add(imesh(G.box, gd, [0, .525, -.02], [.185, .012, .03])); d.add(imesh(G.s, wt, [0, .47, -.17], [.035, .045, .035]));
+      d.add(imesh(G.cap, brown, [0, .56, .14], [.035, .06, .035], [-.5, 0, 0]));
+      const hd = new THREE.Group(); hd.position.set(0, .67, .2); d.add(hd); hd.add(imesh(G.cap, brown, [0, 0, .03], [.045, .05, .045], [1.2, 0, 0])); hd.add(imesh(G.s, tan, [0, -.02, .1], [.035, .03, .04])); hd.add(imesh(G.s, PM('#1f2937'), [0, -.01, .135], [.016, .014, .012]));
+      for (const sx of [-1, 1]) { hd.add(imesh(G.s, PM('#111827'), [sx * .033, .02, .06], [.011, .013, .009])); hd.add(imesh(G.s, brown, [sx * .055, .04, -.01], [.03, .012, .018], [0, 0, sx * .5]));
+        const an = new THREE.Group(); an.position.set(sx * .025, .05, -.01); an.rotation.z = -sx * .35; hd.add(an); an.add(imesh(G.c, am, [0, .08, 0], [.008, .16, .008])); an.add(imesh(G.c, am, [sx * .035, .1, 0], [.006, .08, .006], [0, 0, -sx * .9])); an.add(imesh(G.c, am, [-sx * .02, .14, 0], [.006, .06, .006], [0, 0, sx * .7])); an.add(imesh(G.c, am, [sx * .01, .16, 0], [.006, .05, .006], [0, 0, -sx * .4])); }
+      glow(hd, '#fde68a', .32, [0, .15, 0], .45); const col = new THREE.Group(); col.position.set(0, .56, .15); d.add(col); col.add(imesh(G.tor, PM('#dc2626', { k: 'silk' }), [0, 0, 0], [.065, .065, .14], [.7, 0, 0])); for (const sx of [-1, 0, 1]) { const bl = imesh(G.bell, gd, [sx * .045, -.04, .04 - Math.abs(sx) * .02], [.022, .026, .022]); col.add(bl); bells.push(bl); }
+      const legs = []; for (const [lx, lz] of [[-.045, .09], [.045, .09], [-.045, -.09], [.045, -.09]]) { const l = new THREE.Group(); l.position.set(lx, .36, lz); d.add(l); l.add(imesh(G.c, brown, [0, -.12, 0], [.017, .24, .017])); l.add(imesh(G.c, PM('#1f2937'), [0, -.25, 0], [.02, .03, .02])); legs.push(l); }
+      deer.push({ d, legs, hd }); };
+    for (const z of [.95, 1.5]) for (const x of [-.18, .18]) mkDeer(x, z);
+    // dây cương vàng nối tuần lộc với xe
+    for (const sx of [-.18, .18]) { const pts = [V(sx * 1.4, .4, .55), V(sx, .5, .82), V(sx, .52, 1.1), V(sx, .52, 1.38)]; b.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, .01, 6), gd)); }
+    const fxPts = [V(-.28, .02, -.75), V(.28, .02, -.75)].map(v => { const o = new THREE.Object3D(); o.position.copy(v); b.add(o); return o; });
     return { g, pose: 'sit', seat: .92, leg: -1.45, knee: .35, arm: -1.0, lean: -.05, k: 1.9, always: 1, bob: 1,
-      upd: (dt, C2, mv, t) => { b.position.y = .45 + Math.sin(t * 2) * .06; b.rotation.x = Math.sin(t * 2 + 1) * .025; deer.forEach((q, i) => { const ph = t * (mv ? 10 : 3) + i * .8; q.d.position.y = Math.sin(ph) * .03; q.legs.forEach((l, j) => l.rotation.x = Math.sin(ph + (j % 2 ? Math.PI : 0) + (j > 1 ? 1 : 0)) * (mv ? .7 : .25)); q.hd.rotation.x = Math.sin(ph) * .08; }); bells.forEach((bl, i) => bl.rotation.z = Math.sin(t * 9 + i) * .4); },
-      fx: (dt, C2, S, t, mv) => { const v = new THREE.Vector3(); if (Math.random() < dt * (mv ? 30 : 10)) { const o = fxPts[Math.random() < .5 ? 0 : 1]; o.getWorldPosition(v); const k = ['star', 'spark', 'snow', 'rb'][Math.floor(Math.random() * 4)]; S.fx.emit(pickK(k), v.clone(), { add: k !== 'snow', size: .16, life: 1.2, v: new THREE.Vector3((Math.random() - .5) * .3, -.15, (Math.random() - .5) * .3) }); }
-        if (Math.random() < dt * 4) { bells[Math.floor(Math.random() * bells.length)].getWorldPosition(v); S.fx.emit('spark', v.clone(), { add: 1, size: .1, life: .6 }); } if (Math.random() < dt * 1.5) { sack.getWorldPosition(v); v.y += .3; S.fx.emit('gift', v.clone(), { size: .14, life: 1.4, v: new THREE.Vector3((Math.random() - .5) * .6, .6, (Math.random() - .5) * .6) }); } } }; },
+      upd: (dt, C2, mv, t) => { b.position.y = .45 + Math.sin(t * 2) * .06; b.rotation.x = Math.sin(t * 2 + 1) * .025; deer.forEach((q, i) => { const ph = t * (mv ? 10 : 3) + i * .8; q.d.position.y = Math.sin(ph) * .03; q.legs.forEach((l, j) => l.rotation.x = Math.sin(ph + (j % 2 ? Math.PI : 0) + (j > 1 ? 1 : 0)) * (mv ? .7 : .25)); q.hd.rotation.x = Math.sin(ph) * .08; }); bells.forEach((bl, i) => bl.rotation.z = Math.sin(t * 9 + i) * .4); lamps.forEach((l, i) => l.rotation.z = Math.sin(t * 3 + i) * .15); gifts.children.forEach((q, i) => { if (q.isGroup) q.position.y += Math.sin(t * 6 + i) * .0006; }); },
+      fx: (dt, C2, S, t, mv) => { const v = new THREE.Vector3(); if (Math.random() < dt * (mv ? 30 : 10)) { fxPts[Math.random() < .5 ? 0 : 1].getWorldPosition(v); const k = ['star', 'spark', 'snow', 'rb'][Math.floor(Math.random() * 4)]; S.fx.emit(pickK(k), v.clone(), { add: k !== 'snow', size: .16, life: 1.2, v: new THREE.Vector3((Math.random() - .5) * .3, -.15, (Math.random() - .5) * .3) }); }
+        if (Math.random() < dt * 4) { bells[Math.floor(Math.random() * bells.length)].getWorldPosition(v); S.fx.emit('spark', v.clone(), { add: 1, size: .1, life: .6 }); } if (Math.random() < dt * 2) { gifts.getWorldPosition(v); v.y += .5; S.fx.emit('gift', v.clone(), { size: .14, life: 1.4, v: new THREE.Vector3((Math.random() - .5) * .6, .6, (Math.random() - .5) * .6) }); } } }; },
 };
 /* vệt chân của bộ sưu tập */
 const TRAILX = {
@@ -8235,7 +8256,7 @@ const OWNER_SET = [
     if (a.u) USES[id] = mkUse(n.toLowerCase(), i, a.u[0], a.u[1]);
   }
   for (const it of OWNER_SET) { SHOP.push(it); SHOPMAP[it.id] = it; }
-  USES.santabag = mkUse('bao quà Noel', '🎁', 'rain', ['gift', 'snow', 'star']);
+  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => dropGift(ctx.S, ctx.p0, ctx.a)); } };
   ITEM3D.santabag = C => TB.sack(C, {});
   RIDES.sleigh = C => TR.sleigh(C);
   ITEM3D.o_santasuit = () => ({ fx: (dt, C, S) => { if (Math.random() < dt * 2.5) { const p = C.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * .8, 1.6 + Math.random() * .5, (Math.random() - .5) * .8)); S.fx.emit('snow', p, { size: .1, life: 1.6, v: new THREE.Vector3(0, -.4, 0) }); } } });
@@ -8245,6 +8266,21 @@ const OWNER_SET = [
     for (let i = 0; i < 10; i++) { const t = i * 2.4, y = .15 + (i % 4) * .17; g.add(imesh(G.star, PM('#fde047', { k: 'glow' }), [Math.sin(t) * hd * .9 * (1 - y), hd * y, Math.cos(t) * hd * .9 * (1 - y) - hd * .05], [hd * .05, hd * .05, hd * .03], [0, t, 0])); }
     return { update: (dt, C2) => { tip.rotation.x = Math.sin(C2.t * 3) * .12; }, fx: ptFx(pom, ['snow', 'spark'], 5, { sp: .1, size: .1, vy: -.2, life: 1.4 }) }; };
 })();
+
+/* ---- hộp quà của ông già Noel rơi xuống sân: ai ở gần cũng mở được, mỗi hộp tặng 1 món đồ dưới 500 sao ---- */
+function dropGift(S, p0, a) { if (!S || !S.scene || !S.B) return; const G = IG(), g = new THREE.Group(), r = 2 + Math.random() * 1.5, t = a + (Math.random() - .5) * 1.4, x = p0.x + Math.sin(t) * r, z = p0.z + Math.cos(t) * r, y0 = S.heightAt ? S.heightAt(x, z) : 0;
+  const col = ['#dc2626', '#16a34a', '#2563eb', '#9333ea', '#ec4899'][Math.floor(Math.random() * 5)], gd = PM('#facc15', { k: 'gold' });
+  g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .22, 0], [.44, .44, .44])); g.add(imesh(G.box, gd, [0, .22, 0], [.1, .45, .45])); g.add(imesh(G.box, gd, [0, .22, 0], [.45, .45, .1])); g.add(imesh(G.box, PM(col, { k: 'silk' }), [0, .46, 0], [.48, .08, .48]));
+  for (const sx of [-1, 1]) g.add(imesh(G.cone, gd, [sx * .1, .54, 0], [.07, .14, .05], [0, 0, sx * Math.PI / 2])); g.add(imesh(G.s, gd, [0, .53, 0], [.05, .05, .05])); glow(g, '#fde68a', 1.4, [0, .3, 0], .55);
+  g.position.set(x, y0 + 6, z); S.scene.add(g); let tt = 0, done = false; const S0 = S;
+  const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel', fn: () => { if (done) return; done = true; openGift(S0, g); } }; S.B.acts.push(act);
+  const tk = setInterval(() => { tt += .05; if (W.S !== S0 || done || tt > 90) { clearInterval(tk); S0.scene.remove(g); const k = S0.B.acts.indexOf(act); if (k >= 0) S0.B.acts.splice(k, 1); return; }
+    g.position.y = Math.max(y0, y0 + 6 - tt * 7) + (g.position.y <= y0 + .01 ? Math.abs(Math.sin(tt * 3)) * .08 : 0); g.rotation.y += .04; if (S0.fx && Math.random() < .3) S0.fx.emit('spark', g.position.clone().add(new THREE.Vector3((Math.random() - .5) * .6, .5, (Math.random() - .5) * .6)), { add: 1, size: .12, life: .7 }); }, 50); }
+function openGift(S, g) { if (S.fx) { poof(S, g.position, 'gift'); poof(S, g.position, 'star'); poof(S, g.position, 'snow'); } confetti(80); SFX.win();
+  if (!isOwner() && !Items.dayUse('santabox', 5)) { toast('🎁 Hôm nay em đã mở đủ 5 hộp quà của ông già Noel rồi!', 3000); return; }
+  const pool = SHOP.filter(x => x.p > 0 && x.p < 500 && !x.own && !x.hide && !Items.has(x.id));
+  if (!pool.length) { Items.reward(30, 'Chúc mừng bạn đã nhận được quà Noel!'); return; } const it = pool[Math.floor(Math.random() * pool.length)];
+  ME.inv = [...(ME.inv || []), it.id]; saveMe(); toast(`🎄 <b>Chúc mừng bạn đã nhận được quà Noel!</b><br>Ông già Noel tặng bạn <b>${it.i} ${it.n}</b> – vào Túi đồ để mặc thử nhé.`, 6000); }
 
 /* ======================================================================
    NGÀY LỄ: trường tự trang trí theo lịch + hoạt động kỉ niệm
@@ -8405,7 +8441,7 @@ const Fest = {
     B.plane(2.8, 1.6, new THREE.MeshBasicMaterial({ map: canvasTex(512, 300, (c, w, h) => { const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, F.bg[0]); g.addColorStop(1, F.bg[1]); c.fillStyle = g; c.fillRect(0, 0, w, h); c.strokeStyle = '#facc15'; c.lineWidth = 10; c.strokeRect(5, 5, w - 10, h - 10); c.fillStyle = '#fff'; c.textAlign = 'center'; c.font = `900 44px ${FONT}`; c.fillText('BẢNG LỜI CHÚC', w / 2, 80); c.font = `700 30px ${FONT}`; c.fillStyle = '#fde68a'; c.fillText(F.n, w / 2, 140); c.fillStyle = '#fff'; c.font = `600 26px ${FONT}`; c.fillText('Lại gần và gửi lời chúc của em!', w / 2, 220); }), side: THREE.DoubleSide }), x, 2.1, z, 0);
     B.col(x, z, 2.8, .4); this.wishAct(B, x, z + 1.4, F, '💌 Gửi lời chúc ' + F.n); },
   wishAct(B, x, z, F, label) { B.act({ x, z, r: 2.6, icon: '💌', label, fn: () => HUD.choice('💌 ' + F.n, 'Em chọn một lời chúc để gửi tới cả trường nhé:', F.wishes.map(w => ({ label: w, fn: () => this.sendWish(w, F) }))) }); },
-  sendWish(w, F) { try { if (DB.on) DB.ref('chat').push({ u: ME.id, n: ME.n, g: ME.g, m: ('💌 ' + w).slice(0, 120), w: F.n.slice(0, 30), t: firebase.database.ServerValue.TIMESTAMP }).catch(() => { }); } catch (e) { }
+  sendWish(w, F) { try { if (DB.on) DB.ref('chat').push({ u: ME.id, n: ME.n, g: pubG(), m: ('💌 ' + w).slice(0, 120), w: F.n.slice(0, 30), t: firebase.database.ServerValue.TIMESTAMP }).catch(() => { }); } catch (e) { }
     if (W.P && W.S && W.S.fx) { poof(W.S, W.P.root.position, 'heart'); poof(W.S, W.P.root.position, F.amb === 'snow' ? 'snow' : 'petal'); W.P.state = 'cheer'; setTimeout(() => { if (W.P.state === 'cheer') W.P.state = 'idle'; }, 1500); }
     SFX.win(); if (!Items.capped('fest_wish', 5, 5, 'Gửi lời chúc ' + F.n)) toast('💌 Lời chúc của em đã được gửi tới cả trường!', 2600); },
   /* khung ảnh trái tim để chụp ảnh lưu niệm */
@@ -8620,7 +8656,7 @@ const HUD = {
   },
   renderMe() { const e = $('#hMe'); if (!e || !ME) return; ownerTop(); const tt = titleOf(ME.xp); const lv = 1 + Math.floor(Math.sqrt((ME.xp | 0) / 25));
     const a0 = (lv - 1) ** 2 * 25, a1 = lv ** 2 * 25, pc = Math.max(4, Math.min(100, ((ME.xp | 0) - a0) / (a1 - a0) * 100));
-    e.innerHTML = `<div class="av">${avatarSVG(ME.av, { bust: true })}<em>${lv}</em></div><div class="mi"><b>${esc(ME.n)}</b><small>Lớp ${ME.g} · ${tt[2]} ${tt[1]}</small><div class="xpb" title="Điểm học tập: ${ME.xp | 0}"><u style="width:${pc}%"></u><span>📘 ${ME.xp | 0} / ${a1}</span></div></div><span class="coin" title="Điểm thưởng để mua đồ">⭐ ${isOwner() ? '∞' : ME.st | 0}</span><i class="ed">✏️ Đổi</i>`; },
+    e.innerHTML = `<div class="av">${avatarSVG(ME.av, { bust: true })}<em>${lv}</em></div><div class="mi"><b>${esc(ME.n)}</b><small>${isOwner() ? '' : `Lớp ${ME.g} · `}${tt[2]} ${tt[1]}</small><div class="xpb" title="Điểm học tập: ${ME.xp | 0}"><u style="width:${pc}%"></u><span>📘 ${ME.xp | 0} / ${a1}</span></div></div><span class="coin" title="Điểm thưởng để mua đồ">⭐ ${isOwner() ? '∞' : ME.st | 0}</span><i class="ed">✏️ Đổi</i>`; },
   /* ---------- bản đồ nhỏ góc trên phải ---------- */
   drawMini() {
     const c = $('#mmap'); if (!c || !W.S || !W.P || !W.on) return; const x = c.getContext('2d'), S = W.S, p = W.P.root.position, D = 180, H = 90;
@@ -8779,7 +8815,7 @@ const HUD = {
   chatOpen: false,
   chatToggle(on = !this.chatOpen) { this.chatOpen = on; const b = $('#chatBox'); if (!b) return; b.classList.toggle('hidden', !on); if (on) { $('#chatDot').classList.add('hidden'); this.chatRender(); setTimeout(() => $('#chatIn').focus(), 50); } else $('#chatIn').blur(); },
   chatOnline(n) { const ho = $('#hOn'); if (ho) ho.textContent = DB.on ? `🟢 ${n || 1} đang chơi` : '⚪ Chơi một mình'; const e = $('#chatOn'); if (e) e.textContent = DB.on ? `🟢 ${n || 1} bạn online` : ''; const nt = $('#chatNote'); if (nt) nt.textContent = DB.on ? 'Tin nhắn hiện cho tất cả các bạn đang online. Hãy nói lời hay, ý đẹp nhé!' : 'ℹ️ Chưa kết nối máy chủ Firebase nên tin nhắn chỉ hiện trên máy này. Xem HUONG-DAN.md để bật chơi online.'; },
-  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small> · Lớp ${m.g || '?'} · ${tm}</small></b><span>${esc(m.m)}</span></div>`; },
+  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small>${m.g ? ` · Lớp ${m.g}` : ''} · ${tm}</small></b><span>${esc(m.m)}</span></div>`; },
   chatRender() { const l = $('#chatList'); if (!l) return; l.innerHTML = Net.msgs.length ? Net.msgs.map(m => this.chatRow(m)).join('') : '<p class="muted small" style="text-align:center">Chưa có tin nhắn nào. Hãy chào các bạn nhé! 👋</p>'; l.scrollTop = l.scrollHeight; },
   civilBanner(msg) {
     let b = document.getElementById('civilB'); if (!b) { b = document.createElement('div'); b.id = 'civilB'; b.style.cssText = 'position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9999;max-width:min(92vw,520px);background:#fff7ed;border:3px solid #f59e0b;border-radius:16px;padding:10px 14px;font:800 15px Nunito,sans-serif;color:#7c2d12;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center'; document.body.appendChild(b); }
