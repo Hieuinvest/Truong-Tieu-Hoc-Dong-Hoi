@@ -390,7 +390,10 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .chatbox{position:fixed;right:10px;bottom:66px;width:min(340px,calc(100vw - 20px));height:min(430px,60vh);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;z-index:3}
 .ch-h{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#eff6ff;border-bottom:1px solid var(--line)}.ch-h b{font-size:14px}.ch-h span{font-size:11.5px;font-weight:800;color:#15803d;margin-left:auto;white-space:nowrap}.ch-h button{width:26px;height:26px;border-radius:8px;background:#fff}
 .ch-l{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:5px}
-.cm{max-width:85%;background:#f1f5f9;border-radius:12px 12px 12px 4px;padding:5px 9px}.cm b{display:block;font-size:12px;color:#1d4ed8}.cm b small{color:var(--muted);font-weight:700}.cm span{font-size:13.5px;font-weight:600;word-wrap:break-word}
+.cm{position:relative;max-width:85%;background:#f1f5f9;border-radius:12px 12px 12px 4px;padding:5px 9px}.cm b{display:block;font-size:12px;color:#1d4ed8}.cm b small{color:var(--muted);font-weight:700}.cm span{font-size:13.5px;font-weight:600;word-wrap:break-word}
+.cm .lk{position:absolute;top:3px;right:3px;font-size:15px;line-height:1;cursor:pointer;opacity:.5;padding:2px;border-radius:6px;font-style:normal}.cm .lk:hover{opacity:1;background:#e2e8f0}.cm .lk.on{opacity:1}
+#lockAllBtn{font-size:14px}#lockAllBtn.on{background:#fee2e2;border:1px solid #ef4444}
+.ch-lock{padding:7px 10px;margin:0;background:#fff7ed;border-bottom:1px solid #fed7aa;color:#9a3412;font-size:12px;font-weight:800;line-height:1.35}
 .cm.me{align-self:flex-end;background:#dbeafe;border-radius:12px 12px 4px 12px}
 .ch-q{display:flex;gap:4px;overflow-x:auto;padding:5px 8px;border-top:1px solid var(--line)}.ch-q button{white-space:nowrap;background:#f1f5f9;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700}
 .ch-f{display:flex;gap:6px;padding:6px 8px}.ch-f input{flex:1;border:2px solid var(--line);border-radius:10px;padding:6px 9px;font:inherit;font-size:14px}
@@ -6381,7 +6384,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   const selfAct = (icon, label, when, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when, fn });
   let sitCur = null, eatOn = null, drawOn = null, restOn = null;   // người chơi đang ngồi ghế nhà ăn / bàn vẽ / ghế đá
   // ---- NGƯỜI CHƠI THAM GIA TRÒ CHƠI NGOÀI SÂN: vào chơi bằng nút hành động, bấm di chuyển (hoặc đi ra xa) là thôi chơi
-  const yardStar = (n, why) => { Items.capped('play', n, 30, why); };
+  const yardStar = (n, why) => { Items.capped('play', n, 15, why); };
   const Join = { cur: null, start(o) { this.stop(); this.cur = o; o.begin && o.begin(); toast(o.msg, 3200); }, stop() { const c = this.cur; if (!c) return; this.cur = null; c.end && c.end(); ghud(); W.P.autoTo = null; if (!['walk', 'run'].includes(W.P.state)) W.P.state = 'idle'; } };
   const follow = (x, z, dt) => { const p = W.P.root.position, dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz); W.P.autoTo = null; if (d > 2.5) { W.P.autoTo = { x, z }; return; } p.x += dx * Math.min(1, dt * 5); p.z += dz * Math.min(1, dt * 5); if (d > .02) W.P.root.rotation.y = W.turn(W.P.root.rotation.y, Math.atan2(dx, dz), dt * 8); W.P.state = 'walk'; W.P.speed = 1.3; };
   B.tick(dt => { const j = Join.cur; if (!j) return; if (W.S !== def || W.seat) { Join.stop(); return; } const [ix, iy] = W.input(); if ((ix || iy) && !j.free) { Join.stop(); return; }
@@ -6533,7 +6536,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   }
   // ==================== TRÒ CHƠI 3D NGAY TRONG NHÀ THỂ CHẤT: ném rổ, sút phạt, cầu lông, chạy đua ====================
   { const gx = -56.75, gz = -31, cl = (v, a, b) => Math.max(a, Math.min(b, v));
-    const playStar = (n, why) => { Items.capped('play', n, 30, why); };
+    const playStar = (n, why) => { Items.capped('play', n, 15, why); };
     const modeAct = (icon, label, on, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when: on, fn });
     const ask = (title, start) => start();   // chơi 3D ngay tại nhà thể chất
     const mkBall = (r, col) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mat(col)); m.userData.dyn = 1; m.visible = false; scene.add(m); return m; };
@@ -6781,6 +6784,33 @@ const Civil = {
     }
     return false;
   },
+  /* ---- PHÁT HIỆN CÃI NHAU / CÔNG KÍCH theo ngữ cảnh (luật thông minh có dấu, chạy trong máy, không cần máy chủ) ---- */
+  AGG_PHRASE: ['câm mồm', 'câm miệng', 'câm ngay', 'im mồm', 'im miệng', 'im đi', 'im ngay', 'cút đi', 'cút ngay', 'cút ra', 'biến đi', 'biến ngay', 'xéo đi', 'xéo ngay', 'chết đi', 'chết cho rồi', 'mất dạy', 'vô học', 'vô duyên', 'láo toét', 'đồ ngu', 'đồ điên', 'đồ chó', 'đồ lợn', 'đồ khùng', 'đồ mất dạy', 'đồ vô học', 'đồ thần kinh', 'đồ rác rưởi', 'thằng ngu', 'thằng điên', 'thằng chó', 'thằng khùng', 'thằng mất dạy', 'thằng hâm', 'con ngu', 'con điên', 'con chó', 'con khùng', 'óc chó', 'óc lợn', 'não ngắn', 'mất não', 'ngu như chó', 'ngu như bò', 'ngu si', 'thần kinh', 'điên khùng', 'đánh nhau', 'đánh mày', 'đập mày', 'đập vào mặt', 'tát mày', 'ghét mày', 'khinh mày', 'nhìn đểu', 'gây sự', 'thích gây sự', 'muốn ăn đấm', 'ăn đấm không', 'ăn đạp không', 'sợ tao à', 'làm gì được tao', 'mẹ mày', 'bố mày', 'cả nhà mày', 'dòng họ nhà mày', 'bố láo', 'mất lịch sự'],
+  AGG_PHRASE_ND: ['cam mom', 'cut di', 'mat day', 'vo hoc', 'than kinh', 'danh nhau', 'do cho', 'oc cho'],
+  AGG_TOK: ['ngu', 'điên', 'khùng', 'chó', 'lợn', 'câm', 'cút', 'xéo', 'láo', 'đần', 'hâm', 'mất dạy', 'vô học', 'thần kinh', 'rác rưởi', 'khinh', 'óc chó'],
+  SOFT_NEG: ['ghét', 'cút', 'im đi', 'ngu', 'điên', 'chó', 'láo', 'khinh'],
+  _norm(text) { return String(text || '').toLowerCase().replace(/[^\p{L}\s]+/gu, ' ').replace(/\s+/g, ' ').trim(); },
+  _you(raw) { return /(^|\s)(mày|mầy)(\s|$)/.test(' ' + raw + ' '); },
+  aggCore(text) {
+    const raw = this._norm(text); if (!raw) return false;
+    const p = ' ' + raw + ' ';
+    if (this.AGG_PHRASE.some(x => p.includes(' ' + x + ' ') || raw.includes(x))) return true;
+    const nd = ' ' + this.strip(raw) + ' ';
+    if (this.AGG_PHRASE_ND.some(x => nd.includes(' ' + x + ' '))) return true;
+    if (this._you(raw) && this.AGG_TOK.some(t => p.includes(' ' + t + ' ') || raw.includes(t))) return true;
+    return false;
+  },
+  aggressive(text, ctx) {
+    if (this.aggCore(text)) return true;
+    try {
+      const now = Date.now(), recent = (ctx || []).filter(m => m && m.m && (now - (m.t || now) < 90000)).slice(-6);
+      const heat = recent.filter(m => this.aggCore(m.m)).length;
+      if (heat >= 1) { const raw = this._norm(text), p = ' ' + raw + ' ';
+        if (this._you(raw) || this.SOFT_NEG.some(t => p.includes(' ' + t + ' '))) return true;
+      }
+    } catch (e) { }
+    return false;
+  },
   bad(text) { try { return this.bad1(text) || this.bad2(text); } catch (e) { return this.bad1(text); } },
   bad1(text) {
     const raw = String(text || ''), dia = this.HASDIA.test(raw);
@@ -6799,9 +6829,9 @@ const Civil = {
   warns: ['Các em ơi, cô Hiệu trưởng nhắc nhở: chúng ta nói chuyện lịch sự, không nói tục chửi bậy nhé!', 'Em ơi, lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau. Em nói lại thật lịch sự nhé!', 'Cô Hiệu trưởng nhắc em: học sinh Trường Tiểu học Đông Hội luôn nói lời hay, ý đẹp. Em đừng nói tục nhé!', 'Không nói tục chửi bậy em nhé. Cô tin em sẽ là một học sinh ngoan, lễ phép với bạn bè.'],
   strikes() { const now = Date.now(); const a = (LS.get('dh_strikes', []) || []).filter(t => now - t < 10 * 60000); return a; },
   muted() { const u = +LS.get('dh_mute', 0) || 0; return u > Date.now() ? Math.ceil((u - Date.now()) / 1000) : 0; },
-  warn() {
+  warn(kind) {
     const a = this.strikes(); a.push(Date.now()); LS.set('dh_strikes', a);
-    let msg = this.warns[Math.floor(Math.random() * this.warns.length)];
+    let msg = kind === 'fight' ? 'Các em đừng cãi nhau, nói lời công kích bạn nhé! Cô Hiệu trưởng mong các em chơi vui, hoà thuận.' : this.warns[Math.floor(Math.random() * this.warns.length)];
     if (a.length >= 3) { LS.set('dh_mute', Date.now() + 120000); LS.set('dh_strikes', []); msg = 'Em đã nói tục nhiều lần rồi. Cô cho em nghỉ trò chuyện hai phút để suy nghĩ lại nhé. Em nhớ nói lời hay, ý đẹp nhé!'; }
     HUD.civilBanner && HUD.civilBanner(msg);
     try { Voice.speak(msg, { who: typeof PRINC !== 'undefined' ? PRINC : null, style: 'normal' }); } catch { }
@@ -6830,6 +6860,29 @@ const Spam = {
     const bad = (k && a.some(x => x.k === k)) || a.filter(x => t - x.t < this.WIN).length >= this.BURST || (a.length && t - a[a.length - 1].t < 1000); a.push({ t, k }); if (a.length > 12) a.shift(); return bad; },
 };
 function cleanText(t) { return String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120); }
+/* ====== KHÓA CHAT — chỉ chủ trường điều khiển (toàn trường hoặc từng bạn) ====== */
+const ChatLock = {
+  all: false, users: {}, ready: false,
+  _uid(u) { return String(u || '').replace(/[.#$\[\]/]/g, '_'); },
+  init() {
+    if (this.ready || !DB.on) return; this.ready = true;
+    try {
+      DB.ref('chatlock/all').on('value', s => { this.all = !!s.val(); this.changed(); });
+      DB.ref('chatlock/users').on('value', s => { this.users = s.val() || {}; this.changed(); });
+    } catch (e) { }
+  },
+  isUser(u) { return !!this.users[this._uid(u)]; },
+  blocked() {
+    if (typeof isOwner === 'function' && isOwner()) return '';
+    if (this.all) return '🔒 Chủ trường đang tạm khóa trò chuyện toàn trường. Em chờ mở lại nhé!';
+    if (ME && this.isUser(ME.id)) return '🔒 Chủ trường đã tạm khóa trò chuyện của em. Em nhắn lại sau nhé!';
+    return '';
+  },
+  setAll(v) { if (!DB.on) return; try { DB.ref('chatlock/all').set(!!v); } catch (e) { } },
+  setUser(u, v) { if (!DB.on) return; const k = this._uid(u); try { if (v) DB.ref('chatlock/users/' + k).set(true); else DB.ref('chatlock/users/' + k).remove(); } catch (e) { } },
+  changed() { try { if (typeof HUD !== 'undefined' && HUD.chatLockUI) HUD.chatLockUI(); } catch (e) { } },
+};
+
 const Net = {
   sid: null, sref: null, myRef: null, subs: {}, useSig: '', remotes: {}, last: 0, lastKey: '', msgs: [], start: Date.now(), online: 0, lastSend: 0, ready: false,
   init() {
@@ -6840,6 +6893,7 @@ const Net = {
       setInterval(() => { if (ME) oref.update({ n: ME.n, g: pubG(), t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
       DB.ref('online').on('value', s => { let n = 0; const now = DB.now(); s.forEach(c => { if (now - (c.val().t || 0) < 180000) n++; }); this.online = n; HUD.chatOnline(n); });
       DB.ref('chat').limitToLast(50).on('child_added', s => this.onMsg({ id: s.key, ...s.val() }));
+      ChatLock.init();
       // dọn tin nhắn cũ hơn 1 ngày
       DB.ref('chat').orderByChild('t').endAt(DB.now() - 86400000).limitToFirst(50).once('value', s => s.forEach(c => { c.ref.remove().catch(() => { }); }));
     } catch (e) { console.warn(e); }
@@ -6927,7 +6981,9 @@ const Net = {
   send(text) {
     text = cleanText(text); if (!text) return false;
     const ms = Civil.muted(); if (ms) { toast(`Cô Hiệu trưởng cho em nghỉ trò chuyện, còn ${ms} giây nữa nhé.`, 2600); return false; }
+    { const bl = ChatLock.blocked(); if (bl) { toast(bl, 3000); return false; } }
     if (Civil.bad(text)) { Civil.warn(); return false; }
+    if (Civil.aggressive(text, this.msgs)) { Civil.warn('fight'); return false; }
     { const sp = Spam.check(text); if (sp) { toast('✋ ' + sp, 3000); return false; } } this.lastSend = Date.now();
     const m = { u: ME.id, n: ME.n, g: pubG(), m: text, w: W.S ? W.S.name : '' };
     if (DB.on) DB.ref('chat').push({ ...m, t: firebase.database.ServerValue.TIMESTAMP }).catch(() => toast('Không gửi được tin nhắn.'));
@@ -6937,7 +6993,7 @@ const Net = {
   onMsg(m) {
     if (!m || !m.m) return; if (this.msgs.some(x => x.id === m.id)) return;
     m.m = String(m.m).slice(0, 120); if (Spam.drop(m)) return;
-    if (Civil.bad(m.m)) m = { ...m, m: Civil.hidden };
+    if (Civil.bad(m.m) || (m.u !== (ME && ME.id) && Civil.aggressive(m.m, this.msgs))) m = { ...m, m: Civil.hidden };
     this.msgs.push(m); const tt = x => typeof x.t === 'number' ? x.t : Date.now(); this.msgs.sort((a, b) => tt(a) - tt(b)); if (this.msgs.length > 50) this.msgs.shift();   // luôn xếp theo giờ gửi: tin mới ở dưới
     if (!DB.on) LS.set('dh_chat', this.msgs);
     const fresh = (m.t || 0) > this.start - 3000 || !DB.on && m.id && m.id.startsWith('l');
@@ -8599,7 +8655,8 @@ const HUD = {
       <div class="zoomb" id="zoomb"><button data-z="in" title="Phóng to (lại gần)">＋</button><button data-z="out" title="Thu nhỏ (ra xa)">－</button></div>
       <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.use()">🪄 Sử dụng đũa phép</button>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
-      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="feedBtn" title="Ẩn/hiện tin nhắn nổi trên màn hình"></button><button id="chatX">✕</button></div>
+      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="lockAllBtn" class="hidden" title="Khóa trò chuyện toàn trường"></button><button id="feedBtn" title="Ẩn/hiện tin nhắn nổi trên màn hình"></button><button id="chatX">✕</button></div>
+        <div class="ch-lock hidden" id="chatLockBn"></div>
         <div class="ch-l" id="chatList"></div>
         <div class="ch-q">${['👋 Chào các bạn!', '😄', '👍', 'Cùng vào Đấu trường nhé!', 'Học bài cùng mình không?', '❤️'].map(q => `<button data-q="${q}">${q}</button>`).join('')}</div>
         <form class="ch-f" id="chatForm"><input id="chatIn" maxlength="120" placeholder="Nhập tin nhắn…" autocomplete="off"><button class="btn sun sm">Gửi</button></form>
@@ -8660,8 +8717,10 @@ const HUD = {
     $('#chatForm').onsubmit = e => { e.preventDefault(); const i = $('#chatIn'); if (Net.send(i.value)) i.value = ''; };
     $$('#chatBox [data-q]').forEach(b => b.onclick = () => Net.send(b.dataset.q));
     $('#chatIn').addEventListener('keydown', e => e.stopPropagation());
+    { const la = $('#lockAllBtn'); if (la) la.onclick = () => { const v = !ChatLock.all; if (v && !confirm('Khóa trò chuyện TOÀN TRƯỜNG? Các bạn sẽ tạm thời không gửi được tin nhắn (chủ trường vẫn gửi được).')) return; ChatLock.setAll(v); toast(v ? '🔒 Đã khóa trò chuyện toàn trường.' : '🔓 Đã mở lại trò chuyện toàn trường.', 2200); }; }
+    { const l = $('#chatList'); if (l) l.onclick = e => { const b = e.target.closest('.lk'); if (!b || !isOwner()) return; const u = b.dataset.u, n = b.dataset.n || 'bạn này', on = ChatLock.isUser(u); if (!on && !confirm(`Khóa chat của ${n}? Bạn ấy sẽ tạm thời không gửi được tin nhắn.`)) return; ChatLock.setUser(u, !on); toast(on ? `🔓 Đã mở chat cho ${n}.` : `🔒 Đã khóa chat của ${n}.`, 2200); }; }
     $('#vrExit').onclick = () => { if (Tour.active) Tour.stop(); else this.vrExit(); };
-    this.chatOnline(Net.online); this.chatRender();
+    this.chatOnline(Net.online); this.chatRender(); this.chatLockUI();
     const tick = () => { const el = $('#arenaBadge'); if (!el) return false; const s = Live.state(); el.textContent = s.phase === 'lobby' ? 'MỞ' : s.phase === 'q' ? 'THI' : mmss(s.toNext); el.className = s.phase === 'lobby' ? 'open' : ''; return true; };
     tick(); const iv = setInterval(() => { if (!tick()) clearInterval(iv); }, 1000);
     const mi = setInterval(() => { if (!$('#mmap')) return clearInterval(mi); this.drawMini(); }, 80);
@@ -8825,9 +8884,22 @@ const HUD = {
   },
   /* ---------- trò chuyện ---------- */
   chatOpen: false,
-  chatToggle(on = !this.chatOpen) { this.chatOpen = on; const b = $('#chatBox'); if (!b) return; b.classList.toggle('hidden', !on); if (on) { $('#chatDot').classList.add('hidden'); this.chatRender(); setTimeout(() => $('#chatIn').focus(), 50); } else $('#chatIn').blur(); },
+  chatToggle(on = !this.chatOpen) { this.chatOpen = on; const b = $('#chatBox'); if (!b) return; b.classList.toggle('hidden', !on); if (on) { $('#chatDot').classList.add('hidden'); this.chatRender(); this.chatLockUI(); setTimeout(() => $('#chatIn').focus(), 50); } else $('#chatIn').blur(); },
   chatOnline(n) { const ho = $('#hOn'); if (ho) ho.textContent = DB.on ? `🟢 ${n || 1} đang chơi` : '⚪ Chơi một mình'; const e = $('#chatOn'); if (e) e.textContent = DB.on ? `🟢 ${n || 1} bạn online` : ''; const nt = $('#chatNote'); if (nt) nt.textContent = DB.on ? 'Tin nhắn hiện cho tất cả các bạn đang online. Hãy nói lời hay, ý đẹp nhé!' : 'ℹ️ Chưa kết nối máy chủ Firebase nên tin nhắn chỉ hiện trên máy này. Xem HUONG-DAN.md để bật chơi online.'; },
-  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small>${m.g ? ` · Lớp ${m.g}` : ''} · ${tm}</small></b><span>${esc(m.m)}</span></div>`; },
+  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; const own = isOwner() && !me && m.u; const lk = own && ChatLock.isUser(m.u); return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small>${m.g ? ` · Lớp ${m.g}` : ''} · ${tm}</small></b><span>${esc(m.m)}</span>${own ? `<i class="lk ${lk ? 'on' : ''}" data-u="${esc(m.u)}" data-n="${esc(m.n)}" title="${lk ? 'Mở chat cho bạn này' : 'Khóa chat bạn này'}">${lk ? '🔒' : '🔓'}</i>` : ''}</div>`; },
+  chatLockUI() {
+    const owner = typeof isOwner === 'function' && isOwner();
+    const la = $('#lockAllBtn'); if (la) { la.classList.toggle('hidden', !owner); la.textContent = ChatLock.all ? '🔒' : '🔓'; la.classList.toggle('on', ChatLock.all); la.title = ChatLock.all ? 'Trò chuyện đang KHÓA toàn trường — bấm để mở lại' : 'Khóa trò chuyện toàn trường'; }
+    const bl = owner ? '' : ChatLock.blocked();
+    const inp = $('#chatIn'); if (inp) { inp.disabled = !!bl; inp.placeholder = bl ? 'Trò chuyện đang tạm khóa…' : 'Nhập tin nhắn…'; }
+    const bn = $('#chatLockBn');
+    if (bn) { let msg = '';
+      if (bl) msg = bl;
+      else if (owner && ChatLock.all) msg = '🔒 Em đang KHÓA trò chuyện toàn trường. Bấm 🔒 ở trên để mở lại.';
+      else if (owner) { const n = Object.keys(ChatLock.users || {}).length; if (n) msg = `🔒 Em đang khóa chat của ${n} bạn. Bấm 🔓 ở cạnh tên bạn để mở.`; }
+      bn.innerHTML = msg; bn.classList.toggle('hidden', !msg); }
+    if (this.chatOpen) this.chatRender();
+  },
   chatRender() { const l = $('#chatList'); if (!l) return; l.innerHTML = Net.msgs.length ? Net.msgs.map(m => this.chatRow(m)).join('') : '<p class="muted small" style="text-align:center">Chưa có tin nhắn nào. Hãy chào các bạn nhé! 👋</p>'; l.scrollTop = l.scrollHeight; },
   civilBanner(msg) {
     let b = document.getElementById('civilB'); if (!b) { b = document.createElement('div'); b.id = 'civilB'; b.style.cssText = 'position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9999;max-width:min(92vw,520px);background:#fff7ed;border:3px solid #f59e0b;border-radius:16px;padding:10px 14px;font:800 15px Nunito,sans-serif;color:#7c2d12;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center'; document.body.appendChild(b); }
