@@ -24,6 +24,7 @@ input,select{font:inherit}
 .hidden{display:none!important}
 
 /* ---------- nền & khung ---------- */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
 #pano{position:fixed;inset:0;z-index:0;overflow:hidden;background:#0b2a5b;cursor:grab;transition:opacity .25s;touch-action:none;user-select:none}
 #pano.fade{opacity:.15}#pano.grab{cursor:grabbing}
 .pcube{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
@@ -552,6 +553,36 @@ body.seated .zoomb,body.lesson .zoomb{display:none}
 </style>
 </head>
 <body>
+<div id="dtShield" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#0b2a5b;color:#fff;align-items:center;justify-content:center;text-align:center;font:800 22px/1.5 system-ui,sans-serif;padding:24px">🔒 Vui lòng đóng công cụ nhà phát triển<br>để tiếp tục vào trường nhé!</div>
+<script>
+/* Bảo vệ: cản xem mã nguồn / mở công cụ nhà phát triển. Đây là lớp cản trở ở phía trình duyệt, không thay được luật bảo mật Firebase. */
+(function () {
+  var ed = function (t) { return !!(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)); };
+  var stop = function (e) { e.preventDefault(); e.stopPropagation(); return false; };
+  document.addEventListener('contextmenu', function (e) { if (!ed(e.target)) return stop(e); }, true);
+  ['dragstart', 'selectstart', 'copy', 'cut'].forEach(function (n) { document.addEventListener(n, function (e) { if (!ed(e.target)) return stop(e); }, true); });
+  document.addEventListener('keydown', function (e) {
+    var k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey;
+    if (e.key === 'F12' || e.keyCode === 123) return stop(e);
+    if (c && e.shiftKey && 'ijcknm'.indexOf(k) >= 0 && k.length === 1) return stop(e);          // Ctrl+Shift+I/J/C/K/N/M
+    if (e.metaKey && e.altKey && 'iujc'.indexOf(k) >= 0 && k.length === 1) return stop(e);        // Cmd+Opt+I/U/J/C (Mac)
+    if (c && !e.shiftKey && 'usp'.indexOf(k) >= 0 && k.length === 1) return stop(e);              // Ctrl+U (xem mã), Ctrl+S (lưu trang), Ctrl+P (in)
+    if (c && 'cxa'.indexOf(k) >= 0 && k.length === 1 && !ed(e.target)) return stop(e);          // Ctrl+C/X/A ngoài ô nhập
+  }, true);
+  var hide = function () { try { document.getElementById('dtShield').style.display = 'flex'; } catch (e) { } };
+  var show = function () { try { document.getElementById('dtShield').style.display = 'none'; } catch (e) { } };
+  var open = false, setOpen = function (v) { if (v === open) return; open = v; v ? hide() : show(); };
+  var owner = function () { try { return typeof isOwner === 'function' && isOwner(); } catch (e) { return false; } };
+  var touch = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (window.top === window.self && !touch) setInterval(function () {                              // cửa sổ DevTools gắn cạnh làm khung trang nhỏ lại
+    if (owner()) { setOpen(false); return; }
+    var dw = window.outerWidth - window.innerWidth, dh = window.outerHeight - window.innerHeight;
+    var zoomed = Math.abs((window.devicePixelRatio || 1) - 1) > .05 && false;
+    setOpen(!zoomed && (dw > 220 || dh > 260));
+  }, 1200);
+})();
+</script>
+
 <div id="sky"><div class="cloud" style="top:10%;width:180px;height:50px;animation-duration:80s"></div><div class="cloud" style="top:24%;width:120px;height:36px;animation-duration:55s;animation-delay:-20s"></div><div class="cloud" style="top:6%;width:220px;height:60px;animation-duration:95s;animation-delay:-50s"></div></div>
 <div id="w3" class="hidden"></div><div id="fade"></div><div id="bub3"></div>
 <header id="topbar"></header>
@@ -7444,7 +7475,7 @@ const Items = {
     const now = Date.now(); if (now - (this._use || 0) < 4000) { toast('Chờ một chút rồi dùng tiếp em nhé!', 1200); return; } this._use = now;
     if (W.seat) { toast('Em đứng dậy rồi dùng nhé!', 1800); return; }
     C.state = 'cheer'; setTimeout(() => { if (C.state === 'cheer') C.state = 'idle'; }, 1200);
-    let key = ''; try { if (id === 'santabag' && DB.on) key = DB.ref('chat').push().key; } catch (e) { }   // mã riêng của hộp quà: chỉ 1 người nhặt được
+    let key = ''; try { if (id === 'santabag' && DB.on) key = [0, 1, 2].map(() => DB.ref('chat').push().key).join(','); } catch (e) { }   // 3 mã riêng cho 3 hộp quà: mỗi hộp chỉ 1 người nhặt được
     this.useFx(C, W.S, id, key); SFX.win && SFX.win(); if (typeof Net !== 'undefined') { Net.useSig = id + '|' + now + (key ? '|' + key : ''); Net.lastKey = ''; } },
   useFx(C, S, id, arg) { const U = USES[id]; if (!U || !S || !S.fx) return; const V = (x, y, z) => new THREE.Vector3(x, y, z), R = n => (Math.random() - .5) * n, p0 = C.root.position.clone(), a = C.root.rotation.y;
     const later = (ms, f) => setTimeout(() => { if (typeof W !== 'undefined' && W.S === S) { try { f(); } catch (e) { } } }, ms);
@@ -8404,7 +8435,7 @@ const OWNER_SET = [
     if (a.u) USES[id] = mkUse(n.toLowerCase(), i, a.u[0], a.u[1]);
   }
   for (const it of OWNER_SET) { SHOP.push(it); SHOPMAP[it.id] = it; }
-  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => dropGift(ctx.S, ctx.p0, ctx.a, ctx.arg, ctx.C)); } };
+  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => { const ks = String(ctx.arg || '').split(',').filter(Boolean); for (let i = 0; i < 3; i++) dropGift(ctx.S, ctx.p0, ctx.a + i * 2.1, ks[i] || '', ctx.C); }); } };
   ITEM3D.santabag = C => TB.sack(C, {});
   RIDES.sleigh = C => TR.sleigh(C);
   ITEM3D.o_santasuit = () => ({ fx: (dt, C, S) => { if (Math.random() < dt * 2.5) { const p = C.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * .8, 1.6 + Math.random() * .5, (Math.random() - .5) * .8)); S.fx.emit('snow', p, { size: .1, life: 1.6, v: new THREE.Vector3(0, -.4, 0) }); } } });
@@ -8426,9 +8457,9 @@ function dropGift(S, p0, a, key, C) { if (!S || !S.scene || !S.B) return; const 
   let ref = null; if (online) { ref = DB.ref('chat/' + key); ref.on('value', s => { const v = s.val(); if (!v) return; ref.off(); finish(); if (S0.fx) poof(S0, g.position, 'star');
     if (v.u !== ME.id) { const what = String(v.m || '').replace(/^.*Noel:?\s*/, ''); if (isOwner()) toast(`🎁 <b>${esc(v.n)}</b> đã nhặt hộp quà Noel của anh${what ? ': <b>' + esc(what) + '</b>' : ''}`, 6000); else if (Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 12) toast(`🎁 <b>${esc(v.n)}</b> đã nhặt được hộp quà Noel rồi!`, 3000); } }); }
   const claim = () => { if (done || busy) return; if (isOwner()) { if (!warned) { warned = true; toast('🎁 Hộp quà này dành cho các bạn học sinh nhặt nhé!', 2500); } return; }
-    if (!Items.canUse('santabox', 5)) { if (!warned) { warned = true; toast('🎁 Hôm nay em đã nhặt đủ 5 hộp quà Noel rồi, nhường các bạn nhé!', 3000); } return; }
+    if (!Items.canUse('santabox', 3)) { if (!warned) { warned = true; toast('🎁 Hôm nay em đã nhận đủ 3 món quà của ông già Noel rồi, mai em quay lại nhé!', 3000); } return; }
     const pool = SHOP.filter(it => it.p > 0 && it.p < 500 && !it.own && !it.hide && !Items.has(it.id)), it = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
-    const give = () => { Items.dayUse('santabox', 5); finish(); if (S0.fx) { poof(S0, g.position, 'gift'); poof(S0, g.position, 'star'); poof(S0, g.position, 'snow'); } confetti(80); SFX.win();
+    const give = () => { Items.dayUse('santabox', 3); finish(); if (S0.fx) { poof(S0, g.position, 'gift'); poof(S0, g.position, 'star'); poof(S0, g.position, 'snow'); } confetti(80); SFX.win();
       if (it) { ME.inv = [...(ME.inv || []), it.id]; saveMe(); toast(`🎄 <b>Chúc mừng bạn đã nhận được quà Noel!</b><br>Ông già Noel tặng bạn <b>${it.i} ${it.n}</b> – vào Túi đồ để mặc thử nhé.`, 6000); } else Items.reward(30, 'Chúc mừng bạn đã nhận được quà Noel!'); };
     if (!online) return give(); busy = true;
     ref.set({ u: ME.id, n: String(ME.n).slice(0, 20), g: pubG(), m: ('🎁 đã nhặt được hộp quà Noel: ' + (it ? it.i + ' ' + it.n : '30 ⭐')).slice(0, 120), t: firebase.database.ServerValue.TIMESTAMP })
