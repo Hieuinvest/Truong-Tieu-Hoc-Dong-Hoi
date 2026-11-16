@@ -390,7 +390,10 @@ button.card:hover,.card.click:hover{transform:translateY(-3px);box-shadow:0 16px
 .chatbox{position:fixed;right:10px;bottom:66px;width:min(340px,calc(100vw - 20px));height:min(430px,60vh);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;z-index:3}
 .ch-h{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#eff6ff;border-bottom:1px solid var(--line)}.ch-h b{font-size:14px}.ch-h span{font-size:11.5px;font-weight:800;color:#15803d;margin-left:auto;white-space:nowrap}.ch-h button{width:26px;height:26px;border-radius:8px;background:#fff}
 .ch-l{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:5px}
-.cm{max-width:85%;background:#f1f5f9;border-radius:12px 12px 12px 4px;padding:5px 9px}.cm b{display:block;font-size:12px;color:#1d4ed8}.cm b small{color:var(--muted);font-weight:700}.cm span{font-size:13.5px;font-weight:600;word-wrap:break-word}
+.cm{position:relative;max-width:85%;background:#f1f5f9;border-radius:12px 12px 12px 4px;padding:5px 9px}.cm b{display:block;font-size:12px;color:#1d4ed8}.cm b small{color:var(--muted);font-weight:700}.cm span{font-size:13.5px;font-weight:600;word-wrap:break-word}
+.cm .lk{position:absolute;top:3px;right:3px;font-size:15px;line-height:1;cursor:pointer;opacity:.5;padding:2px;border-radius:6px;font-style:normal}.cm .lk:hover{opacity:1;background:#e2e8f0}.cm .lk.on{opacity:1}
+#lockAllBtn{font-size:14px}#lockAllBtn.on{background:#fee2e2;border:1px solid #ef4444}
+.ch-lock{padding:7px 10px;margin:0;background:#fff7ed;border-bottom:1px solid #fed7aa;color:#9a3412;font-size:12px;font-weight:800;line-height:1.35}
 .cm.me{align-self:flex-end;background:#dbeafe;border-radius:12px 12px 4px 12px}
 .ch-q{display:flex;gap:4px;overflow-x:auto;padding:5px 8px;border-top:1px solid var(--line)}.ch-q button{white-space:nowrap;background:#f1f5f9;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700}
 .ch-f{display:flex;gap:6px;padding:6px 8px}.ch-f input{flex:1;border:2px solid var(--line);border-radius:10px;padding:6px 9px;font:inherit;font-size:14px}
@@ -3896,6 +3899,33 @@ const PRAISE = ['Đúng rồi, em làm tốt lắm!', 'Chính xác. Cô khen em!
 const CHEER = ['Chưa đúng rồi em ạ, không sao đâu.', 'Gần đúng rồi, em cố gắng ở câu sau nhé.', 'Cô tin em sẽ làm tốt hơn ở câu sau.', 'Không sao, mình cùng xem lại đáp án nhé.', 'Em bình tĩnh, đọc kĩ câu hỏi hơn một chút nhé.'];
 const pickOne = a => a[Math.floor(Math.random() * a.length)];
 
+/* Hiệu ứng khi ghi điểm / trả lời đúng – dùng chung cho trò chơi 3D, Đấu trường, Học bài, trò ngoài sân */
+const Juice = { combo: 0, last: 0, _css: false,
+  css() { if (this._css) return; this._css = true; const st = document.createElement('style'); st.textContent = `
+    .jz-pop{position:fixed;z-index:99990;pointer-events:none;transform:translate(-50%,-50%);font:900 30px/1.1 system-ui,sans-serif;color:#fff;text-shadow:0 2px 0 rgba(15,23,42,.55),0 0 14px rgba(250,204,21,.9);white-space:nowrap;animation:jzPop 1.1s cubic-bezier(.2,.9,.3,1) forwards}
+    .jz-pop.big{font-size:40px}
+    @keyframes jzPop{0%{opacity:0;transform:translate(-50%,-20%) scale(.3)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.25)}32%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-190%) scale(1)}}
+    .jz-flash{position:fixed;z-index:99980;pointer-events:none;border-radius:14px;animation:jzFlash .5s ease-out forwards}
+    @keyframes jzFlash{0%{opacity:.85}100%{opacity:0}}
+    .jz-star{position:fixed;z-index:99985;pointer-events:none;font-size:22px;animation:jzStar .9s cubic-bezier(.15,.8,.3,1) forwards}
+    @keyframes jzStar{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.25) rotate(var(--rt))}}
+    .jz-pulse{animation:jzPulse .32s ease-out}
+    @keyframes jzPulse{0%{transform:scale(1)}40%{transform:scale(1.018)}100%{transform:scale(1)}}
+    .jz-shake{animation:jzShake .36s linear}
+    @keyframes jzShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}`; document.head.appendChild(st); },
+  rect() { const e = document.querySelector('.g3w'); if (e && e.isConnected) { const b = e.getBoundingClientRect(); if (b.width > 40) return { e, x: b.left, y: b.top, w: b.width, h: b.height }; } return { e: null, x: 0, y: 0, w: innerWidth, h: innerHeight }; },
+  add(cls, ms, fn) { this.css(); const d = document.createElement('div'); d.className = cls; fn(d); document.body.appendChild(d); setTimeout(() => d.remove(), ms); return d; },
+  pop(text, col, big) { const r = this.rect(); this.add('jz-pop' + (big ? ' big' : ''), 1150, d => { d.textContent = text; if (col) d.style.color = col; d.style.left = (r.x + r.w / 2) + 'px'; d.style.top = (r.y + r.h * .34) + 'px'; }); },
+  flash(c) { const r = this.rect(); this.add('jz-flash', 520, d => { d.style.left = r.x + 'px'; d.style.top = r.y + 'px'; d.style.width = r.w + 'px'; d.style.height = r.h + 'px'; d.style.boxShadow = `inset 0 0 ${Math.round(Math.min(r.w, r.h) * .22)}px ${c}`; }); },
+  stars(n = 8, set = ['⭐', '✨', '🌟']) { const r = this.rect(), R = Math.min(r.w, r.h) * .36; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 + Math.random() * .5, d0 = R * (.55 + Math.random() * .6); this.add('jz-star', 950, d => { d.textContent = set[i % set.length]; d.style.left = (r.x + r.w / 2) + 'px'; d.style.top = (r.y + r.h * .4) + 'px'; d.style.setProperty('--dx', Math.cos(a) * d0 + 'px'); d.style.setProperty('--dy', Math.sin(a) * d0 * .8 + 'px'); d.style.setProperty('--rt', (Math.random() * 360 - 180 | 0) + 'deg'); }); } },
+  cls(c) { const e = this.rect().e; if (!e) return; e.classList.remove(c); void e.offsetWidth; e.classList.add(c); setTimeout(() => e.classList.remove(c), 420); },
+  ok() { const now = Date.now(); this.combo = now - this.last < 9000 ? this.combo + 1 : 1; this.last = now; const k = this.combo;
+    this.flash('rgba(34,197,94,.75)'); this.cls('jz-pulse'); this.stars(k >= 5 ? 16 : k >= 3 ? 12 : 8, k >= 3 ? ['⭐', '🔥', '✨', '🌟'] : undefined);
+    this.pop(k >= 3 ? `🔥 Liên tiếp x${k}!` : ['✔ Đúng rồi!', '👍 Giỏi lắm!', '⭐ Tuyệt vời!', '🎯 Chính xác!'][Math.floor(Math.random() * 4)], k >= 3 ? '#fde047' : '#bbf7d0', k >= 3); },
+  no() { this.combo = 0; this.flash('rgba(239,68,68,.7)'); this.cls('jz-shake'); },
+  win(text) { this.pop(text, '#fde047', 1); this.stars(14, ['⭐', '🎉', '✨', '🌟']); },
+};
+{ const ok0 = SFX.ok, no0 = SFX.no; SFX.ok = () => { ok0(); try { Juice.ok(); } catch (e) { } }; SFX.no = () => { no0(); try { Juice.no(); } catch (e) { } }; }
 function confetti(n = 70) {
   const cols = ['#ef4444', '#3b82f6', '#f59e0b', '#22c55e', '#a855f7', '#ec4899'];
   for (let i = 0; i < n; i++) {
@@ -4825,6 +4855,7 @@ const W = {
   async enter(id, at, o = {}) {
     if (!this.ok) return;
     if (!o.real && typeof to3D === 'function') { const r = to3D(id); if (r) { id = r.id; at = at || r.at; } }
+    if (id === 'bld') { id = 'yard'; if (!at) { const p = toaW(TOA.find(T => T.mid), -9, 1.6); at = { x: p.x, y: 0, z: p.z, ry: 0 }; } }
     const go = () => {
       if (this.S && this.S.onLeave) this.S.onLeave();
       this.standUp(true); Lesson.end(true); HUD.choiceHide(); HUD.close();
@@ -4843,7 +4874,7 @@ const W = {
     if (o.instant || !this.S) { go(); return; }
     if (this.S && this.S.pano) { await this.panoFade(id); go(); this.fading = false; return; }
     const f = document.getElementById('fade'); f.classList.add('on'); this.fading = true;
-    await new Promise(r => setTimeout(r, 380)); go(); setTimeout(() => { f.classList.remove('on'); this.fading = false; }, 120);
+    await new Promise(r => setTimeout(r, 380)); try { go(); } catch (e) { console.error(e); } setTimeout(() => { f.classList.remove('on'); this.fading = false; }, 120);
   },
   /* ---------- ngồi ghế ---------- */
   sit(seat) {
@@ -5315,6 +5346,8 @@ const ROOM_INFO = {
   vr17: { t: 'Cô Phương (Tổng phụ trách Đội)', ad: '#dc2626', board: -90, subj: ['hdtn', 'sk:kns', 'sk:atgt', 'sk:pccc', 'sk:mang'] },
   vr19: { t: 'Cô Ngọc Anh (Y tế)', nurse: 1, board: 0, subj: ['sk:vs', 'sk:boi'] },
   vr15c: { t: 'Cô Hiệu trưởng', ad: '#0e9aa7', principal: 1, board: -20 },
+  hop: { t: 'Cô Phó Hiệu trưởng', ad: '#7c3aed', meeting: 1 },
+  hdong: { t: 'Cô Hiệu trưởng', ad: '#0e9aa7', meeting: 1 },
   vr15: { t: 'Cô Diễn (Thể dục)', pe: 1, board: -100, subj: ['gdtc'], games: [['🎮', 'Sân chơi trò chơi', '#/play']] },
 };
 // môn → khu học phù hợp
@@ -5542,38 +5575,36 @@ Object.assign(ROOMS, {
   en: { n: 'Phòng Tiếng Anh', type: 'english' }, it: { n: 'Phòng Tin học', type: 'it' },
   lib: { n: 'Thư viện', type: 'library' }, mus: { n: 'Phòng Âm nhạc', type: 'music' },
   art: { n: 'Phòng Mĩ thuật', type: 'art' }, stem: { n: 'Phòng STEM', type: 'stem' }, doi: { n: 'Phòng Đội', type: 'doi' },
+  hop: { n: 'Phòng họp giáo viên', type: 'meeting' }, hdong: { n: 'Phòng Hội đồng', type: 'meeting' },
 });
 // lớp cũ (bản trước) → lớp mới, để ảnh VR 360 và đường dẫn cũ vẫn dùng được
 const L = k => clsId(k);
 // Tòa: gốc o (điểm trên tường lớp ở giữa tòa), góc quay th (u: dọc hành lang, v: từ tường lớp ra phía sân)
 const TOA = [
-  { id: 'A', n: 'Tòa A', d: 'Khối 2 · Khối 3', o: [-26, -17], th: Math.PI / 2, u0: -20, u1: 20, endOpen: 1,
+  { id: 'A', n: 'Tòa A', d: 'Khối 2 · Khối 3', o: [-23, -15.5], th: Math.PI / 2, u0: -18.5, u1: 18.5, endOpen: 1,
     floors: [[L('2A1'), L('2A2'), L('2A3'), L('2A4'), L('2A5'), L('2A6')], [L('2A7'), L('2A8'), L('2A9'), L('3A1'), L('3A2')], [L('3A3'), L('3A4'), L('3A5'), L('3A6'), L('3A7')]] },
-  { id: 'B', n: 'Tòa B', d: 'Khối 1 · Khối 4', o: [0, -40], th: 0, u0: -26, u1: 26, endOpen: 0,
+  { id: 'B', n: 'Tòa B', d: 'Khối 1 · Khối 4', o: [23, -15.5], th: -Math.PI / 2, u0: -18.5, u1: 18.5, endOpen: -1,
     floors: [[L('1A1'), L('1A2'), L('1A3'), L('1A4'), L('1A5'), L('1A6')], [L('1A7'), L('1A8'), L('1A9'), L('4A1'), L('4A2')], [L('4A3'), L('4A4'), L('4A5'), L('4A6'), L('4A7')]] },
-  { id: 'C', n: 'Tòa C', d: 'Khối 5 · Phòng chức năng', o: [26, -17], th: -Math.PI / 2, u0: -20, u1: 20, endOpen: -1,
-    floors: [[L('5A1'), L('5A2'), L('5A3'), L('5A4'), L('5A5'), L('5A6')], ['pri', 'med', 'doi', 'lib', 'mus'], ['en', 'it', 'art', 'stem']] },
+  { id: 'H', n: 'Khu hiệu bộ', d: 'Hiệu bộ · Thư viện · STEM', o: [0, -37], th: 0, u0: -23, u1: 23, endOpen: 0, mid: 1,
+    floors: [['hop', 'med', 'doi'], ['pri', 'hdong'], ['lib', 'stem']] },
+  { id: 'C', n: 'Tòa C', d: 'Khối 5 · Phòng chức năng', o: [0, -70], th: 0, u0: -23, u1: 23, endOpen: 0, solo: 1,   // tòa mới phía sau khu hiệu bộ, cách một khoảng sân
+    floors: [[L('5A1'), L('5A2'), L('5A3'), L('5A4'), L('5A5'), L('5A6')], ['en', 'it'], ['mus', 'art']] },
 ];
 // vị trí cửa dọc hành lang: 3 cửa mỗi bên cầu thang
-const DOOR_U = { A: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5], B: [-17.5, -12, -6.5, 6.5, 12, 17.5], C: [-16.5, -11.5, -6.5, 6.5, 11.5, 16.5] };
+const DOOR_U = { A: [-15.2, -10.7, -6.3, 6.3, 10.7, 15.2], B: [-15.2, -10.7, -6.3, 6.3, 10.7, 15.2], C: [-17.5, -12, -6.5, 6.5, 12, 17.5], H: [-17.5, -12, -6.5, 6.5, 12, 17.5] };
 const toaW = (T, u, v) => { const c = Math.cos(T.th), s = Math.sin(T.th); return { x: T.o[0] + u * c + v * s, z: T.o[1] - u * s + v * c }; };
 const toaL = (T, x, z) => { const c = Math.cos(T.th), s = Math.sin(T.th), dx = x - T.o[0], dz = z - T.o[1]; return { u: dx * c - dz * s, v: dx * s + dz * c }; };
 const DOORS = {};   // id → chỗ đứng trước cửa (ở hành lang), quay mặt ra hành lang
 const ROOM_AT = {}; // id → { toa, f }
-TOA.forEach(T => T.floors.forEach((list, f) => { const us = list.length >= 5 ? DOOR_U[T.id] : list.length === 4 ? [DOOR_U[T.id][1], DOOR_U[T.id][2], DOOR_U[T.id][3], DOOR_U[T.id][4]] : [DOOR_U[T.id][2], DOOR_U[T.id][3]];
-  list.forEach((id, i) => { const u = (list.length === 5 && i >= 3) ? us[i + 1] : us[i]; const p = toaW(T, u, 1.1); DOORS[id] = { x: p.x, y: f * FLOOR_H, z: p.z, ry: T.th, u, f, toa: T.id }; ROOM_AT[id] = { toa: T, f }; }); }));
+const DOOR_IX = { 6: [0, 1, 2, 3, 4, 5], 5: [0, 1, 2, 4, 5], 4: [1, 2, 3, 4], 3: [1, 3, 4], 2: [2, 3] };
+TOA.forEach(T => T.floors.forEach((list, f) => {
+  list.forEach((id, i) => { const u = DOOR_U[T.id][DOOR_IX[list.length][i]]; const p = toaW(T, u, 1.1); DOORS[id] = { x: p.x, y: f * FLOOR_H, z: p.z, ry: T.th, u, f, toa: T.id }; ROOM_AT[id] = { toa: T, f }; }); }));
 // danh sách tầng (cho bản đồ)
 const FLOORS = []; TOA.forEach(T => T.floors.forEach((rooms, f) => FLOORS.push({ n: `${T.n} · Tầng ${f + 1}`, d: T.d, rooms, toa: T.id })));
 const roomsOfGrade = g => CLASS_LIST.filter(c => +c[0][0] === g).map(c => clsId(c[0]));
 const toaOfGrade = g => g === 1 || g === 4 ? 'B' : g <= 3 ? 'A' : 'C';
 
-SCENES.bld = () => {
-  const scene = new THREE.Scene(); scene.background = new THREE.Color('#bfe0ff'); scene.fog = new THREE.Fog('#dceefd', 70, 200);
-  { const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 24, 12), new THREE.MeshBasicMaterial({ map: TX.sky, side: THREE.BackSide, fog: false })); scene.add(sky); }
-  const B = Builder(scene);
-  scene.add(new THREE.HemisphereLight('#ffffff', '#d6c4a8', .9)); const dl = new THREE.DirectionalLight('#fff7e8', .45); dl.position.set(-10, 30, 25); scene.add(dl);
-  // khung cảnh sân trường thật nhìn từ hành lang (cùng toạ độ với sân)
-  { const yg = new THREE.Group(); yg.position.set(0, -.03, 0); scene.add(yg); yardMake(yg); }
+function buildTowers(scene, B) {   // dựng 3 tòa NGAY TRONG SÂN TRƯỜNG: sân + hành lang + cầu thang là một không gian
   const H = FLOOR_H, NF = 3, groups = [];
   const surf = [];   // mặt sàn: { T, u0,u1,v0,v1, h(u,v) }
   const colL = (T, u0, u1, v0, v1, y0, y1) => { const a = toaW(T, u0, v0), b = toaW(T, u1, v1); B.cols.push({ x0: Math.min(a.x, b.x), x1: Math.max(a.x, b.x), z0: Math.min(a.z, b.z), z1: Math.max(a.z, b.z), y0, y1 }); };
@@ -5594,25 +5625,27 @@ SCENES.bld = () => {
     const sg = (text, w, h, u, y, v, ry, o) => { const m = B.sign(text, w, h, u, y, v, ry, o); g.add(m); return m; };
     const Lu = T.u1 - T.u0, mu = (T.u0 + T.u1) / 2;
     // đoạn hành lang có lan can phía sân (bỏ hai góc nối với tòa bên cạnh)
-    const ru0 = T.id === 'B' ? -23 : T.u0, ru1 = T.id === 'B' ? 23 : T.u1;
+    const ru0 = T.mid ? T.u0 + 3 : T.u0, ru1 = T.mid ? T.u1 - 3 : T.u1;
     for (let f = 0; f < NF; f++) {
       const y = f * H;
       surf.push({ T, u0: T.u0, u1: T.u1, v0: 0, v1: 3, h: () => y });
       bx(Lu, .25, 3, tilesM, mu, y - .25, 1.5); camL(T, T.u0, T.u1, 0, 3, y - .3, y - .02);
+      if (!f) pl(Lu, 3, tilesM, mu, .04, 1.5, 0, -Math.PI / 2);   // tầng trệt: gạch hành lang nằm trên nền sân (giống các tầng trên)
       // tường lớp học (chừa ô cầu thang ở giữa)
       for (const [a, b] of [[T.u0, SU0], [SU1, T.u1]]) { bx(b - a, H, .3, wallM, (a + b) / 2, y, -.15); bx(b - a, .9, .015, dadoM, (a + b) / 2, y + .14, .012); bx(b - a, .14, .02, mat('#d9c7a5'), (a + b) / 2, y, .01); colL(T, a, b, -1, 0, y - 1, y + H); }
       bx(SU1 - SU0, .45, .3, wallM, 0, y + H - .45, -.15);
       bx(Lu, .14, .32, blue, mu, y + H - .2, -.12);
       pl(Lu, 3.3, slatM, mu, y + H - .32, 1.5, 0, Math.PI / 2);
       // phía sân: tầng trệt có bồn cây, các tầng trên lan can trắng tay vịn xanh
-      if (f > 0) { bx(ru1 - ru0, .95, .16, wallM, (ru0 + ru1) / 2, y, 3.05); bx(ru1 - ru0, .08, .26, blue, (ru0 + ru1) / 2, y + .95, 3.05); }
-      else for (let u = ru0 + 2.6; u < ru1 - 1; u += 5.1) { if (Math.abs(u) < 2.4) continue; B.cyl(.28, .24, .55, '#e2e8f0', u, 0, 3.1, 12, { parent: g }); const lf = new THREE.Mesh(new THREE.IcosahedronGeometry(.4, 0), mat('#3f8f3a')); lf.position.set(u, .85, 3.1); g.add(lf); }
-      colL(T, ru0, ru1, 3, 3.8, y - .5, y + 2);
-      for (let u = ru0; u <= ru1 + .01; u += (ru1 - ru0) / Math.round((ru1 - ru0) / 4.3)) bx(.55, H, .38, blue, u, y, 3.1);
-      bx(ru1 - ru0, .3, .45, wallM, (ru0 + ru1) / 2, y + H - .3, 3.1);
+      if (f > 0) { bx(ru1 - ru0, .95, .16, mat('#1d4ed8'), (ru0 + ru1) / 2, y, 3.05); bx(ru1 - ru0, .08, .26, mat('#93c5fd'), (ru0 + ru1) / 2, y + .95, 3.05); }
+      else for (let u = ru0 + 2.6; u < ru1 - 1; u += 5.1) { if (Math.abs(u) < 2.4) continue; B.cyl(.28, .24, .55, '#e2e8f0', u, 0, 3.1, 12, { parent: g }); const lf = new THREE.Mesh(new THREE.IcosahedronGeometry(.4, 0), mat('#3f8f3a')); lf.position.set(u, .85, 3.1); g.add(lf); colL(T, u - .32, u + .32, 2.78, 3.42, -.5, 1.2); }
+      if (f > 0) colL(T, ru0, ru1, 3, 3.8, y - .5, y + 2);
+      else { bx(ru1 - ru0, .14, .3, stepM, (ru0 + ru1) / 2, .07, 3.45); bx(ru1 - ru0, .14, .3, stepM, (ru0 + ru1) / 2, 0, 3.75); }   // bậc thềm xuống sân
+      for (let u = ru0; u <= ru1 + .01; u += (ru1 - ru0) / Math.round((ru1 - ru0) / 4.3)) { bx(.55, H, .38, mat('#1d4ed8'), u, y, 3.1); if (!f) colL(T, u - .3, u + .3, 2.9, 3.3, -.5, H); }
+      bx(ru1 - ru0, .3, .45, mat('#f1f5f9'), (ru0 + ru1) / 2, y + H - .3, 3.1);
       pl(ru1 - ru0, .34, buntM, (ru0 + ru1) / 2, y + H - .62, 2.86, Math.PI);
       // đầu hồi tòa (không nối với tòa khác): tường kính
-      const ends = T.id === 'B' ? [T.u0, T.u1] : T.endOpen > 0 ? [T.u0] : [T.u1];
+      const ends = T.mid || T.solo ? [T.u0, T.u1] : T.endOpen > 0 ? [T.u0] : [T.u1];
       for (const ue of ends) { const s = ue < 0 ? 1 : -1; bx(.3, H, 3.4, wallM, ue, y, 1.5); if (f > 0) pl(2.4, 1.3, glassM, ue + s * .02, y + 1.8, 1.5, Math.PI / 2); colL(T, ue - .6, ue + .6, 0, 3.4, y - 1, y + H); }
       // ghế băng, bình chữa cháy, đèn trần
       for (const u of [-9, 9]) { bx(1.5, .06, .36, '#c98a4b', u, y + .42, 2.62); for (const du of [-.65, .65]) bx(.06, .42, .32, '#475569', u + du, y, 2.62); }
@@ -5656,25 +5689,24 @@ SCENES.bld = () => {
       if (f === 0) colL(T, .12, SU1, SV, -.25, -.2, 1.6);
       // nút đi nhanh (vẫn tự đi bộ lên thang được)
       const up = toaW(T, -1.8, .7), dn = toaW(T, 1.8, .7);
-      B.act({ x: up.x, z: up.z, y: y0, r: 1.2, icon: '🪜', label: `Lên tầng ${f + 2} (${T.n})`, fn: () => { const p = toaW(T, -1.8, 1.6); W.enter('bld', { x: p.x, y: y0 + H, z: p.z, ry: T.th }); } });
-      const dn2 = toaW(T, 1.8, .7); B.act({ x: dn2.x, z: dn2.z, y: y0 + H, r: 1.2, icon: '🪜', label: `Xuống tầng ${f + 1} (${T.n})`, fn: () => { const p = toaW(T, 1.8, 1.6); W.enter('bld', { x: p.x, y: y0, z: p.z, ry: T.th }); } });
+      B.act({ x: up.x, z: up.z, y: y0, r: 1.2, icon: '🪜', label: `Lên tầng ${f + 2} (${T.n})`, fn: () => { const p = toaW(T, -1.8, 1.6); W.P.root.position.set(p.x, y0 + H, p.z); W.baseY = y0 + H; W.vy = 0; } });
+      const dn2 = toaW(T, 1.8, .7); B.act({ x: dn2.x, z: dn2.z, y: y0 + H, r: 1.2, icon: '🪜', label: `Xuống tầng ${f + 1} (${T.n})`, fn: () => { const p = toaW(T, 1.8, 1.6); W.P.root.position.set(p.x, y0, p.z); W.baseY = y0; W.vy = 0; } });
       sg(`TẦNG ${f + 1} ⇄ TẦNG ${f + 2}`, 2.4, .36, 0, y0 + 3.3, SV + .15, 0, { bg: '#1e40af', fg: '#fde047' });
     }
     // tầng 3: chắn chỗ trống phía trên vế 1 và chiếu nghỉ
     { const yt = (NF - 1) * H; colL(T, SU0, -.12, SV, -.15, yt - .2, yt + 2); colL(T, .12, SU1, SV, SV1 - .05, yt - .2, yt + 2);
       bx(-SU0 - .12, 1, .05, glassM, (SU0 - .12) / 2, yt, -.1); bx(-SU0 - .12, .07, .08, woodM, (SU0 - .12) / 2, yt + 1, -.1); bx(SU1 - .12, 1, .05, glassM, (SU1 + .12) / 2, yt, SV1 - .05); }
-    sg('🪜 CẦU THANG', 2.2, .4, 0, 2.6, .06, 0, { bg: '#16a34a', fg: '#fff' });
     // mái tòa nhà + khối nhà phía sau (nhìn từ tòa đối diện)
     bx(Lu + 1, .35, 4.6, mat('#2563eb'), mu, NF * H - .05, 1.5);
-    { const mm = mat('#eceae4'); for (const [a, b] of [[T.u0, SU0 - .25], [SU1 + .25, T.u1]]) bx(b - a, NF * H, 9.6, mm, (a + b) / 2, 0, -5.1); bx(SU1 - SU0 + .5, NF * H, 3, mm, 0, 0, SV - 1.75); bx(Lu + .6, .4, 10.4, mat('#2563eb'), mu, NF * H, -5); }
-    // lối ra sân ở tầng trệt (giữa tòa và hai bên)
-    for (const u of [-9.2, 9.2]) { const w = toaW(T, u, 2.6), o = toaW(T, u, 5.2); B.act({ x: w.x, z: w.z, y: 0, r: 1.4, icon: '🌤️', label: 'Ra sân trường', fn: () => W.enter('yard', { x: o.x, z: o.z, ry: T.th }) }); }
+    { const mm = mat('#eceae4'); for (const [a, b] of [[T.u0, SU0 - .25], [SU1 + .25, T.u1]]) bx(b - a, NF * H, 9.6, mm, (a + b) / 2, 0, -5.1); bx(SU1 - SU0 + .5, NF * H, 3, mm, 0, 0, SV - 1.75); bx(Lu + .6, .4, 10.4, mat('#2563eb'), mu, NF * H, -5);
+      colL(T, T.u0, SU0 - .25, -9.9, -.3, -1, 30); colL(T, SU1 + .25, T.u1, -9.9, -.3, -1, 30); colL(T, SU0 - .3, SU1 + .3, -9.9, SV - .2, -1, 30);
+      pl(Lu, NF * H, new THREE.MeshLambertMaterial({ map: texRep(yardFacade(), Math.max(2, Math.round(Lu / 4.4)), 1) }), mu, NF * H / 2, -9.93, Math.PI); }   // mặt sau tòa có cửa sổ các lớp
   });
   // khối nhà phía sau tường lớp không được đi vào
   // (va chạm đã có ở tường lớp; camera không xuyên tường)
   TOA.forEach(T => { camL(T, T.u0, SU0, -12, -.12, -1, 20); camL(T, SU1, T.u1, -12, -.12, -1, 20); });
   // hàm độ cao
-  const heightAt = (x, z, y) => { let best = null, bd = 1e9; for (const s of surf) { const p = toaL(s.T, x, z); if (p.u < s.u0 || p.u > s.u1 || p.v < s.v0 || p.v > s.v1) continue; const h = s.h(p.u, p.v); const d = Math.abs(h - y); if (d < .7 && d < bd) { bd = d; best = h; } } return best ?? y; };
+  const towerHeight = (x, z, y) => { let best = null, bd = 1e9; for (const s of surf) { const p = toaL(s.T, x, z); if (p.u < s.u0 || p.u > s.u1 || p.v < s.v0 || p.v > s.v1) continue; const h = s.h(p.u, p.v); const d = Math.abs(h - y); if (d < .7 && d < bd) { bd = d; best = h; } } return best; };
   // ---- học sinh đi lại / trò chuyện ở hành lang
   const rr = mulberry32(hashStr('bld-kids-38'));
   const mk = () => { const av = randAv3(rr); av.a = rr() < .8 ? 0 : av.a; av.o = av.g === 'm' ? (rr() < .6 ? 0 : 1) : (rr() < .7 ? 0 : 1); return CH.build(av); };
@@ -5687,14 +5719,12 @@ SCENES.bld = () => {
     n.name = (C.av.g === 'm' ? KIDNAMES_M : KIDNAMES_F)[Math.floor(rr() * 10)]; n.talk = kidTalk; } });
   // chuyển các nhóm toà về cảnh chính để gộp hình (chạy nhanh trên điện thoại)
   scene.updateMatrixWorld(true); groups.forEach(g => { [...g.children].forEach(c => scene.attach(c)); scene.remove(g); });
-  mergeStatic(scene);
-  const sp = toaW(TOA[1], -9, 1.6);
-  return { scene, B, name: 'Dãy nhà học tập', indoor: true, heightAt, spawn: { x: sp.x, z: sp.z, ry: Math.PI / 2 },
-    placeAt: (x, y, z) => { let best = TOA[1], bd = 1e9; TOA.forEach(T => { const p = toaL(T, x, z); const d = Math.max(0, p.u - T.u1, T.u0 - p.u) + Math.max(0, -p.v - 7, p.v - 3); if (d < bd) { bd = d; best = T; } }); return `${best.n} · Tầng ${Math.max(1, Math.min(3, Math.round(y / H) + 1))}`; },
-    floorName: y => 'Tầng ' + Math.max(1, Math.min(3, Math.round(y / FLOOR_H) + 1)),
-    onEnter() { let last = ''; this._pt = setInterval(() => { if (W.S !== this || !W.P) return; const p = W.P.root.position, t = this.placeAt(p.x, W.baseY || 0, p.z); if (t !== last) { last = t; HUD.place('🏫 ' + t); } }, 600); },
-    onLeave() { clearInterval(this._pt); } };
-};
+  const MID = TOA.find(T => T.mid);
+  const placeAt = (x, y, z) => { let best = MID, bd = 1e9; TOA.forEach(T => { const p = toaL(T, x, z); const d = Math.max(0, p.u - T.u1, T.u0 - p.u) + Math.max(0, -p.v - 7, p.v - 3); if (d < bd) { bd = d; best = T; } }); return `${best.n} · Tầng ${Math.max(1, Math.min(3, Math.round(y / H) + 1))}`; };
+  const near = (x, z) => { for (const T of TOA) { const p = toaL(T, x, z); if (p.u > T.u0 - .2 && p.u < T.u1 + .2 && p.v > -7 && p.v < 3.2) return true; } return false; };
+  return { towerHeight, placeAt, near };
+}
+SCENES.bld = () => SCENES.yard();
 
 /* ======================================================================
    PHÒNG HỌC 3D – lớp học (bàn ghế, bảng xanh, quạt trần, cửa sổ rèm),
@@ -5821,7 +5851,7 @@ function buildRoom(id) {
   // tường trước: bảng, ảnh, khẩu hiệu
   const boardW = type === 'principal' ? 3 : 4.6;
   board = type === 'principal' ? Board(B, boardW, 1.45, 0, 1.0, -d / 2 + .05) : Board(B, 3.0, 1.7, 0, .95, -d / 2 + .07, 0, true);
-  if (type !== 'principal') for (const sx of [-1, 1]) { B.box(1.9, 1.5, .05, '#8b5a2b', sx * 2.65, .98, -d / 2 + .02); B.plane(1.8, 1.4, new THREE.MeshBasicMaterial({ map: canvasTex(256, 200, (x, W2, H2) => { x.fillStyle = '#1f4d3a'; x.fillRect(0, 0, W2, H2); x.strokeStyle = 'rgba(255,255,255,.1)'; for (let i = 1; i < 8; i++) { x.beginPath(); x.moveTo(0, i * 25); x.lineTo(W2, i * 25); x.stroke(); } x.fillStyle = 'rgba(255,255,255,.85)'; x.font = `italic 600 16px ${FONT}`; const d2 = new Date(); x.fillText(sx < 0 ? `Ngày ${d2.getDate()} tháng ${d2.getMonth() + 1} năm ${d2.getFullYear()}` : 'Học, học nữa,', 14, 30); x.fillText(sx < 0 ? R.n : 'học mãi!', 14, 58); x.fillStyle = '#fde68a'; x.fillText(sx < 0 ? 'Chăm ngoan – học giỏi' : '★ ★ ★', 14, 90); }) }), sx * 2.65, 1.73, -d / 2 + .06, 0); }
+  if (type !== 'principal' && type !== 'meeting') for (const sx of [-1, 1]) { B.box(1.9, 1.5, .05, '#8b5a2b', sx * 2.65, .98, -d / 2 + .02); B.plane(1.8, 1.4, new THREE.MeshBasicMaterial({ map: canvasTex(256, 200, (x, W2, H2) => { x.fillStyle = '#1f4d3a'; x.fillRect(0, 0, W2, H2); x.strokeStyle = 'rgba(255,255,255,.1)'; for (let i = 1; i < 8; i++) { x.beginPath(); x.moveTo(0, i * 25); x.lineTo(W2, i * 25); x.stroke(); } x.fillStyle = 'rgba(255,255,255,.85)'; x.font = `italic 600 16px ${FONT}`; const d2 = new Date(); x.fillText(sx < 0 ? `Ngày ${d2.getDate()} tháng ${d2.getMonth() + 1} năm ${d2.getFullYear()}` : 'Học, học nữa,', 14, 30); x.fillText(sx < 0 ? R.n : 'học mãi!', 14, 58); x.fillStyle = '#fde68a'; x.fillText(sx < 0 ? 'Chăm ngoan – học giỏi' : '★ ★ ★', 14, 90); }) }), sx * 2.65, 1.73, -d / 2 + .06, 0); }
   if (type !== 'principal') { const pt = portraitTex(); B.box(.62, .78, .04, '#b45309', 0, 2.56, -d / 2 + .02); B.plane(.52, .66, new THREE.MeshBasicMaterial({ map: pt }), 0, 2.95, -d / 2 + .05, 0); }
   B.sign('THI ĐUA DẠY TỐT – HỌC TỐT', 4.4, .42, 0, h - .45, d / 2 - .02, Math.PI, { bg: '#dc2626', fg: '#fde047' });
   // bảng "Năm điều Bác Hồ dạy" trên tường bên
@@ -5840,6 +5870,23 @@ function buildRoom(id) {
     for (const cx of cols) for (const rz of rows) { desk2(B, cx, rz); for (const sx of [-1, 1]) { chair(B, cx + sx * .3, rz + .5); addSeat(cx + sx * .3, rz + .5, Math.PI, sx * 1.2, 0); }
       if (type === 'it') for (const sx of [-1, 1]) { B.box(.42, .28, .03, '#111827', cx + sx * .3, .62, rz - .12); B.plane(.38, .24, mat('#60a5fa', { emissive: '#1d4ed8' }), cx + sx * .3, .76, rz - .1, 0); B.box(.3, .015, .1, '#334155', cx + sx * .3, .6, rz + .1); } }
     kidsN = type === 'class' || type === 'english' ? 10 : 10;   // lớp học: 10 bạn ảo (giảm một nửa), còn nhiều ghế trống
+  }
+  if (type === 'meeting') {   // PHÒNG HỌP: hai dãy bàn dài quay vào nhau, các cô ngồi hai bên
+    const wd = mat(TX.wood), hdg = id === 'hdong';
+    for (const sx of [-1, 1]) { const tx = sx * 1.25;
+      B.box(.8, .05, 5.4, wd, tx, .72, .3, { col: true }); B.box(.8, .02, 5.4, '#1e3a8a', tx, .77, .3);   // mặt bàn phủ khăn xanh
+      for (const lz of [-2.2, 2.8]) for (const lx of [-.34, .34]) B.box(.05, .72, .05, '#6b7280', tx + lx, 0, lz);
+      for (let i = 0; i < 5; i++) { const cz = -1.6 + i * 1.15;
+        chair(B, sx * 2.0, cz, sx * -Math.PI / 2, '#1d4ed8'); addSeat(sx * 2.0, cz, sx * -Math.PI / 2, sx * 1.1, 0);
+        B.box(.22, .01, .3, '#f8fafc', tx + sx * .15, .8, cz); B.box(.16, .1, .02, '#fde047', tx - sx * .22, .83, cz - .02);   // giấy họp + bảng tên
+        if (i % 2 === 0) { B.cyl(.045, .04, .09, '#e2e8f0', tx - sx * .02, .8, cz + .22, 10); } }
+      B.cyl(.08, .06, .22, '#f1f5f9', tx, .8, .3, 10); const fl = new THREE.Mesh(new THREE.IcosahedronGeometry(.13, 0), mat(hdg ? '#fb7185' : '#4ade80')); fl.position.set(tx, 1.06, .3); scene.add(fl); }   // bình hoa giữa bàn
+    // ghế chủ trì ở đầu bàn (phía cuối phòng, nhìn về bảng)
+    chair(B, 0, 3.35, Math.PI, '#7f1d1d'); addSeat(0, 3.35, Math.PI, 0, .8);
+    for (const sx of [-1, 1]) { B.box(.9, 1.3, .06, '#8b5a2b', sx * 4.1, 1.45, -d / 2 + .04); B.plane(.8, 1.2, mat(picTex(hashStr(id + 'm' + sx))), sx * 4.1, 1.45, -d / 2 + .08, 0); }
+    B.box(1.4, 1.9, .45, '#cbd5e1', w / 2 - 1.0, 0, -d / 2 + .3, { col: true }); B.box(1.3, .02, .02, '#94a3b8', w / 2 - 1.0, .95, -d / 2 + .53);   // tủ hồ sơ
+    B.box(.9, .04, .5, wd, -w / 2 + .7, .7, -1.2, { col: true }); B.box(.5, .3, .35, '#e2e8f0', -w / 2 + .7, .74, -1.2); B.cyl(.12, .12, .5, '#e2e8f0', -w / 2 + .7, .74, -.7, 10);   // bàn nước + ấm
+    kidsN = 0;
   }
   if (type === 'library') {
     for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) B.box(.4, 2.1, 1.8, mat(TX.books), sx * (w / 2 - .25), 0, -2 + i * 2, { col: true });
@@ -5920,12 +5967,13 @@ function buildRoom(id) {
   if (I.principal) { T = CH.build({}, { role: 'principal', aodai: I.ad, hair: 'teacherBob', skin: '#f2c6a2', lip: '#dc2626' }); T.root.position.set(0, 0, -2.85); T.root.rotation.y = 0; }
   else if (I.nurse) { T = CH.build({}, { role: 'nurse', hair: 'teacher', skin: '#f3c9a6' }); T.root.position.set(-2, 0, -2.6); T.root.rotation.y = .3; }
   else { T = CH.build({}, { role: 'teacher', glasses: hashStr(id + 'g') % 2 === 0, aodai: I.ad || '#f472b6', hair: ['teacher', 'teacherLong', 'teacherBob'][hashStr(id) % 3], skin: ['#f3c9a6', '#efc19b', '#f6d0b0'][hashStr(id + 'k') % 3] }); T.root.position.set(type === 'class' || type === 'english' ? Math.min(w / 2 - .55, 3.85) : 2.95, 0, -d / 2 + 1.0); T.root.rotation.y = -.45; }
-  if (type !== 'principal') teacherDesk(B, -w / 2 + 1.6, -d / 2 + 1.3);
+  if (type === 'meeting') { T.root.position.set(0, 0, -3.65); T.root.rotation.y = 0; }
+  if (type !== 'principal' && type !== 'meeting') teacherDesk(B, -w / 2 + 1.6, -d / 2 + 1.3);
   const tn = B.npc(T, (dt, n) => {
     if (Lesson.on && Lesson.T === T) return;
     if (T.talking) return;
     n.cd = (n.cd ?? 2) - dt;
-    if (I.principal || I.nurse) { if (n.cd < 0) { n.cd = 4 + Math.random() * 4; T.state = ['idle', 'hold', 'idle', 'think'][Math.floor(Math.random() * 4)]; } return; }
+    if (I.principal || I.nurse || I.meeting) { if (n.cd < 0) { n.cd = 4 + Math.random() * 4; T.state = ['idle', 'hold', 'idle', 'think'][Math.floor(Math.random() * 4)]; } return; }
     // đi lại trước bảng
     if (n.tg) { const p = T.root.position, dx = n.tg - p.x; if (Math.abs(dx) < .05) { n.tg = null; T.state = 'idle'; T.root.rotation.y = -.3; } else { T.state = 'walk'; T.speed = 1.1; p.x += Math.sign(dx) * Math.min(Math.abs(dx), dt * 1.1); T.root.rotation.y = dx > 0 ? Math.PI / 2 : -Math.PI / 2; } return; }
     if (n.cd < 0) { n.cd = 3 + Math.random() * 5; const r = Math.random(); if (r < .35) n.tg = (type === 'class' || type === 'english' ? 2.1 : 2.6) + Math.random() * .8; else T.state = r < .7 ? 'teach' : 'idle'; }
@@ -5950,12 +5998,22 @@ function buildRoom(id) {
     n.name = (av.g === 'm' ? KIDNAMES_M : KIDNAMES_F)[Math.floor(rr() * 10)]; n.talk = kidTalk; n.base = 'sit'; n.talkR = 1.3; n.seat = s;
     kids.push(n);
   }
+  if (type === 'meeting') {   // các cô giáo ngồi họp ở hai dãy bàn (còn vài ghế trống cho em)
+    const cols = ['#f472b6', '#60a5fa', '#a78bfa', '#34d399', '#fb923c', '#2dd4bf', '#c084fc', '#fb7185'], LN = ['Cô giáo ơi, mời em ngồi dự họp nhé.', 'Cô đang ghi biên bản cuộc họp.', 'Cuối tuần này cả trường có hoạt động ngoại khóa đó em.', 'Cô đang soạn kế hoạch tuần sau.', 'Mời em ngồi xuống ghế cho vui nhé.'];
+    const order = seats.map((s, i) => i).filter(i => seats[i].x !== 0); R2shuffle(rr, order);
+    order.slice(0, 7).forEach((si, k) => { const s = seats[si]; s.taken = true;
+      const C = CH.build({}, { role: 'teacher', glasses: rr() < .35, aodai: cols[k % cols.length], hair: ['teacher', 'teacherLong', 'teacherBob'][k % 3], skin: ['#f3c9a6', '#efc19b', '#f6d0b0'][k % 3] });
+      C.root.position.set(s.x, 0, s.z); C.root.rotation.y = s.ry; C.state = rr() < .6 ? 'sitWrite' : 'sit'; C.seatH = .34; C.t = rr() * 10;
+      const n = B.npc(C, (dt, n) => { n.cd = (n.cd ?? rr() * 5) - dt; if (n.cd < 0) { n.cd = 3 + Math.random() * 6; const r = Math.random(); C.state = r < .55 ? 'sitWrite' : r < .9 ? 'sit' : 'sitRaise'; } });
+      n.name = 'Cô giáo'; n.base = 'sit'; n.talkR = 1.6; n.talkLabel = 'Chào cô giáo';
+      n.talk = () => { const ln = LN[k % LN.length]; W.face(C, W.P.root.position); const pv = C.state; C.state = 'sitRaise'; W.bubble(C, 'Cô giáo: ' + ln, 3800); Voice.speak(ln, { who: C }); setTimeout(() => { C.state = pv === 'sitRaise' ? 'sit' : pv; }, 1800); }; });
+  }
   // nhóm học sinh đứng chơi trong phòng chức năng
   mergeStatic(scene);
   const def = { scene, B, name: R.n, indoor: true, room: { w, d, h }, board, T, kids, rid: id, grade: R.g,
     spawn: { x: doorX, z: d / 2 - 2.6, ry: Math.PI }, bounds: { x0: -w / 2 + .1, x1: w / 2 - .1, z0: -d / 2 + .1, z1: d / 2 - .1 },
     onEnter() {
-      const greet = type === 'library' ? `Chào em ${ME.n}! Cô là cô Dương, thủ thư. Em chọn sách truyện trên giá rồi ngồi đọc nhé.` : I.principal ? `Chào em ${ME.n}! Cô là Hiệu trưởng Trường Tiểu học Đông Hội. Chúc em học tập thật tốt!` : I.nurse ? 'Chào em! Đây là phòng Y tế. Cô sẽ hướng dẫn em cách giữ gìn sức khỏe nhé.' : `Chào em ${ME.n}! Mời em vào lớp. Em tìm một ghế trống rồi bấm Ngồi vào chỗ, cô sẽ giảng bài cho em nhé.`;
+      const greet = type === 'meeting' ? `Chào em ${ME.n}! Đây là ${R.n}. Các cô đang họp, em đi nhẹ nhàng và chào các cô nhé.` : type === 'library' ? `Chào em ${ME.n}! Cô là cô Dương, thủ thư. Em chọn sách truyện trên giá rồi ngồi đọc nhé.` : I.principal ? `Chào em ${ME.n}! Cô là Hiệu trưởng Trường Tiểu học Đông Hội. Chúc em học tập thật tốt!` : I.nurse ? 'Chào em! Đây là phòng Y tế. Cô sẽ hướng dẫn em cách giữ gìn sức khỏe nhé.' : `Chào em ${ME.n}! Mời em vào lớp. Em tìm một ghế trống rồi bấm Ngồi vào chỗ, cô sẽ giảng bài cho em nhé.`;
       setTimeout(() => { if (W.S !== def || Lesson.on) return; W.face(T); T.state = 'wave'; Voice.speak(greet, { who: T, onSentence: s => W.bubble(T, s, 5000) }); setTimeout(() => { if (T.state === 'wave') T.state = 'idle'; }, 2000); }, 700);
       if (scene.userData.hon) refreshHonor(scene.userData.hon);
       if (R.type === 'english') board.draw({ title: 'English Class – Cô Tuyết (Ms. Tuyet)', lines: ['Welcome to our class! – Chào mừng các em!', 'Sit down, please. – Mời các em ngồi vào ghế.', "Let's learn English together! – Cùng học tiếng Anh nào!"] });
@@ -5976,6 +6034,7 @@ function roomTeacherTalk(id, T) {
   if (I.principal) { Voice.speak(`Chào em ${ME.n}! Cô chúc em học giỏi. Cứ mười lăm phút, cô dẫn một cuộc thi ở Đấu trường Trí tuệ. Em nhớ tham gia nhé!`, { who: T, onSentence: s => W.bubble(T, s, 5000) });
     HUD.choice('🏫 Cô Hiệu trưởng', 'Em muốn làm gì?', [{ label: '🔔 Vào Đấu trường', fn: () => location.hash = '#/arena' }, { label: '🏆 Bảng xếp hạng', fn: () => HUD.open('rank') }]); return; }
   if (I.lib || (ROOMS[id] && ROOMS[id].type === 'library')) { Voice.speak('Chào em! Cô là cô Dương, thủ thư. Mời em chọn một cuốn truyện để đọc nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) }); HUD.open('books'); return; }
+  if (I.meeting) { Voice.speak('Chào em! Các cô đang họp. Em cần gặp cô thì chờ cô một chút nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) }); return; }
   Voice.speak('Chào em! Em ngồi vào chỗ trống, chọn bài học, cô sẽ giảng bài cho em nhé.', { who: T, onSentence: s => W.bubble(T, s, 4500) });
   HUD.open('study', { room: id, teacher: T });
 }
@@ -6085,7 +6144,7 @@ const YARD_DOORS = {};
 // Các khu đúng như sơ đồ VR 360 của trường: Cổng Trường · Sân Trường · Hành lang · Khu Sân Chơi & Thể Thao · Không Gian Mỹ Thuật · Khu Cây Xanh
 const YARD_SPOTS = { gate: { n: 'Cổng Trường', x: 0, z: 54, ry: Math.PI }, yard: { n: 'Sân Trường', x: 0, z: 8, ry: Math.PI }, hall: { n: 'Hành lang – dãy lớp học', x: -16, z: -32, ry: Math.PI },
   court: { n: 'Khu Sân Chơi & Thể Thao (Nhà thể chất)', x: -36, z: -31, ry: -Math.PI / 2 }, canteen: { n: 'Nhà ăn học sinh', x: -27, z: 31, ry: -Math.PI / 2 }, art: { n: 'Không Gian Mỹ Thuật', x: -27, z: 15.3, ry: -Math.PI / 2 }, trees: { n: 'Khu Cây Xanh', x: 40.5, z: 2.5, ry: Math.PI },
-  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -18.5, ry: Math.PI } };
+  stage: { n: 'Sân khấu – Đấu trường', x: 0, z: -22.5, ry: Math.PI } };
 let YARD_FAC = null;
 function yardFacade() {   // một ô mặt tiền 3 tầng: sàn trắng, lam che nắng, cửa kính tối, cột xanh – giống dãy nhà thật
   if (YARD_FAC) return YARD_FAC;
@@ -6103,7 +6162,7 @@ function yardFacade() {   // một ô mặt tiền 3 tầng: sàn trắng, lam c
   });
 }
 function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường làm khung cảnh nhìn từ hành lang các tầng)
-  const scene = BK || new THREE.Scene(); const B = Builder(scene);
+  const scene = BK || new THREE.Scene(); const B = Builder(scene); let TW = null;
   if (!BK) {
   scene.fog = new THREE.Fog('#dceefd', 90, 260);
   scene.add(new THREE.HemisphereLight('#ffffff', '#c9a48f', .78));
@@ -6139,6 +6198,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   B.plane(76, 78, new THREE.MeshLambertMaterial({ map: realTex('paver', 76 / 7, 78 / 7) }), 0, .02, 3, 0, -Math.PI / 2);
   B.plane(5, 42.8, new THREE.MeshLambertMaterial({ map: realTex('paver', 5 / 7, 42.8 / 7) }), 40.5, .02, 24.4, 0, -Math.PI / 2);      // sân mở rộng về phía đông
   B.plane(73.4, 3.8, new THREE.MeshLambertMaterial({ map: realTex('paver', 73.4 / 7, 3.8 / 7) }), 6.3, .02, 43.9, 0, -Math.PI / 2);   // sân mở rộng tới sát hàng rào phía cổng
+  B.plane(124, 38.1, new THREE.MeshLambertMaterial({ map: realTex('paver', 124 / 7, 38.1 / 7) }), -14, .022, -65.95, 0, -Math.PI / 2);   // sân sau: giữa khu hiệu bộ và Tòa C
   // nhà cao tầng phía xa (như ảnh)
   for (const [x, z, h] of [[-90, -110, 90], [-55, -120, 110], [-20, -125, 95], [35, -118, 105], [75, -105, 85], [120, -60, 80], [-125, -50, 88], [110, 10, 70]]) {
     const tw = mat(texRep(TX.tower, 2, 6)); B.box(22, h, 18, tw, x, 0, z); B.box(23, 3, 19, '#cbd5e1', x, h, z);
@@ -6159,7 +6219,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
       if (flags) { B.cyl(.022, .022, 1.5, '#e5e7eb', px, 2.6, pz, 6); const fl = B.plane(.62, .86, mat('#e11d2a', { side: THREE.DoubleSide }), px + .33, 3.62, pz, 0); fl.rotation.z = -.12; }
       if (flags && i < n) { const mx = px + (x1 - x0) / n / 2; if (i % 2 === 0) B.plane(3.2, 1.6, murals[(i / 2 | 0) % 4], mx, 1.34, pz + .14, 0);
         const mz = pz - .9; B.box(2.6, .4, .7, '#94a3b8', mx, 0, mz); for (let k = 0; k < 4; k++) { const f = new THREE.Mesh(new THREE.SphereGeometry(.2, 8, 6), mat(k % 2 ? '#f472b6' : '#facc15')); f.position.set(mx - .9 + k * .6, .55, mz); scene.add(f); } } } };
-  fence(-76, -49, 48, -49); fence(-76, -49, -76, 46); fence(48, -49, 48, 46); fence(-76, 46, -6.6, 46, true); fence(6.6, 46, 48, 46, true);
+  fence(-76, -85, 48, -85); fence(-76, -85, -76, 46); fence(48, -85, 48, 46); fence(-76, 46, -6.6, 46, true); fence(6.6, 46, 48, 46, true);
   for (let i = 0; i < 12; i++) if (Math.abs(-58 + i * 10.2) > 9) { const x = -58 + i * 10.2; B.cyl(.22, .28, 3.4, '#7c4a24', x, 0, 48.4, 8); for (const [oy, r] of [[4.3, 1.9], [5.4, 1.4]]) { const t = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), mat('#3f9a3a')); t.position.set(x, oy, 48.4); scene.add(t); } B.box(1.3, .12, 1.3, '#78716c', x, 0, 48.4); }
   // cổng trường
   // cổng (đúng ảnh): hai trụ ốp gạch xanh dương viền trắng, mái đua phẳng màu trắng, biển tên trường nằm giữa hai trụ sát dưới mái, cờ nhiều màu trên mái
@@ -6212,14 +6272,11 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   }
   if (!BK) {
   // BA DÃY NHÀ HỌC 3 TẦNG NỐI LIỀN THÀNH HÌNH CHỮ U (như ảnh VR 360): dãy giữa phía sau sân khấu, hai dãy cánh chạy dọc hai bên sân
-  { // cửa ra vào tầng trệt của 3 tòa (đúng vị trí cửa lớp trong hành lang) + lối lên cầu thang giữa mỗi tòa
-    const TT = id => TOA.find(T => T.id === id), lab = id => ROOMS[id].n + (ROOMS[id].t ? ` (${ROOMS[id].t})` : ''), ic = id => ROOMS[id].g ? '🏫' : ({ med: '🩺', pri: '🏛️' }[id] || '🚪');
-    const stairs = (T, u) => { const p = toaW(T, u, 1.6); return () => W.enter('bld', { x: p.x, y: 0, z: p.z, ry: T.th + Math.PI / 2 }); };
-    const doorsOf = (T, tOf) => T.floors[0].map(id => [ic(id), lab(id), () => W.enter(id), tOf(DOORS[id])]);
-    const TB = TT('B'), TA = TT('A'), TC = TT('C');
-    building(0, -42, 46, 10, 3, 's', [['🚶', 'Hành lang Tòa B', stairs(TB, -21), -21], ...doorsOf(TB, D => D.x), ['🪜', 'Cầu thang Tòa B (Khối 1, 4)', stairs(TB, 0), 0]]);
-    building(-28, -22, 50, 10, 3, 'e', [...doorsOf(TA, D => D.z + 22), ['🪜', 'Cầu thang Tòa A (Khối 2, 3)', stairs(TA, 0), 5]], { c0: -12 });
-    building(28, -22, 50, 10, 3, 'w', [...doorsOf(TC, D => D.z + 22), ['🪜', 'Cầu thang Tòa C (Khối 5, phòng chức năng)', stairs(TC, 0), 5]], { c0: -12 }); }
+  TW = buildTowers(scene, B);   // 3 tòa học thật (hành lang, cửa lớp, cầu thang đi bộ lên được) dựng ngay trong sân
+  for (const sx of [-1, 1]) {   // khối góc phía sau (giữ đúng hình dãy nhà cũ)
+    const fa = new THREE.MeshLambertMaterial({ map: texRep(yardFacade(), 3, 1) }), fb = new THREE.MeshLambertMaterial({ map: texRep(yardFacade(), 2, 1) }), gr = mat('#e5e7eb');
+    const m = new THREE.Mesh(new THREE.BoxGeometry(10, FLOOR_H * 3, 13), [fa, fa, gr, gr, fb, fb]); m.position.set(sx * 28, FLOOR_H * 1.5, -40.5); scene.add(m);
+    B.box(10.6, .4, 13.6, '#2563eb', sx * 28, FLOOR_H * 3, -40.5); B.col(sx * 28, -40.5, 10, 13); B.camBoxes.push({ x0: sx * 28 - 5, x1: sx * 28 + 5, z0: -47, z1: -34, y0: -1, y1: 20 }); }
   { // đầu hồi hai dãy cánh: tường trắng ốp mảng vàng – xám như ảnh
     const endT = canvasTex(256, 256, (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); x.fillStyle = '#f5c518'; x.fillRect(96, 30, 44, 150); x.fillRect(150, 110, 60, 60); x.fillStyle = '#fde68a'; x.fillRect(150, 30, 60, 70); x.fillStyle = '#cbd5e1'; x.fillRect(40, 60, 46, 120); x.fillStyle = '#2b3442'; x.fillRect(40, 196, 170, 44); x.fillStyle = '#e2e8f0'; x.fillRect(0, 0, w, 10); });
     for (const sx of [-1, 1]) { B.plane(10, 10.2, new THREE.MeshLambertMaterial({ map: endT }), sx * 28, 5.1, 3.03, 0); B.box(3.2, 10.2, .3, '#f8fafc', sx * 21.5, 0, 3, { col: true }); B.box(3.2, 2.2, .1, '#f5c518', sx * 21.5, 4, 3.2); }
@@ -6235,19 +6292,19 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   for (const bx of [-11.5, 11.5]) B.plane(2.0, 6.2, new THREE.MeshBasicMaterial({ map: realTex('banner2') }), bx, 5.4, -32.6, 0);
   }
   // ---- sân khấu (giống ảnh: mái hồi xanh, cột cam)
-  B.box(16, .8, 7, '#f1f5f9', 0, 0, -26, { cam: true });   // sân khấu: đi lên được bằng bậc thềm phía trước
-  B.col(-8.1, -26, .3, 7.2); B.col(8.1, -26, .3, 7.2); B.col(-5, -22.45, 6, .3); B.col(5, -22.45, 6, .3); B.col(0, -29.1, 16, .5);
-  B.box(16.2, .12, 7.2, '#2563eb', 0, .8, -26);
-  for (let k = 0; k < 4; k++) B.box(4, .2 * (k + 1), .35, k % 2 ? '#e2e8f0' : '#cbd5e1', 0, 0, -22.5 + .175 + (3 - k) * .35);
-  for (const sx of [-1, 1]) B.box(.08, .9, .08, '#f97316', sx * 2.04, .8, -22.46);
-  for (const sx of [-1, 1]) for (const zz of [-28.8, -23]) B.box(.5, 5, .5, '#f97316', sx * 7.4, .8, zz);
+  B.box(16, .8, 7, '#f1f5f9', 0, 0, -30, { cam: true });   // sân khấu: đi lên được bằng bậc thềm phía trước
+  B.col(-8.1, -30, .3, 7.2); B.col(8.1, -30, .3, 7.2); B.col(-5, -26.45, 6, .3); B.col(5, -26.45, 6, .3); B.col(0, -33.1, 16, .5);
+  B.box(16.2, .12, 7.2, '#2563eb', 0, .8, -30);
+  for (let k = 0; k < 4; k++) B.box(4, .2 * (k + 1), .35, k % 2 ? '#e2e8f0' : '#cbd5e1', 0, 0, -26.5 + .175 + (3 - k) * .35);
+  for (const sx of [-1, 1]) B.box(.08, .9, .08, '#f97316', sx * 2.04, .8, -26.46);
+  for (const sx of [-1, 1]) for (const zz of [-32.8, -27]) B.box(.5, 5, .5, '#f97316', sx * 7.4, .8, zz);
   { const sh = new THREE.Shape(); sh.moveTo(-5, 0); sh.lineTo(5, 0); sh.lineTo(0, 2.6); sh.closePath(); const g = new THREE.ExtrudeGeometry(sh, { depth: 17.4, bevelEnabled: false }); g.translate(0, 0, -8.7);
-    const r = new THREE.Mesh(g, mat('#3b82f6')); r.rotation.y = Math.PI / 2; r.position.set(0, 5.8, -26); scene.add(r);
-    const gable = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('#fde68a')); gable.position.set(0, 5.8, -21.25); scene.add(gable); }
-  B.box(15, 4.2, .3, '#b91c1c', 0, .8, -28.9);
-  const stageBoard = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: realTex('stage') }), 0, 2.95, -28.7, 0);
+    const r = new THREE.Mesh(g, mat('#3b82f6')); r.rotation.y = Math.PI / 2; r.position.set(0, 5.8, -30); scene.add(r);
+    const gable = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('#fde68a')); gable.position.set(0, 5.8, -25.25); scene.add(gable); }
+  B.box(15, 4.2, .3, '#b91c1c', 0, .8, -32.9);
+  const stageBoard = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: realTex('stage') }), 0, 2.95, -32.7, 0);
   stageBoard.userData.click = () => location.hash = '#/arena';
-  B.act({ x: 0, z: -20.6, r: 3.2, icon: '🔔', label: 'Vào Đấu trường Trí tuệ', fn: () => location.hash = '#/arena' });
+  B.act({ x: 0, z: -24.6, r: 3.2, icon: '🔔', label: 'Vào Đấu trường Trí tuệ', fn: () => location.hash = '#/arena' });
   // cột cờ (cờ bay)
   B.cyl(.9, 1.1, .4, '#e2e8f0', 0, 0, -14.5, 16, { col: true }); B.cyl(.06, .08, 9, '#e5e7eb', 0, .4, -14.5, 8); B.cyl(.12, .12, .2, '#facc15', 0, 9.4, -14.5, 8);
   const fg = new THREE.PlaneGeometry(2.4, 1.6, 14, 6); const flag = new THREE.Mesh(fg, new THREE.MeshLambertMaterial({ map: TX.flag, side: THREE.DoubleSide })); flag.position.set(1.25, 8.5, -14.5); scene.add(flag);
@@ -6377,23 +6434,29 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   const kid2 = (o = {}) => { const av = randAv3(rr2); if (o.g) av.g = o.g; if (o.o != null) av.o = o.o; const C = CH.build(av); const name = (av.g === 'm' ? KIDNAMES_M : KIDNAMES_F)[Math.floor(rr2() * 10)]; return { C, name }; };
   // bảng điểm nổi của trò chơi đang chơi + pháo giấy khi thắng
   let ghudLast = ''; const ghud = (t, a, b) => { const h = t ? `<b>${t}</b>` + (a != null ? `<span>${a}</span>` : '') + (b != null ? `<i>${b}</i>` : '') : ''; if (h === ghudLast) return; ghudLast = h; let e = document.getElementById('ghud'); if (!e) { e = document.createElement('div'); e.id = 'ghud'; document.body.appendChild(e); } e.innerHTML = h; e.style.display = h ? 'flex' : 'none'; };
-  const party = (p, n = 18) => { const S = W.S; if (!S || !S.fx) return; for (let i = 0; i < n; i++) S.fx.emit(i % 3 ? 'rb' + 'roygbv'[i % 6] : 'star', new THREE.Vector3(p.x + (Math.random() - .5) * 1.4, (p.y || 0) + 1.2 + Math.random() * 1.2, p.z + (Math.random() - .5) * 1.4), { size: .24, life: 1.4, add: i % 3 === 0, v: new THREE.Vector3((Math.random() - .5) * 1.6, 1 + Math.random(), (Math.random() - .5) * 1.6) }); };
+  const party = (p, n = 18) => { const S = W.S; if (!S || !S.fx) return; for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; S.fx.emit('star', new THREE.Vector3(p.x, (p.y || 0) + 1.1, p.z), { size: .3, life: 1.1, add: true, grow: .8, spin: 3, v: new THREE.Vector3(Math.cos(a) * 2.6, .9, Math.sin(a) * 2.6), g: 1.5 }); } for (let i = 0; i < 5; i++) S.fx.emit('spark', new THREE.Vector3(p.x, (p.y || 0) + 1.3, p.z), { size: .9, life: .55, add: true, grow: 2.2, v: new THREE.Vector3(0, .2, 0) }); for (let i = 0; i < n; i++) S.fx.emit(i % 3 ? 'rb' + 'roygbv'[i % 6] : 'star', new THREE.Vector3(p.x + (Math.random() - .5) * 1.4, (p.y || 0) + 1.2 + Math.random() * 1.2, p.z + (Math.random() - .5) * 1.4), { size: .24, life: 1.4, add: i % 3 === 0, v: new THREE.Vector3((Math.random() - .5) * 1.6, 1 + Math.random(), (Math.random() - .5) * 1.6) }); };
   const selfAct = (icon, label, when, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when, fn });
   let sitCur = null, eatOn = null, drawOn = null, restOn = null;   // người chơi đang ngồi ghế nhà ăn / bàn vẽ / ghế đá
   // ---- NGƯỜI CHƠI THAM GIA TRÒ CHƠI NGOÀI SÂN: vào chơi bằng nút hành động, bấm di chuyển (hoặc đi ra xa) là thôi chơi
-  const yardStar = (n, why) => { Items.capped('play', n, 30, why); };
+  const yardStar = (n, why) => { Items.capped('play', n, 15, why); try { Juice.win('🎉 ' + why + '!'); } catch (e) { } };
   const Join = { cur: null, start(o) { this.stop(); this.cur = o; o.begin && o.begin(); toast(o.msg, 3200); }, stop() { const c = this.cur; if (!c) return; this.cur = null; c.end && c.end(); ghud(); W.P.autoTo = null; if (!['walk', 'run'].includes(W.P.state)) W.P.state = 'idle'; } };
   const follow = (x, z, dt) => { const p = W.P.root.position, dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz); W.P.autoTo = null; if (d > 2.5) { W.P.autoTo = { x, z }; return; } p.x += dx * Math.min(1, dt * 5); p.z += dz * Math.min(1, dt * 5); if (d > .02) W.P.root.rotation.y = W.turn(W.P.root.rotation.y, Math.atan2(dx, dz), dt * 8); W.P.state = 'walk'; W.P.speed = 1.3; };
   B.tick(dt => { const j = Join.cur; if (!j) return; if (W.S !== def || W.seat) { Join.stop(); return; } const [ix, iy] = W.input(); if ((ix || iy) && !j.free) { Join.stop(); return; }
     if (j.free && Math.hypot(W.P.root.position.x - j.cx, W.P.root.position.z - j.cz) > j.R) { Join.stop(); toast('Em đã ra khỏi trò chơi.', 1500); return; } j.upd && j.upd(dt); });
   // chuyền bóng / đá cầu theo vòng: mems = các nhân vật; người chơi vào thì thành một thành viên
   function passGame(mems, ball, o) { let from = 0, to = 1, u = 0, wait = 0, me = false, cnt = 0; const L = () => me ? [...mems, W.P] : mems;
+    const shd = new THREE.Mesh(new THREE.CircleGeometry(.2, 14), new THREE.MeshBasicMaterial({ color: '#0f172a', transparent: true, opacity: .25, depthWrite: false })); shd.rotation.x = -Math.PI / 2; shd.userData.dyn = 1; scene.add(shd);
+    const zr = (o.ar || 2) + .15, zone = new THREE.Mesh(new THREE.RingGeometry(zr - .14, zr, 40), new THREE.MeshBasicMaterial({ color: '#fde047', transparent: true, opacity: .4, depthWrite: false, side: THREE.DoubleSide })); zone.rotation.x = -Math.PI / 2; zone.position.set(o.cx, .05, o.cz); zone.userData.dyn = 1; scene.add(zone);
+    let trT = 0, zt = 0; const V3 = new THREE.Vector3();
+    B.tick(dt => { zt += dt; zone.material.opacity = me ? .75 : .28 + Math.sin(zt * 3) * .14; zone.material.color.set(me ? '#4ade80' : '#fde047'); shd.position.set(ball.position.x, .04, ball.position.z); shd.scale.setScalar(Math.max(.5, 1.25 - ball.position.y * .22));
+      const fx = W.S && W.S.fx; if (!fx || wait > 0) return; trT += dt; if (trT > .06) { trT = 0; fx.emit('spark', V3.copy(ball.position), { size: .16, life: .4, add: true, grow: -.6, v: new THREE.Vector3(0, .05, 0) }); } });
+    const touch = mine => { const fx = W.S && W.S.fx; if (!fx) return; const p = ball.position; for (let i = 0; i < (mine ? 9 : 3); i++) fx.emit(mine ? (i % 2 ? 'star' : 'rb' + 'roygbv'[i % 6]) : 'spark', new THREE.Vector3(p.x, p.y + .1, p.z), { size: mine ? .22 : .16, life: mine ? .9 : .45, add: true, v: new THREE.Vector3((Math.random() - .5) * 2.2, .8 + Math.random() * 1.2, (Math.random() - .5) * 2.2), g: 3 }); if (mine) try { Juice.pop('+1 ' + o.icon, '#fde047'); if (cnt % 5 === 0) Juice.stars(10); } catch (e) { } };
     B.tick(dt => { const M = L(); if (from >= M.length) from = 0; if (to >= M.length || to === from) to = (from + 1) % M.length;
       const a = M[from].root.position, b = M[to].root.position;
       mems.forEach((C, i) => { if (i !== from || wait <= 0) W.face(C, i === to ? a : ball.position); });
       if (wait > 0) { wait -= dt; ball.position.set(a.x, o.y0 + (a.y || 0), a.z + .01); if (wait <= 0 && M[from] !== W.P) M[from].state = 'idle'; return; }
       u += dt / o.dur; if (u >= 1) { u = 0; from = to; const n = M.length; to = (from + 1 + Math.floor(Math.random() * (n - 1))) % n; if (to === from) to = (to + 1) % n; if (me && M[from] !== W.P && Math.random() < .45) to = n - 1; wait = .7;
-        const K = M[from]; if (K === W.P) { const [ix, iy] = W.input(); if (!(ix || iy)) { W.P.state = 'kick'; W.P.t = 0; setTimeout(() => { if (W.P.state === 'kick') W.P.state = 'idle'; }, 650); } cnt++; SFX.click && SFX.click(); if (cnt % 5 === 0) toast(o.icon + ' Em đã có ' + cnt + ' ' + o.unit + '!', 1500); } else { K.state = o.st || 'kick'; K.t = 0; } return; }
+        const K = M[from]; if (K === W.P) { const [ix, iy] = W.input(); if (!(ix || iy)) { W.P.state = 'kick'; W.P.t = 0; setTimeout(() => { if (W.P.state === 'kick') W.P.state = 'idle'; }, 650); } cnt++; SFX.click && SFX.click(); touch(true); if (cnt % 5 === 0) toast(o.icon + ' Em đã có ' + cnt + ' ' + o.unit + '!', 1500); } else { K.state = o.st || 'kick'; K.t = 0; touch(false); } return; }
       ball.position.set(a.x + (b.x - a.x) * u, o.y0 + Math.sin(Math.PI * u) * o.arc, a.z + (b.z - a.z) * u); ball.rotation.x += dt * 9; });
     B.act({ x: o.cx, z: o.cz, r: o.ar || 2, icon: o.icon, label: o.label, when: () => !me, fn: () => { cnt = 0; Join.start({ free: true, cx: o.cx, cz: o.cz, R: o.R, msg: o.icon + ' Em đang ' + o.what + ' cùng các bạn. Đứng trong vòng để nhận, đi ra xa là thôi chơi.', begin() { me = true; W.bubble(mems[0], 'Vào chơi cùng tụi tớ nào!', 2400); }, end() { me = false; } }); } }); }
   // đá cầu
@@ -6533,7 +6596,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   }
   // ==================== TRÒ CHƠI 3D NGAY TRONG NHÀ THỂ CHẤT: ném rổ, sút phạt, cầu lông, chạy đua ====================
   { const gx = -56.75, gz = -31, cl = (v, a, b) => Math.max(a, Math.min(b, v));
-    const playStar = (n, why) => { Items.capped('play', n, 30, why); };
+    const playStar = (n, why) => { Items.capped('play', n, 15, why); };
     const modeAct = (icon, label, on, fn) => B.act({ get x() { return W.P.root.position.x; }, get z() { return W.P.root.position.z; }, r: 1.2, icon, label, when: on, fn });
     const ask = (title, start) => start();   // chơi 3D ngay tại nhà thể chất
     const mkBall = (r, col) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mat(col)); m.userData.dyn = 1; m.visible = false; scene.add(m); return m; };
@@ -6657,7 +6720,7 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
   // ngồi ghế tròn trò chuyện
   for (let i = 0; i < 3; i++) { const k = kid(); const a = i * 2.1 + .4; k.C.root.position.set(-15 + Math.cos(a) * 1.25, .04, -14 + Math.sin(a) * 1.25); k.C.root.rotation.y = Math.atan2(Math.cos(a), Math.sin(a)); k.C.state = i === 1 ? 'sitTalk' : 'sit'; k.C.seatH = .38; const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.base = k.C.state; }
   // tập văn nghệ trước sân khấu
-  for (let i = 0; i < 4; i++) { const k = kid(); k.C.root.position.set(-4.5 + i * 3, .8, -25.2 - (i % 2) * .9); k.C.root.rotation.y = 0; const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? i * .4) - dt; if (n.cd < 0) { n.cd = 1.6 + Math.random() * 1.6; k.C.state = ['clap', 'cheer', 'wave', 'jump', 'handsOut', 'cheer'][Math.floor(Math.random() * 6)]; } }); n.name = k.name; n.talk = kidTalk; n.line = 'Bọn mình đang tập văn nghệ chào mừng 20 tháng 11!'; }
+  for (let i = 0; i < 4; i++) { const k = kid(); k.C.root.position.set(-4.5 + i * 3, .8, -29.2 - (i % 2) * .9); k.C.root.rotation.y = 0; const n = B.npc(k.C, (dt, n) => { n.cd = (n.cd ?? i * .4) - dt; if (n.cd < 0) { n.cd = 1.6 + Math.random() * 1.6; k.C.state = ['clap', 'cheer', 'wave', 'jump', 'handsOut', 'cheer'][Math.floor(Math.random() * 6)]; } }); n.name = k.name; n.talk = kidTalk; n.line = 'Bọn mình đang tập văn nghệ chào mừng 20 tháng 11!'; }
   // cô giáo Thể dục
   { const C = CH.build({}, { role: 'pe', hair: 'teacherLong', skin: '#e9b98f' }); C.root.position.set(-41.6, 0, -33.4); C.root.rotation.y = -1.2; C.state = 'idle';
     const n = B.npc(C, (dt, n) => { n.cd = (n.cd ?? 3) - dt; if (n.cd < 0 && !C.talking) { n.cd = 4 + Math.random() * 4; C.state = ['idle', 'clap', 'idle', 'point'][Math.floor(Math.random() * 4)]; } });
@@ -6670,13 +6733,38 @@ function yardMake(BK) {   // BK = nhóm cảnh nền (dùng lại sân trường
       if (d < 7) { W.face(C, pp); if (greeted <= 0 && !C.talking) { greeted = 45; C.state = 'wave'; const t = HI[Math.floor(Math.random() * 3)]; W.bubble(C, 'Bác bảo vệ: ' + t, 4500); Voice.speak(t, { who: C }); setTimeout(() => C.state = 'idle', 2600); } }
       else if (d > 12 && greeted < 30) greeted = Math.min(greeted, 0); });
     n.name = 'Bác bảo vệ'; n.talkLabel = 'Chào bác bảo vệ'; n.talk = () => { W.face(C); C.state = 'wave'; const t = 'Bác chào cháu! Cháu cần tìm phòng nào thì bấm nút Bản đồ, hoặc hỏi cô Hạnh hướng dẫn viên nhé.'; W.bubble(C, 'Bác bảo vệ: ' + t, 5000); Voice.speak(t, { who: C }); }; }
+  if (!BK) {   // ---- SÂN SAU (giữa khu hiệu bộ và Tòa C): cây xanh, bồn hoa, ghế đá, đèn + các bạn chơi trò chơi
+    const Z0 = -56.5, fcol = ['#f43f5e', '#facc15', '#a855f7', '#fb923c', '#38bdf8'];
+    tree(-19, Z0); tree(19, Z0); for (const sx of [-1, 1]) for (const z of [-51, -62]) tree(sx * 30, z, .85, false);
+    // bồn hoa tròn giữa sân
+    B.cyl(2.3, 2.3, .45, '#cbd5e1', 0, 0, Z0, 28); B.cyl(2.05, 2.05, .5, '#4caf50', 0, 0, Z0, 28); B.col(0, Z0, 4.2, 4.2);
+    for (let i = 0; i < 14; i++) { const a = i * Math.PI * 2 / 14, r = i % 2 ? 1.6 : .95; const f = new THREE.Mesh(new THREE.SphereGeometry(.24, 8, 6), mat(fcol[i % 5])); f.position.set(Math.cos(a) * r, .68, Z0 + Math.sin(a) * r); scene.add(f); }
+    { const b = new THREE.Mesh(new THREE.ConeGeometry(.55, 1.6, 10), mat('#2e7d32')); b.position.set(0, 1.3, Z0); scene.add(b); }
+    // bồn hoa dọc lưng khu hiệu bộ + ghế đá + đèn sân
+    for (let i = 0; i < 7; i++) { const x = -18 + i * 6; B.box(3.2, .5, 1, '#94a3b8', x, 0, -48.2); B.col(x, -48.2, 3.2, 1); for (let k = 0; k < 4; k++) { const f = new THREE.Mesh(new THREE.SphereGeometry(.28, 8, 6), mat(fcol[(i + k) % 5])); f.position.set(x - 1.15 + k * .77, .7, -48.2); scene.add(f); } }
+    for (const [x, z] of [[-9, -50.3], [9, -50.3], [-26, Z0], [26, Z0]]) { B.box(1.9, .1, .5, '#e7e5e4', x, .42, z); for (const d of [-.75, .75]) B.box(.14, .42, .44, '#a8a29e', x + d, 0, z); B.col(x, z, 1.9, .5); }
+    for (const x of [-34, -12, 12, 34]) lamp(x, -64.6);
+    // đá cầu
+    { const cx = -9.5, cz = -58; const K = [0, 1, 2].map(i => { const k = kid2(); const a = i * 2.094 + .5; k.C.root.position.set(cx + Math.cos(a) * 2.3, 0, cz + Math.sin(a) * 2.3); const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = 'Tụi tớ đang đá cầu ở sân Tòa C. Bạn vào đá cùng nhé!'; return k; });
+      const cau = new THREE.Group(); cau.add(new THREE.Mesh(new THREE.CylinderGeometry(.05, .06, .03, 10), mat('#1f2937'))); for (let i = 0; i < 4; i++) { const f = new THREE.Mesh(new THREE.ConeGeometry(.035, .16, 5), mat(['#ef4444', '#facc15', '#22c55e', '#3b82f6'][i])); f.position.set(Math.cos(i * 1.57) * .03, .09, Math.sin(i * 1.57) * .03); cau.add(f); } cau.traverse(o => o.userData.dyn = 1); scene.add(cau);
+      passGame(K.map(k => k.C), cau, { cx, cz, R: 5.5, arc: 1.7, y0: .25, dur: 1.0, icon: '🪶', label: 'Vào đá cầu cùng các bạn', what: 'đá cầu', unit: 'lần đỡ cầu' }); }
+    // chuyền bóng
+    { const cx = 9.5, cz = -58; const K = [0, 1, 2, 3].map(i => { const k = kid2(); const a = i * 1.571 + .4; k.C.root.position.set(cx + Math.cos(a) * 2.8, 0, cz + Math.sin(a) * 2.8); const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = 'Chuyền bóng với tụi tớ đi, vui lắm!'; return k; });
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(.2, 14, 10), mat('#fde047')); ball.userData.dyn = 1; scene.add(ball);
+      passGame(K.map(k => k.C), ball, { st: 'wave', cx, cz, R: 6, arc: 2.0, y0: 1.2, dur: 1.1, icon: '🏐', label: 'Vào chuyền bóng cùng các bạn', what: 'chuyền bóng', unit: 'đường chuyền' }); }
+    // đuổi bắt quanh bồn hoa
+    { const K = [0, 1, 2].map(() => { const k = kid2(); const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = 'Tụi tớ đang chơi đuổi bắt, bạn chạy cùng không?'; return k; }); let t = 0;
+      B.tick(dt => { t += dt * .75; K.forEach((k, i) => { const a = t + i * 1.15 + Math.sin(t * .6 + i) * .25, p = k.C.root.position; p.x = Math.cos(a) * 4.3; p.z = Z0 + Math.sin(a) * 3.6; k.C.root.rotation.y = W.turn(k.C.root.rotation.y, Math.atan2(-Math.sin(a) * 4.3, Math.cos(a) * 3.6), dt * 8); k.C.state = 'run'; k.C.speed = 3.2; }); }); }
+    // hai bạn ngồi đọc sách ở ghế đá, hai bạn đứng trò chuyện
+    for (const [x, z, ry, st, line] of [[-26, -56.1, 0, 'idle', 'Tớ đang đợi bạn ra chơi nhảy dây.'], [26.6, -56.1, 0, 'wave', 'Sân Tòa C mới rộng và mát ghê!'], [-9.5, -51.2, Math.PI, 'idle', 'Lát nữa tụi mình lên phòng Âm nhạc ở Tòa C nhé.']]) { const k = kid2(); k.C.root.position.set(x, 0, z); k.C.root.rotation.y = ry; k.C.state = st; const n = B.npc(k.C); n.name = k.name; n.talk = kidTalk; n.line = line; }
+  }
   try { Fest.decorate(scene, B, { kid }); } catch (e) { console.error(e); }
   mergeStatic(scene);
-  const heightAt = (x, z) => { if (x > -8 && x < 8 && z > -29.5 && z <= -22.5) return .8; if (Math.abs(x) <= 2.05 && z > -22.5 && z < -21.1) return .8 * (-21.1 - z) / 1.4; let h = 0; for (const s of yardSurf) { const ix = Math.max(s.x0 - x, 0, x - s.x1), iz = Math.max(s.z0 - z, 0, z - s.z1); if (!ix && !iz) return CH0; const d = s.dir[0] ? (iz ? 9 : ix) : (ix ? 9 : iz); const out = s.dir[0] ? (s.dir[0] > 0 ? x > s.x1 : x < s.x0) : z > s.z1; if (out && d < .72) h = Math.max(h, CH0 * (1 - d / .72)); } return h; };
-  const def = { scene, B, id: 'yard', yard: true, heightAt, T: scene.userData.peTeacher, name: 'Sân trường', indoor: false, spawn: { x: 0, z: 59, ry: Math.PI }, cam0: { pitch: .06, dist: 11 }, bounds: { x0: -74.5, x1: 46.5, z0: -47.5, z1: 66 },
-    onEnter(prev) { Tour.onEnter(prev, def); if (Fest.cur) Fest.greet(); },
+  const heightAt = (x, z, y) => { if (TW) { const th = TW.towerHeight(x, z, y || 0); if (th != null) return th; } if (x > -8 && x < 8 && z > -33.5 && z <= -26.5) return .8; if (Math.abs(x) <= 2.05 && z > -26.5 && z < -25.1) return .8 * (-25.1 - z) / 1.4; let h = 0; for (const s of yardSurf) { const ix = Math.max(s.x0 - x, 0, x - s.x1), iz = Math.max(s.z0 - z, 0, z - s.z1); if (!ix && !iz) return CH0; const d = s.dir[0] ? (iz ? 9 : ix) : (ix ? 9 : iz); const out = s.dir[0] ? (s.dir[0] > 0 ? x > s.x1 : x < s.x0) : z > s.z1; if (out && d < .72) h = Math.max(h, CH0 * (1 - d / .72)); } return h; };
+  const def = { scene, B, id: 'yard', yard: true, heightAt, T: scene.userData.peTeacher, name: 'Sân trường', indoor: false, spawn: { x: 0, z: 59, ry: Math.PI }, cam0: { pitch: .06, dist: 11 }, bounds: { x0: -74.5, x1: 46.5, z0: -83.5, z1: 66 },
+    onEnter(prev) { Tour.onEnter(prev, def); if (Fest.cur) Fest.greet(); let last = ''; clearInterval(this._pt); this._pt = setInterval(() => { if (W.S !== this || !W.P || !TW) return; const p = W.P.root.position, t = (TW.near(p.x, p.z) || (W.baseY || 0) > 1) ? '🏫 ' + TW.placeAt(p.x, W.baseY || 0, p.z) : this.name; if (t !== last) { last = t; HUD.place(t); } }, 600); },
     onSit(seat) { seat.look = .35; const f = seat.eat ? eatOn : seat.draw ? drawOn : seat.rest ? restOn : null; if (f) { sitCur = { seat, ...f(seat) }; seat.look = .35; W.pitch = .5; W.dist = 3; } },
-    onLeave() { Join.stop(); ghud(); if (sitCur) { sitCur.off(); sitCur = null; } } };
+    onLeave() { clearInterval(this._pt); Join.stop(); ghud(); if (sitCur) { sitCur.off(); sitCur = null; } } };
   return def;
 }
 SCENES.yard = () => yardMake();
@@ -6684,19 +6772,19 @@ SCENES.yard = () => yardMake();
 /* Bản đồ nhỏ của sân trường: tranh sơ đồ vẽ sẵn một lần (8 điểm ảnh / mét, bắc ở trên) */
 let _yardMap = null;
 function yardMapImg() {
-  if (_yardMap) return _yardMap; const K = 8, c = document.createElement('canvas'); c.width = 136 * K; c.height = 123 * K; const x = c.getContext('2d'); x.scale(K, K); x.translate(82, 55);
+  if (_yardMap) return _yardMap; const K = 8, c = document.createElement('canvas'); c.width = 136 * K; c.height = 155 * K; const x = c.getContext('2d'); x.scale(K, K); x.translate(82, 87);
   let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
   const rr = (x0, z0, x1, z1, r) => { x.beginPath(); x.moveTo(x0 + r, z0); x.arcTo(x1, z0, x1, z1, r); x.arcTo(x1, z1, x0, z1, r); x.arcTo(x0, z1, x0, z0, r); x.arcTo(x0, z0, x1, z0, r); x.closePath(); };
   const R = (col, x0, z0, x1, z1, r = 0) => { x.fillStyle = col; rr(x0, z0, x1, z1, r); x.fill(); };
   // cỏ
-  { const g = x.createLinearGradient(0, -55, 0, 68); g.addColorStop(0, '#a3dc86'); g.addColorStop(1, '#7fc96c'); x.fillStyle = g; x.fillRect(-82, -55, 136, 123); for (let i = 0; i < 500; i++) { x.fillStyle = rnd() > .5 ? 'rgba(255,255,255,.10)' : 'rgba(22,101,52,.10)'; x.beginPath(); x.arc(-82 + rnd() * 136, -55 + rnd() * 123, .4 + rnd() * 1.1, 0, 7); x.fill(); } }
+  { const g = x.createLinearGradient(0, -87, 0, 68); g.addColorStop(0, '#a3dc86'); g.addColorStop(1, '#7fc96c'); x.fillStyle = g; x.fillRect(-82, -87, 136, 155); for (let i = 0; i < 500; i++) { x.fillStyle = rnd() > .5 ? 'rgba(255,255,255,.10)' : 'rgba(22,101,52,.10)'; x.beginPath(); x.arc(-82 + rnd() * 136, -87 + rnd() * 155, .4 + rnd() * 1.1, 0, 7); x.fill(); } }
   // đường + vỉa hè + vạch sang đường
   R('#e7e5e4', -82, 46.6, 54, 51.2); R('#6b7280', -82, 51.2, 54, 64.5); R('#e7e5e4', -82, 64.5, 54, 68);
   x.fillStyle = '#fde68a'; for (let i = -82; i < 54; i += 6) x.fillRect(i, 57.6, 3.2, .5);
   x.fillStyle = '#f8fafc'; for (let i = 0; i < 7; i++) x.fillRect(-4.6 + i * 1.4, 51.8, .8, 12);
   for (const [cx, col] of [[-40, '#ef4444'], [-22, '#f8fafc'], [26, '#3b82f6'], [41, '#facc15']]) { R('rgba(15,23,42,.25)', cx - 2, 53.3, cx + 2.6, 55.7, .6); R(col, cx - 2.3, 53, cx + 2.3, 55.3, .7); R('rgba(15,23,42,.45)', cx - 1.2, 53.3, cx + .9, 55, .3); }
   // khuôn viên: nền gạch hồng
-  R('rgba(15,23,42,.18)', -75.4, -48.4, 48.8, 46.8, 3); R('#f9d2ca', -76, -49, 48, 46, 3); R('#f2b3a8', -38, -36, 38, 42, 1); R('#f2b3a8', 37, 3, 43, 45.8, 1); R('#f2b3a8', -30.4, 41, 43, 45.8, 1);
+  R('rgba(15,23,42,.18)', -75.4, -84.4, 48.8, 46.8, 3); R('#f9d2ca', -76, -85, 48, 46, 3); R('#f2b3a8', -38, -36, 38, 42, 1); R('#f2b3a8', 37, 3, 43, 45.8, 1); R('#f2b3a8', -30.4, 41, 43, 45.8, 1);
   x.save(); rr(-38, -36, 38, 42, 1); x.clip(); x.strokeStyle = 'rgba(255,255,255,.28)'; x.lineWidth = .18; for (let g = -40; g <= 44; g += 4) { x.beginPath(); x.moveTo(g, -36); x.lineTo(g, 42); x.moveTo(-38, g); x.lineTo(38, g); x.stroke(); }
   x.strokeStyle = 'rgba(220,38,38,.22)'; x.lineWidth = .5; for (const [a, b] of [[0, 6], [0, 26]]) { x.beginPath(); x.arc(a, b, 6, 0, 7); x.stroke(); x.beginPath(); x.arc(a, b, 3, 0, 7); x.stroke(); } x.restore();
   // vườn cây + hồ
@@ -6711,14 +6799,15 @@ function yardMapImg() {
   for (const [a, b, c2, d] of [[-23, -37, 23, -34], [-23, -34, -20, 3], [20, -34, 23, 3]]) { R('#fffbeb', a, b, c2, d); x.strokeStyle = '#e7c9a0'; x.lineWidth = .25; x.strokeRect(a, b, c2 - a, d - b); }
   R('#e7e5e4', -20, -34, 20, -33.2); R('#e7e5e4', -20, -34, -19.2, 3); R('#e7e5e4', 19.2, -34, 20, 3);
   roof(-33.6, -47.6, -23, 3.4, 'z'); roof(23, -47.6, 33.6, 3.4, 'z'); roof(-23.4, -47.6, 23.4, -37, 'x');
+  R('#fffbeb', -23, -70, 23, -67); R('#e7e5e4', -23, -67, 23, -66.2); roof(-23.4, -80.4, 23.4, -70, 'x');   // Tòa C (phía sau)
   roof(-74.6, -48, -41.4, -20, 'z', '#7dd3fc', '#0ea5e9'); roof(-47.6, 11.2, -30.6, 43.4, 'z'); x.strokeStyle = '#eff6ff'; x.lineWidth = .4; x.beginPath(); x.moveTo(-47.6, 19); x.lineTo(-30.6, 19); x.stroke();
   roof(43, 6, 47.4, 40, 'z', '#93c5fd', '#60a5fa');
   // sân khấu, quầy hàng, chòi bảo vệ, cột cờ
-  R('rgba(15,23,42,.22)', -7.4, -28.9, 8.6, -21.9, 1); R('#fb923c', -8, -29.5, 8, -22.5, 1); R('#fde68a', -6.4, -28.2, 6.4, -23.8, .6); R('#dc2626', -5, -27.2, 5, -26.2, .3);
+  R('rgba(15,23,42,.22)', -7.4, -32.9, 8.6, -25.9, 1); R('#fb923c', -8, -33.5, 8, -26.5, 1); R('#fde68a', -6.4, -32.2, 6.4, -27.8, .6); R('#dc2626', -5, -31.2, 5, -30.2, .3);
   R('rgba(15,23,42,.22)', 12.2, 41.4, 15.6, 44.6, .4); R('#0f766e', 11.8, 41, 15.2, 44.2, .4);
   x.fillStyle = '#64748b'; x.beginPath(); x.arc(12, -21, .5, 0, 7); x.fill(); x.fillStyle = '#dc2626'; x.fillRect(12.2, -22.4, 2.6, 1.6); x.fillStyle = '#fde047'; x.beginPath(); x.arc(13.5, -21.6, .45, 0, 7); x.fill();
   // hàng rào + trụ + cổng
-  x.strokeStyle = '#1e40af'; x.lineWidth = .55; rr(-76, -49, 48, 46, 3); x.stroke(); x.fillStyle = '#f8fafc'; for (let q = -72; q <= 44; q += 8) for (const z of [-49, 46]) { x.beginPath(); x.arc(q, z, .8, 0, 7); x.fill(); } for (let z = -41; z <= 38; z += 8) for (const q of [-76, 48]) { x.beginPath(); x.arc(q, z, .8, 0, 7); x.fill(); }
+  x.strokeStyle = '#1e40af'; x.lineWidth = .55; rr(-76, -85, 48, 46, 3); x.stroke(); x.fillStyle = '#f8fafc'; for (let q = -72; q <= 44; q += 8) for (const z of [-85, 46]) { x.beginPath(); x.arc(q, z, .8, 0, 7); x.fill(); } for (let z = -81; z <= 38; z += 8) for (const q of [-76, 48]) { x.beginPath(); x.arc(q, z, .8, 0, 7); x.fill(); }
   R('#f2b3a8', -5, 44.8, 5, 51.2); R('#1d4ed8', -6.6, 44.9, -5, 47.1, .4); R('#1d4ed8', 5, 44.9, 6.6, 47.1, .4); R('#dc2626', -5, 45.5, 5, 46.3, .2);
   // cây (bồn vuông + tán nhiều lớp)
   const tree = (tx, tz, r = 2.3, box) => { if (box) { R('#e2e8f0', tx - 1.6, tz - 1.6, tx + 1.6, tz + 1.6, .3); R('#65a30d', tx - 1.2, tz - 1.2, tx + 1.2, tz + 1.2, .2); }
@@ -6726,7 +6815,8 @@ function yardMapImg() {
     x.fillStyle = '#4caf50'; x.beginPath(); x.arc(tx - .5, tz - .5, r * .68, 0, 7); x.fill(); x.fillStyle = '#86d989'; x.beginPath(); x.arc(tx - .9, tz - .9, r * .3, 0, 7); x.fill(); };
   for (const px of [-17, 17]) for (const z of [30, 20, 10, 0]) tree(px, z, 2.2, true);
   for (const [a, b] of [[-15, -14], [15, -14], [-21, 39], [19, 39], [36, 9]]) tree(a, b, 2.7);
-  for (let i = 0; i < 9; i++) { tree(-79.5, -44 + i * 11, 2.2); tree(51.5, -44 + i * 11, 2.2); } for (let i = 0; i < 9; i++) tree(-58 + i * 13, -52.3, 2.2);
+  tree(-19, -56.5, 2.7); tree(19, -56.5, 2.7); for (const q of [-30, 30]) for (const z of [-51, -62]) tree(q, z, 2); x.fillStyle = '#e2e8f0'; x.beginPath(); x.arc(0, -56.5, 2.4, 0, 7); x.fill(); x.fillStyle = '#65a30d'; x.beginPath(); x.arc(0, -56.5, 1.9, 0, 7); x.fill(); x.fillStyle = '#f43f5e'; x.beginPath(); x.arc(0, -56.5, .8, 0, 7); x.fill();
+  for (let i = 0; i < 9; i++) { tree(-79.5, -44 + i * 11, 2.2); tree(51.5, -44 + i * 11, 2.2); }
   // huy hiệu các khu
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '4.3px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
   for (const [t, lx, lz] of [['🏫', 0, -42.3], ['📚', -28.3, -20], ['🏛️', 28.3, -20], ['🏀', -55, -31], ['🎨', -39, 15.2], ['🍚', -39, 31], ['🌳', 40.6, -16], ['🚪', 0, 41]]) {
@@ -6781,6 +6871,33 @@ const Civil = {
     }
     return false;
   },
+  /* ---- PHÁT HIỆN CÃI NHAU / CÔNG KÍCH theo ngữ cảnh (luật thông minh có dấu, chạy trong máy, không cần máy chủ) ---- */
+  AGG_PHRASE: ['câm mồm', 'câm miệng', 'câm ngay', 'im mồm', 'im miệng', 'im đi', 'im ngay', 'cút đi', 'cút ngay', 'cút ra', 'biến đi', 'biến ngay', 'xéo đi', 'xéo ngay', 'chết đi', 'chết cho rồi', 'mất dạy', 'vô học', 'vô duyên', 'láo toét', 'đồ ngu', 'đồ điên', 'đồ chó', 'đồ lợn', 'đồ khùng', 'đồ mất dạy', 'đồ vô học', 'đồ thần kinh', 'đồ rác rưởi', 'thằng ngu', 'thằng điên', 'thằng chó', 'thằng khùng', 'thằng mất dạy', 'thằng hâm', 'con ngu', 'con điên', 'con chó', 'con khùng', 'óc chó', 'óc lợn', 'não ngắn', 'mất não', 'ngu như chó', 'ngu như bò', 'ngu si', 'thần kinh', 'điên khùng', 'đánh nhau', 'đánh mày', 'đập mày', 'đập vào mặt', 'tát mày', 'ghét mày', 'khinh mày', 'nhìn đểu', 'gây sự', 'thích gây sự', 'muốn ăn đấm', 'ăn đấm không', 'ăn đạp không', 'sợ tao à', 'làm gì được tao', 'mẹ mày', 'bố mày', 'cả nhà mày', 'dòng họ nhà mày', 'bố láo', 'mất lịch sự'],
+  AGG_PHRASE_ND: ['cam mom', 'cut di', 'mat day', 'vo hoc', 'than kinh', 'danh nhau', 'do cho', 'oc cho'],
+  AGG_TOK: ['ngu', 'điên', 'khùng', 'chó', 'lợn', 'câm', 'cút', 'xéo', 'láo', 'đần', 'hâm', 'mất dạy', 'vô học', 'thần kinh', 'rác rưởi', 'khinh', 'óc chó'],
+  SOFT_NEG: ['ghét', 'cút', 'im đi', 'ngu', 'điên', 'chó', 'láo', 'khinh'],
+  _norm(text) { return String(text || '').toLowerCase().replace(/[^\p{L}\s]+/gu, ' ').replace(/\s+/g, ' ').trim(); },
+  _you(raw) { return /(^|\s)(mày|mầy)(\s|$)/.test(' ' + raw + ' '); },
+  aggCore(text) {
+    const raw = this._norm(text); if (!raw) return false;
+    const p = ' ' + raw + ' ';
+    if (this.AGG_PHRASE.some(x => p.includes(' ' + x + ' ') || raw.includes(x))) return true;
+    const nd = ' ' + this.strip(raw) + ' ';
+    if (this.AGG_PHRASE_ND.some(x => nd.includes(' ' + x + ' '))) return true;
+    if (this._you(raw) && this.AGG_TOK.some(t => p.includes(' ' + t + ' ') || raw.includes(t))) return true;
+    return false;
+  },
+  aggressive(text, ctx) {
+    if (this.aggCore(text)) return true;
+    try {
+      const now = Date.now(), recent = (ctx || []).filter(m => m && m.m && (now - (m.t || now) < 90000)).slice(-6);
+      const heat = recent.filter(m => this.aggCore(m.m)).length;
+      if (heat >= 1) { const raw = this._norm(text), p = ' ' + raw + ' ';
+        if (this._you(raw) || this.SOFT_NEG.some(t => p.includes(' ' + t + ' '))) return true;
+      }
+    } catch (e) { }
+    return false;
+  },
   bad(text) { try { return this.bad1(text) || this.bad2(text); } catch (e) { return this.bad1(text); } },
   bad1(text) {
     const raw = String(text || ''), dia = this.HASDIA.test(raw);
@@ -6799,9 +6916,9 @@ const Civil = {
   warns: ['Các em ơi, cô Hiệu trưởng nhắc nhở: chúng ta nói chuyện lịch sự, không nói tục chửi bậy nhé!', 'Em ơi, lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau. Em nói lại thật lịch sự nhé!', 'Cô Hiệu trưởng nhắc em: học sinh Trường Tiểu học Đông Hội luôn nói lời hay, ý đẹp. Em đừng nói tục nhé!', 'Không nói tục chửi bậy em nhé. Cô tin em sẽ là một học sinh ngoan, lễ phép với bạn bè.'],
   strikes() { const now = Date.now(); const a = (LS.get('dh_strikes', []) || []).filter(t => now - t < 10 * 60000); return a; },
   muted() { const u = +LS.get('dh_mute', 0) || 0; return u > Date.now() ? Math.ceil((u - Date.now()) / 1000) : 0; },
-  warn() {
+  warn(kind) {
     const a = this.strikes(); a.push(Date.now()); LS.set('dh_strikes', a);
-    let msg = this.warns[Math.floor(Math.random() * this.warns.length)];
+    let msg = kind === 'fight' ? 'Các em đừng cãi nhau, nói lời công kích bạn nhé! Cô Hiệu trưởng mong các em chơi vui, hoà thuận.' : this.warns[Math.floor(Math.random() * this.warns.length)];
     if (a.length >= 3) { LS.set('dh_mute', Date.now() + 120000); LS.set('dh_strikes', []); msg = 'Em đã nói tục nhiều lần rồi. Cô cho em nghỉ trò chuyện hai phút để suy nghĩ lại nhé. Em nhớ nói lời hay, ý đẹp nhé!'; }
     HUD.civilBanner && HUD.civilBanner(msg);
     try { Voice.speak(msg, { who: typeof PRINC !== 'undefined' ? PRINC : null, style: 'normal' }); } catch { }
@@ -6830,6 +6947,29 @@ const Spam = {
     const bad = (k && a.some(x => x.k === k)) || a.filter(x => t - x.t < this.WIN).length >= this.BURST || (a.length && t - a[a.length - 1].t < 1000); a.push({ t, k }); if (a.length > 12) a.shift(); return bad; },
 };
 function cleanText(t) { return String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120); }
+/* ====== KHÓA CHAT — chỉ chủ trường điều khiển (toàn trường hoặc từng bạn) ====== */
+const ChatLock = {
+  all: false, users: {}, ready: false,
+  _uid(u) { return String(u || '').replace(/[.#$\[\]/]/g, '_'); },
+  init() {
+    if (this.ready || !DB.on) return; this.ready = true;
+    try {
+      DB.ref('chatlock/all').on('value', s => { this.all = !!s.val(); this.changed(); });
+      DB.ref('chatlock/users').on('value', s => { this.users = s.val() || {}; this.changed(); });
+    } catch (e) { }
+  },
+  isUser(u) { return !!this.users[this._uid(u)]; },
+  blocked() {
+    if (typeof isOwner === 'function' && isOwner()) return '';
+    if (this.all) return '🔒 Chủ trường đang tạm khóa trò chuyện toàn trường. Em chờ mở lại nhé!';
+    if (ME && this.isUser(ME.id)) return '🔒 Chủ trường đã tạm khóa trò chuyện của em. Em nhắn lại sau nhé!';
+    return '';
+  },
+  setAll(v) { if (!DB.on) return; try { DB.ref('chatlock/all').set(!!v); } catch (e) { } },
+  setUser(u, v) { if (!DB.on) return; const k = this._uid(u); try { if (v) DB.ref('chatlock/users/' + k).set(true); else DB.ref('chatlock/users/' + k).remove(); } catch (e) { } },
+  changed() { try { if (typeof HUD !== 'undefined' && HUD.chatLockUI) HUD.chatLockUI(); } catch (e) { } },
+};
+
 const Net = {
   sid: null, sref: null, myRef: null, subs: {}, useSig: '', remotes: {}, last: 0, lastKey: '', msgs: [], start: Date.now(), online: 0, lastSend: 0, ready: false,
   init() {
@@ -6840,6 +6980,7 @@ const Net = {
       setInterval(() => { if (ME) oref.update({ n: ME.n, g: pubG(), t: firebase.database.ServerValue.TIMESTAMP }); }, 60000);
       DB.ref('online').on('value', s => { let n = 0; const now = DB.now(); s.forEach(c => { if (now - (c.val().t || 0) < 180000) n++; }); this.online = n; HUD.chatOnline(n); });
       DB.ref('chat').limitToLast(50).on('child_added', s => this.onMsg({ id: s.key, ...s.val() }));
+      ChatLock.init();
       // dọn tin nhắn cũ hơn 1 ngày
       DB.ref('chat').orderByChild('t').endAt(DB.now() - 86400000).limitToFirst(50).once('value', s => s.forEach(c => { c.ref.remove().catch(() => { }); }));
     } catch (e) { console.warn(e); }
@@ -6927,7 +7068,9 @@ const Net = {
   send(text) {
     text = cleanText(text); if (!text) return false;
     const ms = Civil.muted(); if (ms) { toast(`Cô Hiệu trưởng cho em nghỉ trò chuyện, còn ${ms} giây nữa nhé.`, 2600); return false; }
+    { const bl = ChatLock.blocked(); if (bl) { toast(bl, 3000); return false; } }
     if (Civil.bad(text)) { Civil.warn(); return false; }
+    if (Civil.aggressive(text, this.msgs)) { Civil.warn('fight'); return false; }
     { const sp = Spam.check(text); if (sp) { toast('✋ ' + sp, 3000); return false; } } this.lastSend = Date.now();
     const m = { u: ME.id, n: ME.n, g: pubG(), m: text, w: W.S ? W.S.name : '' };
     if (DB.on) DB.ref('chat').push({ ...m, t: firebase.database.ServerValue.TIMESTAMP }).catch(() => toast('Không gửi được tin nhắn.'));
@@ -6937,7 +7080,7 @@ const Net = {
   onMsg(m) {
     if (!m || !m.m) return; if (this.msgs.some(x => x.id === m.id)) return;
     m.m = String(m.m).slice(0, 120); if (Spam.drop(m)) return;
-    if (Civil.bad(m.m)) m = { ...m, m: Civil.hidden };
+    if (Civil.bad(m.m) || (m.u !== (ME && ME.id) && Civil.aggressive(m.m, this.msgs))) m = { ...m, m: Civil.hidden };
     this.msgs.push(m); const tt = x => typeof x.t === 'number' ? x.t : Date.now(); this.msgs.sort((a, b) => tt(a) - tt(b)); if (this.msgs.length > 50) this.msgs.shift();   // luôn xếp theo giờ gửi: tin mới ở dưới
     if (!DB.on) LS.set('dh_chat', this.msgs);
     const fresh = (m.t || 0) > this.start - 3000 || !DB.on && m.id && m.id.startsWith('l');
@@ -8393,12 +8536,12 @@ const Fest = {
         x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff'; x.font = `700 30px ${FONT}`; x.fillText('TRƯỜNG TIỂU HỌC ĐÔNG HỘI', w / 2, 52);
         let fs = 92; x.font = `900 ${fs}px ${FONT}`; while (x.measureText(t1).width > w * .74 && fs > 30) { fs -= 3; x.font = `900 ${fs}px ${FONT}`; } x.lineWidth = 10; x.strokeStyle = 'rgba(0,0,0,.25)'; x.strokeText(t1, w / 2, 160); const tg = x.createLinearGradient(0, 110, 0, 210); tg.addColorStop(0, '#fff7ae'); tg.addColorStop(1, '#facc15'); x.fillStyle = tg; x.fillText(t1, w / 2, 160);
         x.fillStyle = '#ffffff'; x.font = `800 58px ${FONT}`; x.fillText(t2, w / 2, 262); x.font = `italic 600 34px ${FONT}`; x.fillStyle = '#fde68a'; x.fillText(F.sub, w / 2, 338); });
-      const bd = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: tx }), 0, 2.95, -28.6, 0); bd.userData.click = () => location.hash = '#/arena';
+      const bd = B.plane(14.4, 4.0, new THREE.MeshBasicMaterial({ map: tx }), 0, 2.95, -32.6, 0); bd.userData.click = () => location.hash = '#/arena';
       // bóng bay hai bên sân khấu + chậu hoa trước sân khấu
-      for (const sx of [-1, 1]) for (let i = 0; i < 9; i++) { const b = new THREE.Mesh(G.s, PM(pal[i % pal.length], { k: 'silk' })); b.position.set(sx * 7.4 + Math.cos(i * 2.4) * .28, 1.2 + i * .52, -22.85 + Math.sin(i * 2.4) * .28); b.scale.set(.3, .34, .3); scene.add(b); } }
+      for (const sx of [-1, 1]) for (let i = 0; i < 9; i++) { const b = new THREE.Mesh(G.s, PM(pal[i % pal.length], { k: 'silk' })); b.position.set(sx * 7.4 + Math.cos(i * 2.4) * .28, 1.2 + i * .52, -26.85 + Math.sin(i * 2.4) * .28); b.scale.set(.3, .34, .3); scene.add(b); } }
     // ---- 5. Chậu hoa dọc lối đi từ cổng vào sân
     { const pots = [], fl = [];
-      for (const px of [-7, -5.2, -3.4, 3.4, 5.2, 7]) pots.push([px, -21.8]);
+      for (const px of [-7, -5.2, -3.4, 3.4, 5.2, 7]) pots.push([px, -25.8]);
       const NF = 12, pm = new THREE.InstancedMesh(G.vase, PM('#9a3412', { k: 'silk' }), pots.length), fm = new THREE.InstancedMesh(G.dode, PM('#ffffff', { k: 'matte' }), pots.length * NF), lm = new THREE.InstancedMesh(G.s, mat('#2f7d32'), pots.length), m = new THREE.Matrix4(), c = new THREE.Color(), q = new THREE.Quaternion(); let k = 0;
       pots.forEach(([x, z], i) => { m.compose(V3(x, 0, z), q, V3(.34, .55, .34)); pm.setMatrixAt(i, m); m.compose(V3(x, .6, z), q, V3(.3, .14, .3)); lm.setMatrixAt(i, m);
         for (let j = 0; j < NF; j++) { const t = j * 2.4, r = j ? .1 + (j % 4) * .06 : 0, h = .72 + (.3 - r) * .5; m.compose(V3(x + Math.cos(t) * r, h, z + Math.sin(t) * r), q, V3(.085, .085, .085)); fm.setMatrixAt(k, m); fm.setColorAt(k, c.set(F.id === 'tet' ? (i % 2 ? '#facc15' : '#f472b6') : pal[(i + j) % pal.length])); k++; } });
@@ -8406,7 +8549,7 @@ const Fest = {
     // ---- 6. Đồ trang trí riêng của từng ngày lễ
     const spotA = [9.5, 12], spotB = [-9.5, 12];
     if (P.xmas) this.xmasTree(scene, B, spotA[0], spotA[1]);
-    if (P.peach) for (const [x, z, col] of [[-6.5, 41, '#f9a8d4'], [6.5, 41, '#facc15'], [-9.5, -21.5, '#f9a8d4'], [9.5, -21.5, '#facc15'], [spotA[0], spotA[1], '#f9a8d4']]) this.blossomTree(scene, B, x, z, col);
+    if (P.peach) for (const [x, z, col] of [[-6.5, 41, '#f9a8d4'], [6.5, 41, '#facc15'], [-9.5, -25.5, '#f9a8d4'], [9.5, -25.5, '#facc15'], [spotA[0], spotA[1], '#f9a8d4']]) this.blossomTree(scene, B, x, z, col);
     if (P.moon) { const mo = new THREE.Sprite(new THREE.SpriteMaterial({ map: canvasTex(128, 128, x => { const g = x.createRadialGradient(64, 64, 20, 64, 64, 64); g.addColorStop(0, '#fffbeb'); g.addColorStop(.6, '#fde68a'); g.addColorStop(.75, 'rgba(253,230,138,.4)'); g.addColorStop(1, 'rgba(253,230,138,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); }), transparent: true, depthWrite: false, fog: false })); mo.position.set(-30, 42, -110); mo.scale.setScalar(26); scene.add(mo); }
     if (P.balloons || P.flags) { // cụm bóng bay bay lơ lửng quanh sân
       const grp = dyn(new THREE.Group()); scene.add(grp); const bs = []; for (let i = 0; i < 26; i++) { const b = new THREE.Mesh(G.s, PM(P.flags && i % 2 ? '#dc2626' : pal[i % pal.length], { k: 'silk' })); b.scale.set(.42, .5, .42); b.position.set((Math.random() - .5) * 40, 6 + Math.random() * 8, -20 + Math.random() * 50); grp.add(b); bs.push([b, b.position.y, Math.random() * 6]); }
@@ -8421,7 +8564,7 @@ const Fest = {
     let fwT = 2;
     B.tick((dt, t) => { const S = W.S; if (!S || !S.fx || !W.P) return; const p = W.P.root.position;
       if (Math.random() < dt * 6) { const k = F.amb === 'rb' ? pickK('rb') : F.amb; S.fx.emit(k, V3(p.x + (Math.random() - .5) * 16, p.y + 5 + Math.random() * 3, p.z + (Math.random() - .5) * 16), { add: isAdd(k), size: k === 'snow' ? .16 : .2, life: 4, spin: (Math.random() - .5) * 3, v: V3((Math.random() - .5) * .5, -1.1, (Math.random() - .5) * .5) }); }
-      if (Math.random() < dt * 2) S.fx.emit('note', V3((Math.random() - .5) * 9, 2.6 + Math.random(), -25 + (Math.random() - .5) * 2), { size: .3, life: 2, v: V3(0, .6, 0) });
+      if (Math.random() < dt * 2) S.fx.emit('note', V3((Math.random() - .5) * 9, 2.6 + Math.random(), -29 + (Math.random() - .5) * 2), { size: .3, life: 2, v: V3(0, .6, 0) });
       if (F.fw && (fwT -= dt) < 0) { fwT = 2.4 + Math.random() * 2.5; const c = V3((Math.random() - .5) * 40, 15 + Math.random() * 6, -45 + Math.random() * 30), col = 'rb' + 'roygbv'[Math.floor(Math.random() * 6)];
         for (let i = 0; i < 70; i++) { const a = Math.random() * 6.283, f = Math.acos(2 * Math.random() - 1), sp = 4 + Math.random() * 2; S.fx.emit(i % 4 ? col : 'spark', c.clone(), { add: 1, size: .55, life: 1.8, g: 1.5, v: V3(Math.sin(f) * Math.cos(a) * sp, Math.cos(f) * sp, Math.sin(f) * Math.sin(a) * sp) }); } } });
     try { this.activities(scene, B, F); } catch (e) { console.error(e); }
@@ -8471,8 +8614,8 @@ const Fest = {
     B.plane(2.4, .5, new THREE.MeshBasicMaterial({ map: signTex('💐 QUẦY HOA TẶNG CÔ', { bg: '#be185d', fg: '#fff', border: '#facc15' }) }), x, 1.95, z, 0);
     B.act({ x, z: z + 1.4, r: 2.2, icon: '💐', label: 'Nhận bó hoa tặng cô', fn: () => { if (!Items.has('f_bouquet')) ME.inv = [...(ME.inv || []), 'f_bouquet']; Items.equip('f_bouquet', true); toast('💐 Em đã cầm bó hoa! Mang lên sân khấu tặng cô giáo nhé.', 3500); } });
     // cô giáo đứng trên sân khấu nhận hoa
-    const T = CH.build({}, { role: 'teacher', aodai: '#e11d48', hair: 'teacherLong', skin: '#f3c9a6' }); T.root.position.set(3.4, .8, -23.4); T.root.rotation.y = 0; const n = B.npc(T, (dt, n) => { n.cd = (n.cd ?? 2) - dt; if (n.cd < 0 && !T.talking) { n.cd = 3 + Math.random() * 3; T.state = ['idle', 'wave', 'idle', 'clap'][Math.floor(Math.random() * 4)]; } });
-    n.name = 'Cô giáo'; n.talkLabel = 'Chúc mừng cô'; n.talk = () => this.giveFlower(T, F); B.act({ x: 3.4, z: -21.4, r: 2.4, icon: '💐', label: 'Tặng hoa cô giáo', when: () => (Items.eq().hand === 'f_bouquet'), fn: () => this.giveFlower(T, F) }); },
+    const T = CH.build({}, { role: 'teacher', aodai: '#e11d48', hair: 'teacherLong', skin: '#f3c9a6' }); T.root.position.set(3.4, .8, -27.4); T.root.rotation.y = 0; const n = B.npc(T, (dt, n) => { n.cd = (n.cd ?? 2) - dt; if (n.cd < 0 && !T.talking) { n.cd = 3 + Math.random() * 3; T.state = ['idle', 'wave', 'idle', 'clap'][Math.floor(Math.random() * 4)]; } });
+    n.name = 'Cô giáo'; n.talkLabel = 'Chúc mừng cô'; n.talk = () => this.giveFlower(T, F); B.act({ x: 3.4, z: -25.4, r: 2.4, icon: '💐', label: 'Tặng hoa cô giáo', when: () => (Items.eq().hand === 'f_bouquet'), fn: () => this.giveFlower(T, F) }); },
   giveFlower(T, F) { W.face(T); const has = Items.eq().hand === 'f_bouquet';
     if (!has) { const t = 'Cô cảm ơn em! Em ra quầy hoa cạnh sân khấu lấy bó hoa nhé.'; W.bubble(T, 'Cô giáo: ' + t, 3500); Voice.speak(t, { who: T }); return; }
     T.state = 'cheer'; W.P.state = 'cheer'; const t = ['Cô cảm ơn em nhiều lắm! Chúc em luôn chăm ngoan, học giỏi nhé!', 'Ôi bó hoa đẹp quá! Cô cảm ơn em!', 'Cô rất vui! Cảm ơn em đã nhớ đến cô!'][Math.floor(Math.random() * 3)];
@@ -8523,7 +8666,7 @@ Object.assign(Fest, {
       B.cyl(.05, .05, 1.9, '#e5e7eb', x, 0, z, 6); B.plane(2.3, .5, new THREE.MeshBasicMaterial({ map: signTex('🎈 THẢ BÓNG BAY ƯỚC MƠ', { bg: '#7c3aed', fg: '#fff', border: '#facc15' }), side: THREE.DoubleSide }), x, 1.1, z + .35, 0);
       B.act({ x, z: z + 1.3, r: 2, icon: '🎈', label: 'Thả bóng bay ước mơ', fn: () => this.balloon(F) }); }
     // ---- C. Lên sân khấu biểu diễn văn nghệ chào mừng
-    B.act({ x: -3.2, z: -21, r: 1.8, icon: '🎤', label: 'Lên sân khấu biểu diễn văn nghệ', when: () => !this._show, fn: () => this.perform(F) });
+    B.act({ x: -3.2, z: -25, r: 1.8, icon: '🎤', label: 'Lên sân khấu biểu diễn văn nghệ', when: () => !this._show, fn: () => this.perform(F) });
     // ---- D. Riêng từng ngày lễ
     if (F.id === 'noel') { const C = CH.build({ g: 'm' }, { outfit: 'santasuit' }); Items.attach(C, { head: 'santahat2', hand: 'santabag' }); C.root.position.set(12.6, 0, 14); C.root.rotation.y = -1.2; const n = B.npc(C, (dt, n) => { if (W.S && W.S.fx) Items.update(C, dt, W.S); }); n.name = 'Ông già Noel'; n.talkLabel = 'Chào ông già Noel';
       n.talk = () => this.santaGift(C); B.act({ x: 12.6, z: 15.6, r: 2.2, icon: '🎁', label: 'Nhận quà của ông già Noel', fn: () => this.santaGift(C) }); }
@@ -8542,7 +8685,7 @@ Object.assign(Fest, {
     P.state = 'cheer'; SFX.win(); let t = 0; const tk = setInterval(() => { t += .05; g.position.y += .09; g.position.x += Math.sin(t * 2) * .02; if (S.fx && Math.random() < .5) S.fx.emit('spark', g.position.clone().add(new THREE.Vector3(0, -.4, 0)), { add: 1, size: .15, life: .8 }); if (t > 6 || W.S !== S) { clearInterval(tk); S.scene.remove(g); } }, 50);
     setTimeout(() => { if (P.state === 'cheer') P.state = 'idle'; }, 1500);
     HUD.choice('🎈 Ước mơ của em', 'Em gửi ước mơ gì theo quả bóng bay?', ['Em mơ thành cô giáo', 'Em mơ thành bác sĩ', 'Em mơ thành nhà khoa học', 'Em mơ thành phi hành gia', 'Em mơ thành hoạ sĩ', 'Em mơ thành cầu thủ'].map(w => ({ label: w, fn: () => { toast('🎈 ' + w + '! Ước mơ đã bay lên trời cao!', 3000); if (!Items.capped('fest_balloon', 1, 3, 'Thả bóng bay ước mơ')) { } } }))); },
-  perform(F) { const P = W.P; if (!P) return; this._show = 1; P.root.position.set(-1.5 + Math.random() * 3, .8, -24.6); P.root.rotation.y = 0; W.yaw = 0; W.pitch = .15; W.dist = 6;
+  perform(F) { const P = W.P; if (!P) return; this._show = 1; P.root.position.set(-1.5 + Math.random() * 3, .8, -28.6); P.root.rotation.y = 0; W.yaw = 0; W.pitch = .15; W.dist = 6;
     toast('🎤 Em đang biểu diễn văn nghệ chào mừng ' + F.n + '! Các bạn đang cổ vũ em đó!', 3500); const moves = ['cheer', 'wave', 'jump', 'clap', 'handsOut', 'cheer']; let k = 0;
     const tk = setInterval(() => { if (!W.S || !W.S.fx) return; P.state = moves[k++ % moves.length]; P.t = 0; for (let i = 0; i < 6; i++) W.S.fx.emit(i % 2 ? 'note' : pickK('rb'), P.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * 2, 1.5 + Math.random(), (Math.random() - .5))), { add: i % 2 === 0, size: .25, life: 1.5, v: new THREE.Vector3(0, .8, 0) }); try { SFX.click(); } catch (e) { } }, 1000);
     setTimeout(() => { clearInterval(tk); this._show = 0; P.state = 'idle'; confetti(80); SFX.win(); if (!Items.capped('fest_show', 3, 6, 'Biểu diễn văn nghệ')) toast('👏 Tiết mục hay quá! Cả trường vỗ tay cho em!', 3000); }, 10000); },
@@ -8599,7 +8742,8 @@ const HUD = {
       <div class="zoomb" id="zoomb"><button data-z="in" title="Phóng to (lại gần)">＋</button><button data-z="out" title="Thu nhỏ (ra xa)">－</button></div>
       <button class="usebtn hidden" id="wandBtn" title="Sử dụng đũa phép (F)" onclick="Items.use()">🪄 Sử dụng đũa phép</button>
       <button class="chatbtn" id="chatBtn" title="Trò chuyện">💬<i>Chat</i><b class="dot hidden" id="chatDot"></b></button>
-      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="feedBtn" title="Ẩn/hiện tin nhắn nổi trên màn hình"></button><button id="chatX">✕</button></div>
+      <div class="chatbox hidden" id="chatBox"><div class="ch-h"><b>💬 Trò chuyện toàn trường</b><span id="chatOn"></span><button id="lockAllBtn" class="hidden" title="Khóa trò chuyện toàn trường"></button><button id="feedBtn" title="Ẩn/hiện tin nhắn nổi trên màn hình"></button><button id="chatX">✕</button></div>
+        <div class="ch-lock hidden" id="chatLockBn"></div>
         <div class="ch-l" id="chatList"></div>
         <div class="ch-q">${['👋 Chào các bạn!', '😄', '👍', 'Cùng vào Đấu trường nhé!', 'Học bài cùng mình không?', '❤️'].map(q => `<button data-q="${q}">${q}</button>`).join('')}</div>
         <form class="ch-f" id="chatForm"><input id="chatIn" maxlength="120" placeholder="Nhập tin nhắn…" autocomplete="off"><button class="btn sun sm">Gửi</button></form>
@@ -8624,7 +8768,7 @@ const HUD = {
       if (a === 'more') { $('#more').classList.toggle('hidden'); return; }
       if (a === 'voice2') { Voice.next(); return; }
       if (a === 'classes') { this.close(); const go = id => () => { if (W.S && W.S.vr) this._beforeVR = null; W.enter(id); };
-        const sub = ['en', 'it', 'mus', 'art', 'stem', 'lib'], TN = { A: 'Tòa A', B: 'Tòa B', C: 'Tòa C' };
+        const sub = ['en', 'it', 'mus', 'art', 'stem', 'lib'], TN = { A: 'Tòa A', B: 'Tòa B', C: 'Tòa C', H: 'Khu hiệu bộ' };
         const pickClass = g => this.choice(`🏫 Khối ${g} · ${TN[toaOfGrade(g)]}`, 'Em chọn lớp nào?', roomsOfGrade(g).map(id => ({ label: `${ME && ME.cl === id ? '⭐' : '🏫'} ${ROOMS[id].n} – ${ROOMS[id].t}`, fn: () => { if (ME && ME.g === g) { ME.cl = id; saveMe(); } go(id)(); } })).concat([{ label: '↩️ Chọn khối khác', fn: pickGrade }]));
         const pickGrade = () => this.choice('🏫 Chọn lớp để vào học', 'Em học khối mấy?', [1, 2, 3, 4, 5].map(g => ({ label: `${ME && ME.g === g ? '⭐' : '📘'} Khối ${g} (${roomsOfGrade(g).length} lớp · ${TN[toaOfGrade(g)]})`, fn: () => pickClass(g) })).concat([{ label: '🚪 Phòng chức năng', fn: () => this.choice('🚪 Phòng chức năng', 'Em muốn vào phòng nào?', sub.map(id => ({ label: '🚪 ' + ROOMS[id].n, fn: go(id) }))) }]));
         pickGrade(); return; }
@@ -8660,8 +8804,10 @@ const HUD = {
     $('#chatForm').onsubmit = e => { e.preventDefault(); const i = $('#chatIn'); if (Net.send(i.value)) i.value = ''; };
     $$('#chatBox [data-q]').forEach(b => b.onclick = () => Net.send(b.dataset.q));
     $('#chatIn').addEventListener('keydown', e => e.stopPropagation());
+    { const la = $('#lockAllBtn'); if (la) la.onclick = () => { const v = !ChatLock.all; if (v && !confirm('Khóa trò chuyện TOÀN TRƯỜNG? Các bạn sẽ tạm thời không gửi được tin nhắn (chủ trường vẫn gửi được).')) return; ChatLock.setAll(v); toast(v ? '🔒 Đã khóa trò chuyện toàn trường.' : '🔓 Đã mở lại trò chuyện toàn trường.', 2200); }; }
+    { const l = $('#chatList'); if (l) l.onclick = e => { const b = e.target.closest('.lk'); if (!b || !isOwner()) return; const u = b.dataset.u, n = b.dataset.n || 'bạn này', on = ChatLock.isUser(u); if (!on && !confirm(`Khóa chat của ${n}? Bạn ấy sẽ tạm thời không gửi được tin nhắn.`)) return; ChatLock.setUser(u, !on); toast(on ? `🔓 Đã mở chat cho ${n}.` : `🔒 Đã khóa chat của ${n}.`, 2200); }; }
     $('#vrExit').onclick = () => { if (Tour.active) Tour.stop(); else this.vrExit(); };
-    this.chatOnline(Net.online); this.chatRender();
+    this.chatOnline(Net.online); this.chatRender(); this.chatLockUI();
     const tick = () => { const el = $('#arenaBadge'); if (!el) return false; const s = Live.state(); el.textContent = s.phase === 'lobby' ? 'MỞ' : s.phase === 'q' ? 'THI' : mmss(s.toNext); el.className = s.phase === 'lobby' ? 'open' : ''; return true; };
     tick(); const iv = setInterval(() => { if (!tick()) clearInterval(iv); }, 1000);
     const mi = setInterval(() => { if (!$('#mmap')) return clearInterval(mi); this.drawMini(); }, 80);
@@ -8690,13 +8836,13 @@ const HUD = {
     }
     const cl = (v, a, b) => a > b ? (a + b) / 2 : Math.max(a, Math.min(b, v));
     let sc, cx, cz;
-    if (S.yard) { sc = 2.25; const hv = H / sc; cx = cl(p.x, -70 + hv, 54 - hv); cz = cl(p.z, -55 + hv, 68 - hv); }
+    if (S.yard) { sc = 2.25; const hv = H / sc; cx = cl(p.x, -70 + hv, 54 - hv); cz = cl(p.z, -87 + hv, 68 - hv); }
     else if (S.room) { sc = 150 / Math.max(S.room.w, S.room.d); cx = 0; cz = 0; }
     else { sc = 6; cx = p.x; cz = p.z; }
     if (S.yard) { x.fillStyle = '#8fd07a'; x.fillRect(0, 0, D, D); }
     else { const bg = x.createLinearGradient(0, 0, 0, D); bg.addColorStop(0, '#f1f5f9'); bg.addColorStop(1, '#dbeafe'); x.fillStyle = bg; x.fillRect(0, 0, D, D); }
     x.translate(H, H); x.scale(sc, sc); x.translate(-cx, -cz);
-    if (S.yard) x.drawImage(yardMapImg(), -82, -55, 136, 123);
+    if (S.yard) x.drawImage(yardMapImg(), -82, -87, 136, 155);
     else {
       const near = b => b.y1 == null || (b.y1 > p.y - .6 && b.y0 < p.y + 1.6);
       x.shadowColor = 'rgba(15,23,42,.25)'; x.shadowBlur = 8; x.fillStyle = '#fff7ed';
@@ -8825,9 +8971,22 @@ const HUD = {
   },
   /* ---------- trò chuyện ---------- */
   chatOpen: false,
-  chatToggle(on = !this.chatOpen) { this.chatOpen = on; const b = $('#chatBox'); if (!b) return; b.classList.toggle('hidden', !on); if (on) { $('#chatDot').classList.add('hidden'); this.chatRender(); setTimeout(() => $('#chatIn').focus(), 50); } else $('#chatIn').blur(); },
+  chatToggle(on = !this.chatOpen) { this.chatOpen = on; const b = $('#chatBox'); if (!b) return; b.classList.toggle('hidden', !on); if (on) { $('#chatDot').classList.add('hidden'); this.chatRender(); this.chatLockUI(); setTimeout(() => $('#chatIn').focus(), 50); } else $('#chatIn').blur(); },
   chatOnline(n) { const ho = $('#hOn'); if (ho) ho.textContent = DB.on ? `🟢 ${n || 1} đang chơi` : '⚪ Chơi một mình'; const e = $('#chatOn'); if (e) e.textContent = DB.on ? `🟢 ${n || 1} bạn online` : ''; const nt = $('#chatNote'); if (nt) nt.textContent = DB.on ? 'Tin nhắn hiện cho tất cả các bạn đang online. Hãy nói lời hay, ý đẹp nhé!' : 'ℹ️ Chưa kết nối máy chủ Firebase nên tin nhắn chỉ hiện trên máy này. Xem HUONG-DAN.md để bật chơi online.'; },
-  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small>${m.g ? ` · Lớp ${m.g}` : ''} · ${tm}</small></b><span>${esc(m.m)}</span></div>`; },
+  chatRow(m) { const me = ME && m.u === ME.id; const tm = m.t ? new Date(m.t).toTimeString().slice(0, 5) : ''; const own = isOwner() && !me && m.u; const lk = own && ChatLock.isUser(m.u); return `<div class="cm ${me ? 'me' : ''}"><b>${esc(m.n)}<small>${m.g ? ` · Lớp ${m.g}` : ''} · ${tm}</small></b><span>${esc(m.m)}</span>${own ? `<i class="lk ${lk ? 'on' : ''}" data-u="${esc(m.u)}" data-n="${esc(m.n)}" title="${lk ? 'Mở chat cho bạn này' : 'Khóa chat bạn này'}">${lk ? '🔒' : '🔓'}</i>` : ''}</div>`; },
+  chatLockUI() {
+    const owner = typeof isOwner === 'function' && isOwner();
+    const la = $('#lockAllBtn'); if (la) { la.classList.toggle('hidden', !owner); la.textContent = ChatLock.all ? '🔒' : '🔓'; la.classList.toggle('on', ChatLock.all); la.title = ChatLock.all ? 'Trò chuyện đang KHÓA toàn trường — bấm để mở lại' : 'Khóa trò chuyện toàn trường'; }
+    const bl = owner ? '' : ChatLock.blocked();
+    const inp = $('#chatIn'); if (inp) { inp.disabled = !!bl; inp.placeholder = bl ? 'Trò chuyện đang tạm khóa…' : 'Nhập tin nhắn…'; }
+    const bn = $('#chatLockBn');
+    if (bn) { let msg = '';
+      if (bl) msg = bl;
+      else if (owner && ChatLock.all) msg = '🔒 Em đang KHÓA trò chuyện toàn trường. Bấm 🔒 ở trên để mở lại.';
+      else if (owner) { const n = Object.keys(ChatLock.users || {}).length; if (n) msg = `🔒 Em đang khóa chat của ${n} bạn. Bấm 🔓 ở cạnh tên bạn để mở.`; }
+      bn.innerHTML = msg; bn.classList.toggle('hidden', !msg); }
+    if (this.chatOpen) this.chatRender();
+  },
   chatRender() { const l = $('#chatList'); if (!l) return; l.innerHTML = Net.msgs.length ? Net.msgs.map(m => this.chatRow(m)).join('') : '<p class="muted small" style="text-align:center">Chưa có tin nhắn nào. Hãy chào các bạn nhé! 👋</p>'; l.scrollTop = l.scrollHeight; },
   civilBanner(msg) {
     let b = document.getElementById('civilB'); if (!b) { b = document.createElement('div'); b.id = 'civilB'; b.style.cssText = 'position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9999;max-width:min(92vw,520px);background:#fff7ed;border:3px solid #f59e0b;border-radius:16px;padding:10px 14px;font:800 15px Nunito,sans-serif;color:#7c2d12;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center'; document.body.appendChild(b); }
@@ -9171,7 +9330,7 @@ function gameShell(title, inner) {
   $('#main').innerHTML = `<div class="wrap"><button class="back" onclick="location.hash='#/play'">← Sân chơi</button><div class="panel game-area"><div class="row" style="justify-content:space-between"><h2>${title}</h2><div class="row" id="ghud"></div></div><div id="gbody" style="margin-top:14px">${inner}</div></div></div>`;
 }
 function gameEnd(title, score, xp, recordKey, better) {
-  const rec = setBest(recordKey, score, better), okR = Items.dayUse('ge_' + recordKey, 3); if (okR) addXP(xp, score > 0 ? 1 : 0); else xp = 0; SFX.win(); if (rec) confetti();
+  const rec = setBest(recordKey, score, better), okR = Items.dayUse('ge_' + recordKey, 3); if (okR) addXP(xp, score > 0 ? 1 : 0); else xp = 0; SFX.win(); if (rec) confetti(); else if (score > 0) confetti(34); try { Juice.win(rec ? '🏆 Kỷ lục mới!' : '🎉 Hoàn thành!'); } catch (e) { }
   $('#gbody').innerHTML = `<div style="text-align:center"><div style="width:120px;margin:0 auto">${avatarSVG(ME.av, { raise: true })}</div><h2>${title}</h2>
     <p style="font-weight:800">${rec ? '🎉 Kỷ lục mới! ' : ''}${okR ? `+${xp} điểm học tập · +${score > 0 ? 1 : 0} ⭐` : 'Hôm nay em đã nhận hết sao thưởng của trò này rồi. Vào Học bài làm bài để nhận thêm ⭐ nhé — học thì không giới hạn!'}</p>
     <div class="row" style="justify-content:center;margin-top:10px">${okR ? '' : '<button class="btn green" onclick="location.hash=\'#/campus/open/study\'">📚 Vào học bài</button>'}<button class="btn sun" onclick="route()">🔁 Chơi lại</button><button class="btn ghost" onclick="location.hash='#/play'">🎮 Trò khác</button></div></div>`;
@@ -9808,6 +9967,23 @@ function g3d(title, o = {}) {
   size(); addEventListener('resize', size);
   if (o.ground !== false) { const g = new THREE.Mesh(new THREE.CircleGeometry(80, 48), new THREE.MeshLambertMaterial({ color: o.ground || '#86efac' })); g.rotation.x = -Math.PI / 2; sc.add(g); S.ground = g;
     if (!o.noTrees) for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2 + .2, d = 26 + (i % 3) * 5; const tr = new THREE.Group(); const tk = new THREE.Mesh(new THREE.CylinderGeometry(.25, .35, 2, 8), new THREE.MeshLambertMaterial({ color: '#92400e' })); tk.position.y = 1; const cr = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 10), new THREE.MeshLambertMaterial({ color: ['#16a34a', '#22c55e', '#15803d'][i % 3] })); cr.position.y = 2.9; tr.add(tk, cr); tr.position.set(Math.cos(a) * d, 0, Math.sin(a) * d); sc.add(tr); } }
+  if (o.ground !== false) {   // ---- cảnh nền đẹp hơn: cỏ có vân, hoa, đồi xa, mây trôi, mặt trời
+    try { const gt = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, 256, 256); for (let i = 0; i < 2600; i++) { x.fillStyle = Math.random() < .5 ? 'rgba(0,60,20,.10)' : 'rgba(255,255,220,.16)'; x.fillRect(Math.random() * 256, Math.random() * 256, 2, 2 + Math.random() * 4); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(40, 40); return t; })(); S.ground.material.map = gt; S.ground.material.needsUpdate = true;
+      const fg = new THREE.SphereGeometry(.11, 6, 5), fm = ['#f43f5e', '#facc15', '#ffffff', '#a855f7', '#fb923c'].map(c => new THREE.MeshLambertMaterial({ color: c }));
+      for (let i = 0; i < 70; i++) { const a = Math.random() * Math.PI * 2, d = 11 + Math.random() * 22; const f = new THREE.Mesh(fg, fm[i % 5]); f.position.set(Math.cos(a) * d, .09, Math.sin(a) * d); sc.add(f); }
+      if (!o.noTrees) {
+        const hm = [new THREE.MeshLambertMaterial({ color: '#4ade80' }), new THREE.MeshLambertMaterial({ color: '#22c55e' })], hg = new THREE.SphereGeometry(1, 18, 10);
+        for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2 + .35, d = 52 + (i % 3) * 7; const h = new THREE.Mesh(hg, hm[i % 2]); h.scale.set(15 + (i % 4) * 4, 5 + (i % 3) * 2.2, 13); h.position.set(Math.cos(a) * d, -.6, Math.sin(a) * d); sc.add(h); }
+        const ct = (() => { const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d'); for (const [cx, cy, r] of [[70, 78, 40], [118, 60, 50], [170, 76, 42], [128, 88, 46]]) { const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, 'rgba(255,255,255,.98)'); g.addColorStop(.7, 'rgba(255,255,255,.8)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 128); } return new THREE.CanvasTexture(c); })();
+        const cl = []; for (let i = 0; i < 8; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: ct, transparent: true, opacity: .92, fog: false, depthWrite: false })); const a = i / 8 * Math.PI * 2; sp.position.set(Math.cos(a) * (40 + (i % 3) * 14), 17 + (i % 4) * 3.5, Math.sin(a) * (40 + (i % 3) * 14) - 10); sp.scale.set(22 + (i % 3) * 6, 10 + (i % 2) * 3, 1); sc.add(sp); cl.push(sp); }
+        S.ticks.push(dt => cl.forEach(c => { c.position.x += dt * .7; if (c.position.x > 80) c.position.x = -80; }));
+        const st = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,235,1)'); g.addColorStop(.22, 'rgba(255,244,170,.95)'); g.addColorStop(.5, 'rgba(255,230,120,.3)'); g.addColorStop(1, 'rgba(255,230,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+        const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: st, transparent: true, fog: false, depthWrite: false })); sun.position.set(-34, 30, -70); sun.scale.set(26, 26, 1); sc.add(sun);
+      }
+      const shG = new THREE.CircleGeometry(.42, 18), shM = new THREE.MeshBasicMaterial({ color: '#0f172a', transparent: true, opacity: .22, depthWrite: false });
+      S._shadow = C => { const m = new THREE.Mesh(shG, shM); m.rotation.x = -Math.PI / 2; sc.add(m); S.ticks.push(() => { const p = C.root.position; m.visible = C.root.visible && !!C.root.parent; m.position.set(p.x, .025, p.z); const k = Math.max(.45, 1 - Math.max(0, p.y) * .35); m.scale.setScalar(k); }); };
+    } catch (e) { console.error(e); }
+  }
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   S.rayAt = e => { const b = cv.getBoundingClientRect(); ndc.set((e.clientX - b.left) / b.width * 2 - 1, -(e.clientY - b.top) / b.height * 2 + 1); ray.setFromCamera(ndc, cam); return ray; };
   cv.addEventListener('pointerdown', e => { e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (_) { } const r = S.rayAt(e); if (S.onDown && S.onDown(e, r) === true) return;
@@ -9850,8 +10026,8 @@ function g3d(title, o = {}) {
   S.btns = (list) => { const b = $('#g3b'); if (!b) return; b.innerHTML = list.map((x, i) => `<button class="btn ${x.cls || 'ghost'} ${x.big ? 'big' : ''}" data-i="${i}">${x.label}</button>`).join(''); b.onclick = e => { const t = e.target.closest('button'); if (t) list[+t.dataset.i].fn(t); }; };
   S.overlay = (h, p, btns) => { const e = $('#g3o'); if (!e) return; if (!h) { e.classList.add('hidden'); return; } e.classList.remove('hidden'); e.innerHTML = `<h3>${h}</h3>${p ? `<p>${p}</p>` : ''}<div class="row">${btns.map((x, i) => `<button class="btn ${x.cls || 'sun'} lg" data-i="${i}">${x.label}</button>`).join('')}</div>`; e.onclick = ev => { const t = ev.target.closest('button'); if (t) { e.classList.add('hidden'); btns[+t.dataset.i].fn(); } }; };
   S.intro = (h, p, go) => S.overlay(h, p, [{ label: '▶️ Bắt đầu!', fn: go }]);
-  S.me = (x = 0, z = 0, ry = 0) => { const C = CH.build(ME.av || {}, { outfit: ME.eq && ME.eq.outfit }); try { Items.attach(C, ME.eq || {}); } catch (_) { } C.root.position.set(x, 0, z); C.root.rotation.y = ry; C.state = 'idle'; sc.add(C.root); S.chars.push(C); return C; };
-  S.kid = (x = 0, z = 0, ry = 0, seed) => { const C = CH.build(randAv3(mulberry32(seed ?? (Math.random() * 1e9) | 0))); C.root.position.set(x, 0, z); C.root.rotation.y = ry; C.state = 'idle'; sc.add(C.root); S.chars.push(C); return C; };
+  S.me = (x = 0, z = 0, ry = 0) => { const C = CH.build(ME.av || {}, { outfit: ME.eq && ME.eq.outfit }); try { Items.attach(C, ME.eq || {}); } catch (_) { } C.root.position.set(x, 0, z); C.root.rotation.y = ry; C.state = 'idle'; sc.add(C.root); S.chars.push(C); if (S._shadow) S._shadow(C); return C; };
+  S.kid = (x = 0, z = 0, ry = 0, seed) => { const C = CH.build(randAv3(mulberry32(seed ?? (Math.random() * 1e9) | 0))); C.root.position.set(x, 0, z); C.root.rotation.y = ry; C.state = 'idle'; sc.add(C.root); S.chars.push(C); if (S._shadow) S._shadow(C); return C; };
   S.pose = (C, st, ms = 700, back = 'idle') => { C.state = st; C.t = 0; setTimeout(() => { if (C.state === st) C.state = back; }, ms); };
   S.countdown = (sec, onEnd) => { S.left = sec; let done = false; S.tick(dt => { if (done || S.paused) return; S.left -= dt; if (S.left <= 0) { done = true; S.left = 0; onEnd(); } }); };
   S.end = (title, score, xp, key, better) => { S.stop = true; gameEnd(title, score, xp, key, better); };
