@@ -6996,8 +6996,9 @@ const ChatLock = {
     if (ME && this.isUser(ME.id)) return '🔒 Chủ trường đã tạm khóa trò chuyện của em. Em nhắn lại sau nhé!';
     return '';
   },
-  setAll(v) { if (!DB.on) return; try { DB.ref('chatlock/all').set(!!v); } catch (e) { } },
-  setUser(u, v) { if (!DB.on) return; const k = this._uid(u); try { if (v) DB.ref('chatlock/users/' + k).set(true); else DB.ref('chatlock/users/' + k).remove(); } catch (e) { } },
+  proof() { return DB.ref('ownerproof').set({ k: String(ME.code || '').replace(/-/g, ''), t: firebase.database.ServerValue.TIMESTAMP }); },   // chứng minh là chủ trường (luật Firebase đối chiếu với mã của chủ, có hiệu lực vài giây)
+  setAll(v) { if (!DB.on || !isOwner()) return; try { this.proof().then(() => DB.ref('chatlock/all').set(!!v)).catch(() => toast('Không đổi được khoá chat, em thử lại nhé.')); } catch (e) { } },
+  setUser(u, v) { if (!DB.on || !isOwner()) return; const k = this._uid(u); try { this.proof().then(() => (v ? DB.ref('chatlock/users/' + k).set(true) : DB.ref('chatlock/users/' + k).remove())).catch(() => toast('Không đổi được khoá chat, em thử lại nhé.')); } catch (e) { } },
   changed() { try { if (typeof HUD !== 'undefined' && HUD.chatLockUI) HUD.chatLockUI(); } catch (e) { } },
 };
 
@@ -8462,8 +8463,11 @@ function dropGift(S, p0, a, key, C) { if (!S || !S.scene || !S.B) return; const 
     const give = () => { Items.dayUse('santabox', 3); finish(); if (S0.fx) { poof(S0, g.position, 'gift'); poof(S0, g.position, 'star'); poof(S0, g.position, 'snow'); } confetti(80); SFX.win();
       if (it) { ME.inv = [...(ME.inv || []), it.id]; saveMe(); toast(`🎄 <b>Chúc mừng bạn đã nhận được quà Noel!</b><br>Ông già Noel tặng bạn <b>${it.i} ${it.n}</b> – vào Túi đồ để mặc thử nhé.`, 6000); } else Items.reward(30, 'Chúc mừng bạn đã nhận được quà Noel!'); };
     if (!online) return give(); busy = true;
-    ref.set({ u: ME.id, n: String(ME.n).slice(0, 20), g: pubG(), m: ('🎁 đã nhặt được hộp quà Noel: ' + (it ? it.i + ' ' + it.n : '30 ⭐')).slice(0, 120), t: firebase.database.ServerValue.TIMESTAMP })
-      .then(give).catch(() => { busy = false; finish(); toast('😢 Tiếc quá, bạn khác đã nhặt hộp quà này trước rồi!', 2500); }); };
+    let settled = false; const once = f => () => { if (settled) return; settled = true; f(); };
+    const slow = setTimeout(once(give), 6000);   // mạng chậm quá 6 giây thì vẫn cho nhận, không để hộp treo mãi
+    try { ref.set({ u: ME.id, n: String(ME.n || 'Bạn').slice(0, 20), g: pubG() || 0, m: ('🎁 đã nhặt được hộp quà Noel: ' + (it ? it.i + ' ' + it.n : '30 ⭐')).slice(0, 120), t: firebase.database.ServerValue.TIMESTAMP })
+      .then(once(() => { clearTimeout(slow); give(); })).catch(once(() => { clearTimeout(slow); busy = false; finish(); toast('😢 Tiếc quá, bạn khác đã nhặt hộp quà này trước rồi!', 2500); })); }
+    catch (e) { clearTimeout(slow); settled = true; busy = false; give(); } };
   const act = { x, z, r: 1.8, icon: '🎁', label: 'Nhặt hộp quà Noel', fn: claim }; S.B.acts.push(act);
   const t0 = performance.now(); const tk = setInterval(() => { tt = (performance.now() - t0) / 1000;
     if (!done && W.P && W.S === S0 && g.position.y <= y0 + .3 && Math.hypot(W.P.root.position.x - x, W.P.root.position.z - z) < 1.3) claim();   // lại gần là tự nhặt
