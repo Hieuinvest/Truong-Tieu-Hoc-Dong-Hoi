@@ -8436,7 +8436,7 @@ const OWNER_SET = [
     if (a.u) USES[id] = mkUse(n.toLowerCase(), i, a.u[0], a.u[1]);
   }
   for (const it of OWNER_SET) { SHOP.push(it); SHOPMAP[it.id] = it; }
-  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => { const ks = String(ctx.arg || '').split(',').filter(Boolean); for (let i = 0; i < 3; i++) dropGift(ctx.S, ctx.p0, ctx.a + i * 2.1, ks[i] || '', ctx.C); }); } };
+  USES.santabag = { n: 'bao quà Noel', i: '🎁', fx: ctx => { USEP.rain(ctx, ['gift', 'snow', 'star']); ctx.later(900, () => { const ks = String(ctx.arg || '').split(',').filter(Boolean); for (let i = 0; i < 3; i++) dropGift(ctx.S, ctx.p0, (ks[0] ? [...ks[0]].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 628, 7) / 100 : ctx.a) + i * 2.1, ks[i] || '', ctx.C); /* góc theo mã quà: hộp nằm cùng chỗ trên máy mọi người */ }); } };
   ITEM3D.santabag = C => TB.sack(C, {});
   RIDES.sleigh = C => TR.sleigh(C);
   ITEM3D.o_santasuit = () => ({ fx: (dt, C, S) => { if (Math.random() < dt * 2.5) { const p = C.root.position.clone().add(new THREE.Vector3((Math.random() - .5) * .8, 1.6 + Math.random() * .5, (Math.random() - .5) * .8)); S.fx.emit('snow', p, { size: .1, life: 1.6, v: new THREE.Vector3(0, -.4, 0) }); } } });
