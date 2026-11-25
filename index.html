@@ -4021,6 +4021,16 @@ const Save = {
     if (!me || typeof me.n !== 'string' || !me.av || !(me.g >= 1 && me.g <= 5)) return { ok: false, msg: 'Mã này không đúng. Em kiểm tra lại nhé.' };
     if (code) me.code = code; ME = me; this.ensure(); LS.set('dh_me', ME); LS.set('dh_place', null); return { ok: true };
   },
+  logout() {   /* đăng xuất: lưu lên máy chủ rồi xoá nhân vật khỏi thiết bị này, trở về màn hình đầu */
+    if (!ME) return; this.ensure(); const c = this.fmt(ME.code);
+    modal(`<h2 style="margin-top:0">🚪 Đăng xuất?</h2><p class="small">Em sẽ thoát khỏi nhân vật <b>${esc(ME.n)}</b> trên thiết bị này. Điểm số và đồ đã mua vẫn được lưu. Muốn chơi tiếp, em bấm “Nhập mã lưu” và nhập mã bên dưới.</p>
+      <div style="font:900 28px/1.2 monospace;letter-spacing:3px;text-align:center;margin:8px 0;padding:8px;background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;user-select:all">${c}</div>
+      <p class="small" style="color:#b91c1c;margin:4px 0 10px"><b>Ghi lại mã này trước khi thoát.</b> Không đưa mã cho bạn khác, vì ai có mã sẽ vào được nhân vật của em.</p>
+      <div class="row" style="justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Ở lại chơi</button><button class="btn" id="loGo" style="background:#dc2626;color:#fff">🚪 Đăng xuất</button></div>`);
+    $('#loGo').onclick = async () => { const b = $('#loGo'); b.disabled = true; b.textContent = '⏳ Đang lưu…';
+      try { if (DB.on) await Promise.race([DB.ref('saves/' + ME.code).set({ t: DB.now(), d: JSON.stringify(ME) }), new Promise(r => setTimeout(r, 3000))]); } catch { }
+      LS.set('dh_me', null); LS.set('dh_place', null); ME = null; try { location.hash = '#/'; } catch { } location.reload(); };
+  },
   openRestore() {
     modal(`<h2 style="margin-top:0">🔑 Nhập mã lưu</h2><p class="small">Nhập mã lưu của em (trong mục “Đổi nhân vật”) để chơi tiếp trên thiết bị này với nhân vật, điểm số và đồ đã mua.</p>
       <input class="input" id="svIn" placeholder="Ví dụ: K7M2-9QXA" autocomplete="off" style="text-transform:uppercase;font-size:22px;letter-spacing:2px;text-align:center">
@@ -4038,6 +4048,7 @@ const Save = {
       <div class="row" style="justify-content:center"><button class="btn sun" id="svCopy">📋 Chép mã</button><button class="btn ghost" id="svOther">🔑 Nhập mã khác</button></div>
       <p class="small" style="margin:8px 0 0">Ghi lại mã này. Ở thiết bị khác, bấm “Nhập mã lưu” ở màn hình đầu để chơi tiếp với đúng nhân vật và điểm của em.${DB.on ? '' : '<br><b>Chưa có mạng:</b> mã sẽ lưu lên máy chủ khi có mạng.'}</p>
       <details style="margin-top:6px"><summary class="small">Sao lưu bằng mã dài (không cần mạng)</summary><textarea class="input" id="svLong" readonly rows="3" style="font-size:11px;margin-top:4px">${this.pack()}</textarea><button class="btn ghost" id="svCopy2" style="margin-top:4px">📋 Chép mã dài</button></details></div>`;
+    el.insertAdjacentHTML('beforeend', `<button class="btn ghost" id="svLogout" style="margin-top:10px;width:100%;color:#b91c1c">🚪 Đăng xuất khỏi nhân vật này</button>`); $('#svLogout').onclick = () => Save.logout();
     const cp = (t, m) => { try { navigator.clipboard.writeText(t).then(() => toast(m)); } catch { toast('Em bôi đen mã rồi chép nhé'); } };
     $('#svCopy').onclick = () => cp(this.fmt(c), '📋 Đã chép mã lưu'); $('#svCopy2').onclick = () => cp(this.pack(), '📋 Đã chép mã dài'); $('#svOther').onclick = () => this.openRestore();
     this.sync();
@@ -8899,7 +8910,7 @@ const HUD = {
   },
   renderMe() { const e = $('#hMe'); if (!e || !ME) return; ownerTop(); const tt = titleOf(ME.xp); const lv = 1 + Math.floor(Math.sqrt((ME.xp | 0) / 25));
     const a0 = (lv - 1) ** 2 * 25, a1 = lv ** 2 * 25, pc = Math.max(4, Math.min(100, ((ME.xp | 0) - a0) / (a1 - a0) * 100));
-    e.innerHTML = `<div class="av">${avatarSVG(ME.av, { bust: true })}<em>${lv}</em></div><div class="mi"><b>${esc(ME.n)}</b><small>${isOwner() ? '' : `Lớp ${ME.g} · `}${tt[2]} ${tt[1]}</small><div class="xpb" title="Điểm học tập: ${ME.xp | 0}"><u style="width:${pc}%"></u><span>📘 ${ME.xp | 0} / ${a1}</span></div></div><span class="coin" title="Điểm thưởng để mua đồ">⭐ ${isOwner() ? '∞' : ME.st | 0}</span><i class="ed">✏️ Đổi</i>`; },
+    e.innerHTML = `<div class="av">${avatarSVG(ME.av, { bust: true })}<em>${lv}</em></div><div class="mi"><b>${esc(ME.n)}</b><small>${isOwner() ? '' : `Lớp ${ME.g} · `}${tt[2]} ${tt[1]}</small><div class="xpb" title="Điểm học tập: ${ME.xp | 0}"><u style="width:${pc}%"></u><span>📘 ${ME.xp | 0} / ${a1}</span></div></div><span class="coin" title="Điểm thưởng để mua đồ">⭐ ${isOwner() ? '∞' : ME.st | 0}</span><i class="ed">✏️ Đổi</i><i class="ed lo" style="margin-left:4px;color:#fecaca" title="Đăng xuất khỏi nhân vật này">🚪 Thoát</i>`; const lo = e.querySelector('.lo'); if (lo) lo.onclick = ev => { ev.stopPropagation(); SFX.click(); Save.logout(); }; },
   /* ---------- bản đồ nhỏ góc trên phải ---------- */
   drawMini() {
     const c = $('#mmap'); if (!c || !W.S || !W.P || !W.on) return; const x = c.getContext('2d'), S = W.S, p = W.P.root.position, D = 180, H = 90;
